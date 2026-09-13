@@ -1,0 +1,13 @@
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Common build/dependency folders
+node_modules/
+dist/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
