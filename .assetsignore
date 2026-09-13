@@ -1,0 +1,8 @@
+# Files that must not be published as web assets
+.git*
+README.md
+supabase/
+.env.example
+_headers
+wrangler.jsonc
+.assetsignore
