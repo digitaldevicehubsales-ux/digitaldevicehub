@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>Resend confirmation | DigitalDeviceHub</title>
+  <link rel="icon" href="/favicon.svg" />
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/backend.css" />
+  <script src="/config.js" defer></script>
+  <script src="/resend-confirmation.js" defer></script>
+</head>
+<body>
+  <main class="section" aria-labelledby="page-title">
+    <div class="container narrow">
+      <p class="eyebrow">DigitalDeviceHub account</p>
+      <h1 id="page-title">Resend your confirmation email</h1>
+      <p>Enter the same email address you used when creating your account. We’ll ask Supabase to send a fresh confirmation link through the configured DigitalDeviceHub mail server.</p>
+      <form id="resendForm" class="dialog-form">
+        <label>Email
+          <input id="email" name="email" type="email" required autocomplete="email" />
+        </label>
+        <button class="button" type="submit">Resend confirmation</button>
+      </form>
+      <p id="status" class="status-note" role="status" aria-live="polite"></p>
+      <p><a href="/">Back to DigitalDeviceHub</a></p>
+    </div>
+  </main>
+</body>
+</html>
