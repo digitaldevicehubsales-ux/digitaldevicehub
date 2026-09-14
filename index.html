@@ -77,7 +77,7 @@
     <section id="marketplace" class="marketplace shell">
       <div class="section-heading marketplace-heading">
         <div>
-          <span class="eyebrow">Marketplace preview</span>
+          <span class="eyebrow">Marketplace</span>
           <h2>Fresh listings</h2>
         </div>
         <div class="search-wrap">
@@ -116,15 +116,37 @@
         <div>
           <span class="eyebrow">Seller onboarding</span>
           <h2>Turn unused devices into value.</h2>
-          <p>This validation build demonstrates the seller journey without paid infrastructure. Real accounts, uploads and payments will connect to Supabase and a payment provider later.</p>
+          <p>Seller accounts and listings are designed to run on the free Supabase backend. New listings are submitted for review before they appear publicly.</p>
         </div>
         <form id="sellForm" class="sell-form">
-          <label>Device type<select required><option value="">Choose type</option><option>Phone</option><option>Laptop</option><option>Tablet</option><option>Accessory</option></select></label>
-          <label>Brand / model<input required placeholder="e.g. iPhone 15 Pro" /></label>
-          <label>Condition<select required><option value="">Choose condition</option><option>New</option><option>Excellent</option><option>Good</option><option>Fair</option></select></label>
-          <label>Asking price (NGN)<input required inputmode="numeric" placeholder="e.g. 450000" /></label>
-          <button class="button" type="submit">Preview listing</button>
-          <p class="form-note">Demo only — this build does not collect personal information or payments.</p>
+          <label>Device type
+            <select name="category" required>
+              <option value="">Choose type</option>
+              <option value="Phones">Phone</option>
+              <option value="Laptops">Laptop</option>
+              <option value="Tablets">Tablet</option>
+              <option value="Accessories">Accessory</option>
+              <option value="Wearables">Wearable</option>
+            </select>
+          </label>
+          <label>Brand<input name="brand" required maxlength="80" placeholder="e.g. Apple" /></label>
+          <label>Model<input name="model" required maxlength="100" placeholder="e.g. iPhone 15 Pro" /></label>
+          <label>Condition
+            <select name="condition" required>
+              <option value="">Choose condition</option>
+              <option value="new">New</option>
+              <option value="excellent">Excellent</option>
+              <option value="good">Good</option>
+              <option value="fair">Fair</option>
+            </select>
+          </label>
+          <label>Storage<input name="storage" maxlength="60" placeholder="e.g. 256 GB" /></label>
+          <label>City<input name="city" maxlength="80" placeholder="e.g. Lagos" /></label>
+          <label>Asking price (NGN)<input name="price" required inputmode="numeric" pattern="[0-9]+" placeholder="e.g. 450000" /></label>
+          <label>Product image<input name="image" type="file" accept="image/jpeg,image/png,image/webp" /></label>
+          <label class="full-field">Description<textarea name="description" maxlength="2000" rows="4" placeholder="Describe the device, battery condition, included accessories and any defects."></textarea></label>
+          <button class="button" type="submit">Submit listing</button>
+          <p class="form-note">No listing fee. Payment collection remains disabled until a compliant payment flow is connected.</p>
         </form>
       </div>
     </section>
@@ -137,11 +159,12 @@
 
   <footer>
     <div class="shell footer-inner">
-      <div><b>DigitalDeviceHub</b><span>Device marketplace validation MVP</span></div>
+      <div><b>DigitalDeviceHub</b><span>Device marketplace MVP</span></div>
       <span>© 2026 DigitalDeviceHub</span>
     </div>
   </footer>
 
+  <script src="/config.js"></script>
   <script src="/app.js" defer></script>
 </body>
 </html>
