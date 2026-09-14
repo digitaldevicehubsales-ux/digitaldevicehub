@@ -18,6 +18,7 @@ const SESSION_KEY = 'ddh_supabase_session';
 let listings = backendReady ? [] : [...demoListings];
 let activeCategory = 'all';
 let session = null;
+let pendingOtpEmail = '';
 
 const grid = document.querySelector('#listingGrid');
 const empty = document.querySelector('#emptyState');
@@ -69,7 +70,7 @@ function loadStoredSession(){
 
 function updateAccountButton(){
   if(!signInButton) return;
-  signInButton.textContent = session?.user?.email ? 'Account' : 'Sign in';
+  signInButton.textContent = session?.user?.email ? 'Account' : 'Sign in / Sign up';
 }
 
 async function authRequest(path, body){
@@ -195,9 +196,9 @@ function openListing(id){
   dialogContent.querySelector('[data-message]')?.addEventListener('click',()=>openMessageForm(x));
 }
 
-function showAuthDialog(mode='signin', message=''){
+function showAuthDialog(_mode='signin', message=''){
   if(!backendReady){
-    showNotice('Backend connection pending','The website is live, but the free Supabase project still needs to be created and connected before account credentials can be accepted.');
+    showNotice('Backend connection pending','The website is live, but the free Supabase project still needs to be created and connected before account access can be used.');
     return;
   }
   if(session?.user?.email){
@@ -206,34 +207,64 @@ function showAuthDialog(mode='signin', message=''){
     dialogContent.querySelector('[data-dialog-close]')?.addEventListener('click',()=>dialog.close());
     return;
   }
-  const isSignup = mode === 'signup';
-  showDialog(`<div class="dialog-product"><span class="eyebrow">${isSignup?'Create account':'Welcome back'}</span><h2>${isSignup?'Start buying and selling.':'Sign in to DigitalDeviceHub.'}</h2>${message?`<p class="status-note">${escapeHtml(message)}</p>`:''}<form id="authForm" class="dialog-form">${isSignup?'<label>Display name<input name="displayName" required maxlength="80" autocomplete="name" /></label>':''}<label>Email<input name="email" type="email" required autocomplete="email" /></label><label>Password<input name="password" type="password" required minlength="8" autocomplete="current-password" /></label><button class="button" type="submit">${isSignup?'Create account':'Sign in'}</button></form><button class="text-button" data-auth-toggle>${isSignup?'Already have an account? Sign in':'New here? Create an account'}</button></div>`);
-  dialogContent.querySelector('#authForm')?.addEventListener('submit',e=>handleAuthSubmit(e,isSignup));
-  dialogContent.querySelector('[data-auth-toggle]')?.addEventListener('click',()=>showAuthDialog(isSignup?'signin':'signup'));
+  showDialog(`<div class="dialog-product"><span class="eyebrow">Secure account access</span><h2>Sign in or create your account.</h2>${message?`<p class="status-note">${escapeHtml(message)}</p>`:''}<p>Enter your email address. We’ll send you a one-time code — no password needed.</p><form id="authForm" class="dialog-form"><label>Email<input name="email" type="email" required autocomplete="email" placeholder="you@example.com" /></label><button class="button" type="submit">Email me a code</button></form><p class="form-note">New email addresses are automatically registered after the code is verified.</p></div>`);
+  dialogContent.querySelector('#authForm')?.addEventListener('submit',handleEmailOtpSubmit);
 }
 
-async function handleAuthSubmit(event,isSignup){
+async function sendEmailOtp(email){
+  const fallbackName = email.split('@')[0].replace(/[._-]+/g,' ').trim().slice(0,80) || 'DigitalDeviceHub user';
+  await authRequest('/auth/v1/otp',{
+    email,
+    create_user:true,
+    data:{display_name:fallbackName}
+  });
+}
+
+async function handleEmailOtpSubmit(event){
   event.preventDefault();
-  const form = new FormData(event.currentTarget);
-  const email = String(form.get('email') || '').trim();
-  const password = String(form.get('password') || '');
+  const email = String(new FormData(event.currentTarget).get('email') || '').trim().toLowerCase();
+  if(!email) return;
   try{
-    if(isSignup){
-      const displayName = String(form.get('displayName') || '').trim();
-      const data = await authRequest('/auth/v1/signup',{email,password,data:{display_name:displayName}});
-      if(data.access_token){
-        saveSession(data);
-        showNotice('Account created','Your account is ready and you are signed in.');
-      }else{
-        showAuthDialog('signin','Account created. Check your email if Supabase requires email confirmation, then sign in.');
-      }
-    }else{
-      const data = await authRequest('/auth/v1/token?grant_type=password',{email,password});
-      saveSession(data);
-      showNotice('Signed in','Your DigitalDeviceHub account is now active in this browser.');
-    }
+    await sendEmailOtp(email);
+    pendingOtpEmail = email;
+    showOtpDialog(email,'We sent a one-time code to your email.');
   }catch(err){
-    showAuthDialog(isSignup?'signup':'signin',err.message);
+    showAuthDialog('signin',err.message);
+  }
+}
+
+function showOtpDialog(email, message=''){
+  showDialog(`<div class="dialog-product"><span class="eyebrow">Email verification</span><h2>Enter your code.</h2>${message?`<p class="status-note">${escapeHtml(message)}</p>`:''}<p>Enter the 6-digit code sent to <strong>${escapeHtml(email)}</strong>.</p><form id="otpForm" class="dialog-form"><label>One-time code<input name="token" type="text" required inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="123456" /></label><button class="button" type="submit">Verify & sign in</button></form><div class="dialog-actions"><button class="text-button" data-resend-otp>Resend code</button><button class="text-button" data-change-email>Use a different email</button></div></div>`);
+  dialogContent.querySelector('#otpForm')?.addEventListener('submit',e=>handleOtpVerify(e,email));
+  dialogContent.querySelector('[data-resend-otp]')?.addEventListener('click',()=>resendOtp(email));
+  dialogContent.querySelector('[data-change-email]')?.addEventListener('click',()=>showAuthDialog('signin'));
+  dialogContent.querySelector('input[name="token"]')?.focus();
+}
+
+async function handleOtpVerify(event,email){
+  event.preventDefault();
+  const token = String(new FormData(event.currentTarget).get('token') || '').replace(/\D/g,'').slice(0,6);
+  if(token.length !== 6){
+    showOtpDialog(email,'Enter the full 6-digit code.');
+    return;
+  }
+  try{
+    const data = await authRequest('/auth/v1/verify',{email,token,type:'email'});
+    saveSession(data);
+    pendingOtpEmail = '';
+    showNotice('Signed in','Your email is verified and you are signed in to DigitalDeviceHub.');
+  }catch(err){
+    showOtpDialog(email,err.message);
+  }
+}
+
+async function resendOtp(email){
+  try{
+    await sendEmailOtp(email);
+    pendingOtpEmail = email;
+    showOtpDialog(email,'A fresh code has been sent. Use the newest code only.');
+  }catch(err){
+    showOtpDialog(email,err.message);
   }
 }
 
@@ -244,6 +275,7 @@ async function signOut(){
     }
   }catch{}
   saveSession(null);
+  pendingOtpEmail = '';
   showNotice('Signed out','Your session has been cleared from this browser.');
 }
 
