@@ -180,7 +180,6 @@
       ${message?`<p class="status-note">${escapeHtml(message)}</p>`:''}
       <div class="provider-stack" aria-label="Sign in options">
         <div id="googleSignInMount" class="google-signin-mount" aria-label="Continue with Google"><button class="provider-button" type="button" disabled>${providerIcon('google')}<span>Loading Google…</span></button></div>
-        <button class="provider-button" type="button" data-oauth-provider="microsoft">${providerIcon('microsoft')}<span>Continue with Microsoft</span></button>
         <button class="provider-button" type="button" data-oauth-provider="facebook">${providerIcon('facebook')}<span>Continue with Facebook</span></button>
       </div>
       <div class="auth-divider"><span></span><b>or</b><span></span></div>
