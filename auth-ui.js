@@ -180,7 +180,6 @@
       ${message?`<p class="status-note">${escapeHtml(message)}</p>`:''}
       <div class="provider-stack" aria-label="Sign in options">
         <div id="googleSignInMount" class="google-signin-mount" aria-label="Continue with Google"><button class="provider-button" type="button" disabled>${providerIcon('google')}<span>Loading Google…</span></button></div>
-        <button class="provider-button" type="button" data-oauth-provider="facebook">${providerIcon('facebook')}<span>Continue with Facebook</span></button>
       </div>
       <div class="auth-divider"><span></span><b>or</b><span></span></div>
       <form id="authForm" class="dialog-form auth-email-form">
@@ -191,7 +190,6 @@
       <p class="form-note auth-note">First-time users are registered automatically. Returning users are signed in to the same account.</p>
     </div>`);
 
-    dialogContent.querySelectorAll('[data-oauth-provider]').forEach(button=>button.addEventListener('click',()=>startOAuth(button.dataset.oauthProvider)));
     dialogContent.querySelector('#authForm')?.addEventListener('submit',handleEmailOtpSubmit);
     mountGoogleButton();
   };
