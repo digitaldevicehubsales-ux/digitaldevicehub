@@ -1,12 +1,12 @@
 const demoListings = [
-  {id:1,category:'Phones',name:'iPhone 15 Pro',condition:'Used',storage:'256 GB',price:620000,seller:'Metro Devices',verified:true,icon:'▯',source:'demo'},
-  {id:2,category:'Phones',name:'Galaxy S24 Ultra',condition:'Used',storage:'256 GB',price:540000,seller:'Prime Mobile',verified:true,icon:'▯',source:'demo'},
-  {id:3,category:'Laptops',name:'MacBook Air M2',condition:'Used',storage:'512 GB',price:870000,seller:'Tech Corner',verified:false,icon:'▱',source:'demo'},
-  {id:4,category:'Laptops',name:'ThinkPad X1 Carbon',condition:'Used',storage:'1 TB',price:690000,seller:'Workstation Hub',verified:true,icon:'▱',source:'demo'},
-  {id:5,category:'Tablets',name:'iPad Air 5',condition:'Used',storage:'256 GB',price:485000,seller:'Metro Devices',verified:true,icon:'▭',source:'demo'},
-  {id:6,category:'Accessories',name:'USB-C 100W Charger',condition:'New',storage:'GaN',price:32000,seller:'Accessory Point',verified:false,icon:'⌁',source:'demo'},
-  {id:7,category:'Phones',name:'Pixel 9 Pro',condition:'New',storage:'256 GB',price:710000,seller:'Prime Mobile',verified:true,icon:'▯',source:'demo'},
-  {id:8,category:'Tablets',name:'Galaxy Tab S9',condition:'Used',storage:'128 GB',price:395000,seller:'Device Loft',verified:false,icon:'▭',source:'demo'}
+  {id:1,category:'Phones',name:'iPhone 15 Pro',condition:'Used',storage:'256 GB',price:620000,currency:'NGN',seller:'Metro Devices',verified:true,icon:'▯',source:'demo'},
+  {id:2,category:'Phones',name:'Galaxy S24 Ultra',condition:'Used',storage:'256 GB',price:540000,currency:'NGN',seller:'Prime Mobile',verified:true,icon:'▯',source:'demo'},
+  {id:3,category:'Laptops',name:'MacBook Air M2',condition:'Used',storage:'512 GB',price:870000,currency:'NGN',seller:'Tech Corner',verified:false,icon:'▱',source:'demo'},
+  {id:4,category:'Laptops',name:'ThinkPad X1 Carbon',condition:'Used',storage:'1 TB',price:690000,currency:'NGN',seller:'Workstation Hub',verified:true,icon:'▱',source:'demo'},
+  {id:5,category:'Tablets',name:'iPad Air 5',condition:'Used',storage:'256 GB',price:485000,currency:'NGN',seller:'Metro Devices',verified:true,icon:'▭',source:'demo'},
+  {id:6,category:'Accessories',name:'USB-C 100W Charger',condition:'New',storage:'GaN',price:32000,currency:'NGN',seller:'Accessory Point',verified:false,icon:'⌁',source:'demo'},
+  {id:7,category:'Phones',name:'Pixel 9 Pro',condition:'New',storage:'256 GB',price:710000,currency:'NGN',seller:'Prime Mobile',verified:true,icon:'▯',source:'demo'},
+  {id:8,category:'Tablets',name:'Galaxy Tab S9',condition:'Used',storage:'128 GB',price:395000,currency:'NGN',seller:'Device Loft',verified:false,icon:'▭',source:'demo'}
 ];
 
 const cfg = window.DDH_CONFIG || {};
@@ -28,16 +28,55 @@ const dialog = document.querySelector('#dialog');
 const dialogContent = document.querySelector('#dialogContent');
 const signInButton = document.querySelector('[data-action="signin"]');
 const sellForm = document.querySelector('#sellForm');
+const sellerCurrency = document.querySelector('#sellerCurrency');
 
-const money = n => new Intl.NumberFormat('en-NG',{style:'currency',currency:'NGN',maximumFractionDigits:0}).format(Number(n) || 0);
 const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const titleCase = value => String(value || '').replace(/^./, c => c.toUpperCase());
+const validCurrency = value => /^[A-Z]{3}$/.test(String(value || '').toUpperCase()) ? String(value).toUpperCase() : '';
 const iconFor = category => ({Phones:'▯',Laptops:'▱',Tablets:'▭',Accessories:'⌁',Wearables:'◉'}[category] || '◫');
 const publicListingImageUrl = path => {
   if(!path) return '';
   const encodedPath = String(path).split('/').map(encodeURIComponent).join('/');
   return `${supabaseUrl}/storage/v1/object/public/listing-images/${encodedPath}`;
 };
+
+function money(amount,currency='NGN'){
+  const code = validCurrency(currency) || 'NGN';
+  const value = Number(amount) || 0;
+  try{
+    return new Intl.NumberFormat(undefined,{style:'currency',currency:code,maximumFractionDigits:4}).format(value);
+  }catch{
+    return `${code} ${value.toLocaleString()}`;
+  }
+}
+
+function supportedCurrencyCodes(){
+  try{
+    if(typeof Intl.supportedValuesOf === 'function') return Intl.supportedValuesOf('currency');
+  }catch{}
+  return ['AED','AUD','BRL','CAD','CHF','CNY','DKK','EGP','EUR','GBP','GHS','HKD','IDR','INR','JPY','KES','KRW','KWD','MAD','MXN','MYR','NGN','NOK','NZD','PHP','PKR','PLN','QAR','SAR','SEK','SGD','THB','TRY','TWD','TZS','UGX','USD','VND','ZAR'];
+}
+
+function currencyDisplayName(code){
+  try{
+    const names = new Intl.DisplayNames([navigator.language || 'en'],{type:'currency'});
+    return names.of(code) || code;
+  }catch{return code;}
+}
+
+function populateSellerCurrencySelect(){
+  if(!sellerCurrency) return;
+  const current = validCurrency(sellerCurrency.value) || 'NGN';
+  const codes = [...new Set(supportedCurrencyCodes().map(validCurrency).filter(Boolean))].sort();
+  sellerCurrency.innerHTML = codes.map(code=>`<option value="${code}">${code} — ${escapeHtml(currencyDisplayName(code))}</option>`).join('');
+  sellerCurrency.value = codes.includes(current) ? current : 'NGN';
+}
+
+function setSellerCurrency(code){
+  if(!sellerCurrency) return;
+  const normalized = validCurrency(code);
+  if(normalized && [...sellerCurrency.options].some(option=>option.value===normalized)) sellerCurrency.value = normalized;
+}
 
 function showDialog(html){
   dialogContent.innerHTML = html;
@@ -127,6 +166,12 @@ async function apiFetch(path,{method='GET',body,headers={},requireAuth=false,raw
   return text ? JSON.parse(text) : null;
 }
 
+function priceMarkup(x){
+  const currency = validCurrency(x.currency) || 'NGN';
+  const amount = Number(x.price) || 0;
+  return `<div class="price" data-price-amount="${escapeHtml(amount)}" data-price-currency="${currency}">${escapeHtml(money(amount,currency))}</div>`;
+}
+
 function render(){
   const q = search.value.trim().toLowerCase();
   const cond = condition.value;
@@ -136,18 +181,19 @@ function render(){
     (!q || `${x.name} ${x.category} ${x.storage || ''} ${x.seller || ''}`.toLowerCase().includes(q))
   );
   grid.innerHTML = filtered.map(x => `
-    <article class="listing-card" tabindex="0" data-id="${escapeHtml(x.id)}" aria-label="${escapeHtml(x.name)}, ${escapeHtml(money(x.price))}">
+    <article class="listing-card" tabindex="0" data-id="${escapeHtml(x.id)}" aria-label="${escapeHtml(x.name)}, ${escapeHtml(money(x.price,x.currency))}">
       <div class="listing-art">${x.image_url ? `<img src="${escapeHtml(x.image_url)}" alt="${escapeHtml(x.name)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;" />` : `<span aria-hidden="true">${escapeHtml(x.icon)}</span>`}</div>
       <div class="listing-body">
         <div class="listing-meta"><span>${escapeHtml(x.category)}</span><span>${escapeHtml(x.condition)}</span></div>
         <h3>${escapeHtml(x.name)}</h3>
         <div class="listing-meta"><span>${escapeHtml(x.storage || 'Details available')}</span></div>
-        <div class="price">${escapeHtml(money(x.price))}</div>
+        ${priceMarkup(x)}
         <div class="seller">${escapeHtml(x.seller || 'Seller')} ${x.verified ? '<span class="verified">✓ Verified</span>' : ''}</div>
       </div>
     </article>`).join('');
   empty.textContent = backendReady ? 'No published devices match this search yet.' : 'No matching preview devices yet.';
   empty.hidden = filtered.length !== 0;
+  window.DDH_LOCALIZATION?.refresh?.();
 }
 
 async function loadListings(){
@@ -157,7 +203,7 @@ async function loadListings(){
     return;
   }
   try{
-    const rows = await apiFetch('/rest/v1/listings?select=id,title,category,condition,storage,price_ngn,seller_id&status=eq.published&order=created_at.desc&limit=40');
+    const rows = await apiFetch('/rest/v1/listings?select=id,title,category,condition,storage,price_amount,price_currency,price_ngn,seller_id&status=eq.published&order=created_at.desc&limit=40');
     const sellerIds = [...new Set((rows || []).map(r=>r.seller_id).filter(Boolean))];
     let sellers = new Map();
     if(sellerIds.length){
@@ -184,7 +230,8 @@ async function loadListings(){
       name:r.title,
       condition:titleCase(r.condition),
       storage:r.storage || '',
-      price:Number(r.price_ngn),
+      price:Number(r.price_amount ?? r.price_ngn),
+      currency:validCurrency(r.price_currency) || 'NGN',
       seller:sellers.get(r.seller_id) || 'Seller',
       seller_id:r.seller_id,
       verified:false,
@@ -210,7 +257,8 @@ function openListing(id){
     </div>` : '';
   const previewNote = x.source === 'demo' ? '<p class="status-note">Preview listing — real marketplace data will replace these examples when the free backend project is connected.</p>' : '';
   const imageMarkup = x.image_url ? `<img src="${escapeHtml(x.image_url)}" alt="${escapeHtml(x.name)}" style="width:100%;max-height:420px;object-fit:contain;border-radius:18px;background:#f3f5fa;margin:0 0 18px;" />` : '';
-  showDialog(`<div class="dialog-product">${imageMarkup}<span class="eyebrow">${escapeHtml(x.category)} • ${escapeHtml(x.condition)}</span><h2>${escapeHtml(x.name)}</h2><p>${escapeHtml(x.storage || 'Details available')} • Seller: ${escapeHtml(x.seller || 'Seller')}${x.verified?' • Verified':''}</p><div class="price">${escapeHtml(money(x.price))}</div>${previewNote}${realActions}<button class="button secondary" data-dialog-close>Continue browsing</button></div>`);
+  showDialog(`<div class="dialog-product">${imageMarkup}<span class="eyebrow">${escapeHtml(x.category)} • ${escapeHtml(x.condition)}</span><h2>${escapeHtml(x.name)}</h2><p>${escapeHtml(x.storage || 'Details available')} • Listed by ${escapeHtml(x.seller || 'Seller')}${x.verified?' • Verified':''}</p>${priceMarkup(x)}${previewNote}${realActions}<button class="button secondary" data-dialog-close>Continue browsing</button></div>`);
+  window.DDH_LOCALIZATION?.refresh?.();
   dialogContent.querySelector('[data-dialog-close]')?.addEventListener('click',()=>dialog.close());
   dialogContent.querySelector('[data-favorite]')?.addEventListener('click',()=>saveFavorite(x));
   dialogContent.querySelector('[data-message]')?.addEventListener('click',()=>openMessageForm(x));
@@ -377,13 +425,19 @@ async function submitListing(event){
     showAuthDialog('signin','Sign in before submitting a listing.');
     return;
   }
-  const price = Number(String(form.get('price') || '').replace(/[^0-9]/g,''));
-  if(!Number.isSafeInteger(price) || price <= 0){
-    showNotice('Check the price','Enter a whole-number asking price in NGN.','error');
+  const price = Number(String(form.get('price') || '').replace(/,/g,'').trim());
+  const priceCurrency = validCurrency(form.get('currency'));
+  if(!Number.isFinite(price) || price <= 0 || price > 1000000000000000){
+    showNotice('Check the price','Enter a valid positive asking price.','error');
+    return;
+  }
+  if(!priceCurrency){
+    showNotice('Choose a currency','Select the currency for your asking price.','error');
     return;
   }
   const brand = String(form.get('brand') || '').trim();
   const model = String(form.get('model') || '').trim();
+  const roundedPrice = Math.round(price * 10000) / 10000;
   const payload = {
     seller_id:session.user.id,
     title:`${brand} ${model}`.trim(),
@@ -391,7 +445,9 @@ async function submitListing(event){
     brand,
     model,
     condition:String(form.get('condition') || ''),
-    price_ngn:price,
+    price_amount:roundedPrice,
+    price_currency:priceCurrency,
+    price_ngn:priceCurrency === 'NGN' ? Math.round(price) : null,
     storage:String(form.get('storage') || '').trim() || null,
     city:String(form.get('city') || '').trim() || null,
     description:String(form.get('description') || '').trim(),
@@ -408,7 +464,8 @@ async function submitListing(event){
       catch(err){ imageWarning = ` The listing was saved, but the image was not uploaded: ${err.message}`; }
     }
     formElement.reset();
-    showNotice('Listing submitted',`Your listing is saved and pending review before it becomes public.${imageWarning}`);
+    setSellerCurrency(window.DDH_LOCALIZATION?.state?.currency || priceCurrency);
+    showNotice('Listing submitted',`Your listing is saved at ${money(roundedPrice,priceCurrency)} and is pending review before it becomes public.${imageWarning}`);
   }catch(err){
     showNotice('Listing not submitted',err.message,'error');
   }
@@ -427,7 +484,9 @@ grid.addEventListener('keydown',e=>{const card=e.target.closest('.listing-card')
 document.querySelector('.dialog-close').addEventListener('click',()=>dialog.close());
 signInButton.addEventListener('click',()=>showAuthDialog('signin'));
 sellForm.addEventListener('submit',submitListing);
+document.addEventListener('ddh:localization-ready',event=>setSellerCurrency(event.detail?.currency));
 
+populateSellerCurrencySelect();
 loadStoredSession();
 ensureSession().finally(()=>updateAccountButton());
 loadListings();
