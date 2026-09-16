@@ -4,70 +4,54 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0b0d12" />
-  <meta name="description" content="DigitalDeviceHub — discover New and Used devices with clear condition details, transparent pricing and seller trust signals." />
+  <meta name="description" content="DigitalDeviceHub — find New and Used devices with clear specifications, transparent pricing and seller context." />
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="/styles.css" />
   <link rel="stylesheet" href="/backend.css" />
-  <title>DigitalDeviceHub — Devices worth choosing</title>
+  <title>DigitalDeviceHub — Find the right device</title>
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="#top" aria-label="DigitalDeviceHub home">
-      <span class="brand-mark" aria-hidden="true">D</span>
-      <span>DigitalDeviceHub</span>
-    </a>
+    <a class="brand" href="/" aria-label="DigitalDeviceHub home"><span class="brand-mark" aria-hidden="true">D</span><span>DigitalDeviceHub</span></a>
     <nav class="desktop-nav" aria-label="Primary navigation">
-      <a href="#marketplace">Marketplace</a>
-      <a href="#trust">Buy with confidence</a>
-      <a href="#sell">List your device</a>
+      <a href="/marketplace.html">Marketplace</a>
+      <a href="/trust.html">Trust & Safety</a>
+      <a href="/help.html">Help</a>
+      <a href="/sell.html">Sell a device</a>
     </nav>
     <div class="header-actions">
       <button class="ghost account-access" data-action="signin">Sign in / Sign up</button>
-      <a class="button compact sell-cta" href="#sell">List your device</a>
+      <a class="button compact sell-cta" href="/sell.html">Sell a device</a>
     </div>
   </header>
 
   <main id="top">
     <section class="hero shell">
       <div class="hero-copy">
-        <div class="eyebrow">Device marketplace • built for confidence</div>
-        <h1>Devices worth choosing.<br/>Sell with confidence.</h1>
-        <p>Clear condition. Clear pricing. Trusted seller signals. Discover New and Used phones, laptops, tablets and accessories without the usual guesswork.</p>
+        <div class="eyebrow">The device marketplace built for clarity</div>
+        <h1>Find the right device.<br/>Buy with confidence.</h1>
+        <p>Discover New and Used phones, laptops, tablets and accessories with structured specifications, transparent prices and seller context.</p>
+        <form class="home-search" action="/marketplace.html" method="get" style="display:flex;gap:10px;margin-top:30px;max-width:650px">
+          <input name="q" type="search" placeholder="Search phones, laptops, tablets…" aria-label="Search marketplace" style="flex:1;height:52px;border:1px solid #e6e7e9;border-radius:14px;padding:0 16px;font:inherit;background:#fff" />
+          <button class="button" type="submit">Search</button>
+        </form>
         <div class="hero-actions">
-          <a class="button" href="#marketplace">Explore devices</a>
-          <a class="button secondary" href="#sell">List your device</a>
+          <a class="button secondary" href="/marketplace.html">Browse marketplace</a>
+          <a class="button secondary" href="/sell.html">Sell a device</a>
         </div>
-        <div class="trust-strip" aria-label="Platform benefits">
-          <span>✓ Clear New & Used condition</span>
-          <span>✓ Structured device details</span>
-          <span>✓ Seller trust signals</span>
-        </div>
+        <div class="trust-strip" aria-label="Platform benefits"><span>✓ New or Used — clearly stated</span><span>✓ Local currency display</span><span>✓ Account-based messaging</span></div>
       </div>
-      <div class="hero-device" aria-label="Stylized device preview">
-        <div class="phone-shell">
-          <div class="phone-camera"></div>
-          <div class="phone-screen">
-            <span class="mini-label">Featured device</span>
-            <strong>Flagship Phone</strong>
-            <span>256 GB • Used</span>
-            <b data-price-amount="620000" data-price-currency="NGN">₦620,000</b>
-          </div>
-        </div>
-        <div class="floating-card card-one">Trusted seller</div>
-        <div class="floating-card card-two">Condition: Used</div>
+      <div class="hero-device" aria-label="Marketplace device preview">
+        <div class="phone-shell"><div class="phone-camera"></div><div class="phone-screen"><span class="mini-label">Marketplace ready</span><strong>Real devices</strong><span>Clear condition • Local pricing</span><b class="price" data-price-amount="620000" data-price-currency="NGN">₦620,000</b></div></div>
+        <div class="floating-card card-one">Structured details</div><div class="floating-card card-two">New or Used</div>
       </div>
     </section>
 
     <section class="categories shell" aria-labelledby="category-title">
-      <div class="section-heading">
-        <div>
-          <span class="eyebrow">Shop by category</span>
-          <h2 id="category-title">Choose with clarity.</h2>
-        </div>
-      </div>
+      <div class="section-heading"><div><span class="eyebrow">Shop by category</span><h2 id="category-title">Start with what you need.</h2></div><a class="button secondary" href="/marketplace.html">View all devices</a></div>
       <div class="category-grid">
-        <button class="category-card active" data-category="all"><span>◫</span><b>All devices</b><small>Explore the marketplace</small></button>
+        <button class="category-card active" data-category="all"><span>◫</span><b>All devices</b><small>Everything in one marketplace</small></button>
         <button class="category-card" data-category="Phones"><span>▯</span><b>Phones</b><small>New & Used</small></button>
         <button class="category-card" data-category="Laptops"><span>▱</span><b>Laptops</b><small>Work, study & performance</small></button>
         <button class="category-card" data-category="Tablets"><span>▭</span><b>Tablets</b><small>Portable productivity</small></button>
@@ -76,95 +60,31 @@
     </section>
 
     <section id="marketplace" class="marketplace shell">
-      <div class="section-heading marketplace-heading">
-        <div>
-          <span class="eyebrow">Device marketplace</span>
-          <h2>Recently listed</h2>
-        </div>
-        <div class="search-wrap">
-          <input id="searchInput" type="search" placeholder="Search devices" aria-label="Search devices" />
-          <select id="conditionFilter" aria-label="Filter by condition">
-            <option value="all">New & Used</option>
-            <option>New</option>
-            <option>Used</option>
-          </select>
-        </div>
-      </div>
-      <div id="listingGrid" class="listing-grid" aria-live="polite"></div>
+      <div class="section-heading marketplace-heading"><div><span class="eyebrow">Recently listed</span><h2>See what just arrived.</h2></div><div class="search-wrap"><input id="searchInput" type="search" placeholder="Search preview" aria-label="Search devices" /><select id="conditionFilter" aria-label="Filter by condition"><option value="all">New & Used</option><option>New</option><option>Used</option></select></div></div>
+      <div id="listingGrid" class="listing-grid home-listing-preview" aria-live="polite"></div>
       <p id="emptyState" class="empty-state" hidden>No matching devices yet.</p>
+      <div style="display:flex;justify-content:center;margin-top:34px"><a class="button" href="/marketplace.html">Explore the full marketplace</a></div>
     </section>
 
     <section id="trust" class="trust-section">
       <div class="shell trust-layout">
-        <div>
-          <span class="eyebrow light">Confidence by design</span>
-          <h2>Clarity at every step.</h2>
-          <p>DigitalDeviceHub is designed around transparent device information, seller trust signals, documented transactions and a clear path when something needs attention.</p>
-        </div>
-        <div class="trust-grid">
-          <article><b>01</b><h3>Seller checks</h3><p>Seller verification can begin with careful manual review and evolve as the marketplace grows.</p></article>
-          <article><b>02</b><h3>Clear condition</h3><p>Every device is presented as New or Used, with structured details that make comparison straightforward.</p></article>
-          <article><b>03</b><h3>Protected workflow</h3><p>The marketplace is structured to support documented transactions and dispute handling when payments go live.</p></article>
-          <article><b>04</b><h3>Meaningful reviews</h3><p>Reputation signals are designed around completed transactions rather than anonymous noise.</p></article>
-        </div>
+        <div><span class="eyebrow light">Confidence by design</span><h2>Know more before you commit.</h2><p>DigitalDeviceHub separates real marketplace capabilities from promises. Clear condition, structured specifications, account-based conversations and transparent seller context come first.</p><a class="button secondary" href="/trust.html" style="margin-top:18px">Visit Trust & Safety</a></div>
+        <div class="trust-grid"><article><b>01</b><h3>Clear condition</h3><p>Every device is New or Used. Used-device quality is described with factual specifications instead of vague grades.</p></article><article><b>02</b><h3>Seller context</h3><p>Authentication, identity verification and marketplace history are treated as separate trust signals.</p></article><article><b>03</b><h3>Local relevance</h3><p>Prices can be entered in the seller's currency and displayed in the buyer's detected local currency.</p></article><article><b>04</b><h3>Account tools</h3><p>Registered users manage listings, analytics, messages and favorites from one dashboard.</p></article></div>
       </div>
     </section>
 
     <section id="sell" class="sell shell">
-      <div class="sell-card">
-        <div>
-          <span class="eyebrow">List your device</span>
-          <h2>Turn your device into value.</h2>
-          <p>Set your asking price in the currency you use. Buyers automatically see the equivalent in their own local currency.</p>
-        </div>
-        <form id="sellForm" class="sell-form">
-          <label>Device type
-            <select name="category" required>
-              <option value="">Choose type</option>
-              <option value="Phones">Phone</option>
-              <option value="Laptops">Laptop</option>
-              <option value="Tablets">Tablet</option>
-              <option value="Accessories">Accessory</option>
-              <option value="Wearables">Wearable</option>
-            </select>
-          </label>
-          <label>Brand<input name="brand" required maxlength="80" placeholder="e.g. Apple" /></label>
-          <label>Model<input name="model" required maxlength="100" placeholder="e.g. iPhone 15 Pro" /></label>
-          <label>Condition
-            <select name="condition" required>
-              <option value="">Choose condition</option>
-              <option value="new">New</option>
-              <option value="used">Used</option>
-            </select>
-          </label>
-          <label>Storage<input name="storage" maxlength="60" placeholder="e.g. 256 GB" /></label>
-          <label>City<input name="city" maxlength="80" placeholder="e.g. Lagos" /></label>
-          <label>Asking price<input name="price" required inputmode="decimal" type="number" min="0.0001" step="0.0001" placeholder="e.g. 450000" /></label>
-          <label>Currency
-            <select name="currency" id="sellerCurrency" required aria-label="Listing currency">
-              <option value="NGN">NGN — Nigerian Naira</option>
-            </select>
-          </label>
-          <label>Product image<input name="image" type="file" accept="image/jpeg,image/png,image/webp" /></label>
-          <label class="full-field">Description<textarea name="description" maxlength="2000" rows="4" placeholder="Describe the device, included accessories and any defects."></textarea></label>
-          <button class="button" type="submit">Submit for review</button>
-          <p class="form-note">No listing fee. Your original price and currency are saved; buyers see a live local-currency equivalent.</p>
-        </form>
+      <div class="sell-card seller-cta-card">
+        <div><span class="eyebrow">Sell on DigitalDeviceHub</span><h2>Turn a device into a clear, credible listing.</h2><p>Use the guided seller workflow to add specifications, a real photo, your own asking currency, location and delivery options. Your listing goes to review before it becomes public.</p><div class="hero-actions"><a class="button" href="/sell.html">Start listing</a><a class="button secondary" href="/dashboard.html">Manage my listings</a></div></div>
+        <div class="seller-steps"><div><b>01</b><span>Describe the device</span></div><div><b>02</b><span>Add specifications and photo</span></div><div><b>03</b><span>Set price, currency and delivery</span></div><div><b>04</b><span>Submit for review</span></div></div>
+        <form id="sellForm" hidden aria-hidden="true"></form>
       </div>
     </section>
   </main>
 
-  <dialog id="dialog">
-    <button class="dialog-close" aria-label="Close">×</button>
-    <div id="dialogContent"></div>
-  </dialog>
+  <dialog id="dialog"><button class="dialog-close" aria-label="Close">×</button><div id="dialogContent"></div></dialog>
 
-  <footer>
-    <div class="shell footer-inner">
-      <div><b>DigitalDeviceHub</b><span>Devices worth choosing.</span><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div>
-      <span>© 2026 DigitalDeviceHub</span>
-    </div>
-  </footer>
+  <footer><div class="shell footer-inner"><div><b>DigitalDeviceHub</b><span>Devices worth choosing.</span><a href="/marketplace.html">Marketplace</a><a href="/trust.html">Trust & Safety</a><a href="/help.html">Help</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div><span>© 2026 DigitalDeviceHub</span></div></footer>
 
   <script src="/config.js"></script>
   <script src="/app.js" defer></script>
@@ -172,5 +92,6 @@
   <script src="/account-ui.js" defer></script>
   <script src="/localization.js" defer></script>
   <script src="/analytics.js" defer></script>
+  <script src="/open-signin.js" defer></script>
 </body>
 </html>
