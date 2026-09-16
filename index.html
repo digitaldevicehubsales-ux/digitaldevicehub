@@ -51,7 +51,7 @@
             <span class="mini-label">Featured device</span>
             <strong>Flagship Phone</strong>
             <span>256 GB • Used</span>
-            <b>₦620,000</b>
+            <b data-price-amount="620000" data-price-currency="NGN">₦620,000</b>
           </div>
         </div>
         <div class="floating-card card-one">Trusted seller</div>
@@ -115,7 +115,7 @@
         <div>
           <span class="eyebrow">List your device</span>
           <h2>Turn your device into value.</h2>
-          <p>Present the essentials clearly. New listings are reviewed before they appear publicly, helping keep the marketplace useful and trustworthy.</p>
+          <p>Set your asking price in the currency you use. Buyers automatically see the equivalent in their own local currency.</p>
         </div>
         <form id="sellForm" class="sell-form">
           <label>Device type
@@ -139,11 +139,16 @@
           </label>
           <label>Storage<input name="storage" maxlength="60" placeholder="e.g. 256 GB" /></label>
           <label>City<input name="city" maxlength="80" placeholder="e.g. Lagos" /></label>
-          <label>Asking price (NGN)<input name="price" required inputmode="numeric" pattern="[0-9]+" placeholder="e.g. 450000" /></label>
+          <label>Asking price<input name="price" required inputmode="decimal" type="number" min="0.0001" step="0.0001" placeholder="e.g. 450000" /></label>
+          <label>Currency
+            <select name="currency" id="sellerCurrency" required aria-label="Listing currency">
+              <option value="NGN">NGN — Nigerian Naira</option>
+            </select>
+          </label>
           <label>Product image<input name="image" type="file" accept="image/jpeg,image/png,image/webp" /></label>
           <label class="full-field">Description<textarea name="description" maxlength="2000" rows="4" placeholder="Describe the device, included accessories and any defects."></textarea></label>
           <button class="button" type="submit">Submit for review</button>
-          <p class="form-note">No listing fee. Listings are reviewed before publication.</p>
+          <p class="form-note">No listing fee. Your original price and currency are saved; buyers see a live local-currency equivalent.</p>
         </form>
       </div>
     </section>
