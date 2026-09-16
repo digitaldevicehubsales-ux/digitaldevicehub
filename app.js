@@ -1,12 +1,12 @@
 const demoListings = [
-  {id:1,category:'Phones',name:'iPhone 15 Pro',condition:'Excellent',storage:'256 GB',price:620000,seller:'Metro Devices',verified:true,icon:'▯',source:'demo'},
-  {id:2,category:'Phones',name:'Galaxy S24 Ultra',condition:'Good',storage:'256 GB',price:540000,seller:'Prime Mobile',verified:true,icon:'▯',source:'demo'},
-  {id:3,category:'Laptops',name:'MacBook Air M2',condition:'Excellent',storage:'512 GB',price:870000,seller:'Tech Corner',verified:false,icon:'▱',source:'demo'},
-  {id:4,category:'Laptops',name:'ThinkPad X1 Carbon',condition:'Good',storage:'1 TB',price:690000,seller:'Workstation Hub',verified:true,icon:'▱',source:'demo'},
-  {id:5,category:'Tablets',name:'iPad Air 5',condition:'Excellent',storage:'256 GB',price:485000,seller:'Metro Devices',verified:true,icon:'▭',source:'demo'},
+  {id:1,category:'Phones',name:'iPhone 15 Pro',condition:'Used',storage:'256 GB',price:620000,seller:'Metro Devices',verified:true,icon:'▯',source:'demo'},
+  {id:2,category:'Phones',name:'Galaxy S24 Ultra',condition:'Used',storage:'256 GB',price:540000,seller:'Prime Mobile',verified:true,icon:'▯',source:'demo'},
+  {id:3,category:'Laptops',name:'MacBook Air M2',condition:'Used',storage:'512 GB',price:870000,seller:'Tech Corner',verified:false,icon:'▱',source:'demo'},
+  {id:4,category:'Laptops',name:'ThinkPad X1 Carbon',condition:'Used',storage:'1 TB',price:690000,seller:'Workstation Hub',verified:true,icon:'▱',source:'demo'},
+  {id:5,category:'Tablets',name:'iPad Air 5',condition:'Used',storage:'256 GB',price:485000,seller:'Metro Devices',verified:true,icon:'▭',source:'demo'},
   {id:6,category:'Accessories',name:'USB-C 100W Charger',condition:'New',storage:'GaN',price:32000,seller:'Accessory Point',verified:false,icon:'⌁',source:'demo'},
   {id:7,category:'Phones',name:'Pixel 9 Pro',condition:'New',storage:'256 GB',price:710000,seller:'Prime Mobile',verified:true,icon:'▯',source:'demo'},
-  {id:8,category:'Tablets',name:'Galaxy Tab S9',condition:'Good',storage:'128 GB',price:395000,seller:'Device Loft',verified:false,icon:'▭',source:'demo'}
+  {id:8,category:'Tablets',name:'Galaxy Tab S9',condition:'Used',storage:'128 GB',price:395000,seller:'Device Loft',verified:false,icon:'▭',source:'demo'}
 ];
 
 const cfg = window.DDH_CONFIG || {};
@@ -311,9 +311,11 @@ function openMessageForm(listing){
 
 async function sendMessage(event,listing){
   event.preventDefault();
+  const formElement = event.currentTarget;
+  const form = new FormData(formElement);
   await ensureSession();
   if(!session?.user?.id) return showAuthDialog('signin');
-  const body = String(new FormData(event.currentTarget).get('body') || '').trim();
+  const body = String(form.get('body') || '').trim();
   try{
     const existing = await apiFetch(`/rest/v1/conversations?select=id&listing_id=eq.${encodeURIComponent(listing.id)}&buyer_id=eq.${encodeURIComponent(session.user.id)}&seller_id=eq.${encodeURIComponent(listing.seller_id)}&limit=1`,{requireAuth:true});
     let conversationId = existing?.[0]?.id;
@@ -344,6 +346,8 @@ async function uploadListingImage(file,listingId,userId){
 
 async function submitListing(event){
   event.preventDefault();
+  const formElement = event.currentTarget;
+  const form = new FormData(formElement);
   if(!backendReady){
     showNotice('Backend connection pending','The listing form is ready, but nothing will be collected until the free Supabase backend is connected.');
     return;
@@ -353,7 +357,6 @@ async function submitListing(event){
     showAuthDialog('signin','Sign in before submitting a listing.');
     return;
   }
-  const form = new FormData(event.currentTarget);
   const price = Number(String(form.get('price') || '').replace(/[^0-9]/g,''));
   if(!Number.isSafeInteger(price) || price <= 0){
     showNotice('Check the price','Enter a whole-number asking price in NGN.','error');
@@ -384,7 +387,7 @@ async function submitListing(event){
       try{ await uploadListingImage(file,listing.id,session.user.id); }
       catch(err){ imageWarning = ` The listing was saved, but the image was not uploaded: ${err.message}`; }
     }
-    event.currentTarget.reset();
+    formElement.reset();
     showNotice('Listing submitted',`Your listing is saved and pending review before it becomes public.${imageWarning}`);
   }catch(err){
     showNotice('Listing not submitted',err.message,'error');
