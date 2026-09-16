@@ -1,16 +1,14 @@
 (function(){
   const GOOGLE_CLIENT_ID='660710567581-tlav5rbkgmkbjmpof5k5gvjkq3ubuc63.apps.googleusercontent.com';
   const providers={
-    google:{label:'Google',supabase:'google'},
-    microsoft:{label:'Microsoft',supabase:'azure',scopes:'email'},
-    facebook:{label:'Facebook',supabase:'facebook',scopes:'email'}
+    google:{label:'Google',supabase:'google'}
   };
   let googleIdentityPromise=null;
+  let googleNonceRaw='';
 
   function providerIcon(provider){
     if(provider==='google') return '<span class="provider-icon google" aria-hidden="true">G</span>';
-    if(provider==='microsoft') return '<span class="provider-icon microsoft" aria-hidden="true"><i></i><i></i><i></i><i></i></span>';
-    return '<span class="provider-icon facebook" aria-hidden="true">f</span>';
+    return '';
   }
 
   async function providerIsEnabled(provider){
@@ -42,7 +40,6 @@
       provider:config.supabase,
       redirect_to:redirectTo
     });
-    if(config.scopes) params.set('scopes',config.scopes);
     window.location.assign(`${supabaseUrl}/auth/v1/authorize?${params.toString()}`);
   }
 
@@ -69,16 +66,35 @@
     return googleIdentityPromise;
   }
 
+  async function createGoogleNoncePair(){
+    if(!window.crypto?.getRandomValues || !window.crypto?.subtle){
+      throw new Error('Secure Google sign-in is not supported by this browser.');
+    }
+    const bytes=crypto.getRandomValues(new Uint8Array(32));
+    const raw=btoa(String.fromCharCode(...bytes));
+    const encoded=new TextEncoder().encode(raw);
+    const digest=await crypto.subtle.digest('SHA-256',encoded);
+    const hashed=Array.from(new Uint8Array(digest)).map(byte=>byte.toString(16).padStart(2,'0')).join('');
+    return {raw,hashed};
+  }
+
   async function handleGoogleCredential(response){
     const idToken=String(response?.credential||'');
     if(!idToken){
       showAuthDialog('signin','Google did not return a sign-in credential. Please try again.');
       return;
     }
+    if(!googleNonceRaw){
+      showAuthDialog('signin','Google sign-in security check expired. Please try again.');
+      return;
+    }
+    const nonce=googleNonceRaw;
+    googleNonceRaw='';
     try{
       const data=await authRequest('/auth/v1/token?grant_type=id_token',{
         provider:'google',
-        id_token:idToken
+        id_token:idToken,
+        nonce
       });
       saveSession(data);
       pendingOtpEmail='';
@@ -96,9 +112,12 @@
       if(!enabled) throw new Error('Google sign-in still needs to be enabled in Supabase.');
       await loadGoogleIdentity();
       if(!dialogContent.contains(mount)) return;
+      const noncePair=await createGoogleNoncePair();
+      googleNonceRaw=noncePair.raw;
       window.google.accounts.id.initialize({
         client_id:GOOGLE_CLIENT_ID,
         callback:handleGoogleCredential,
+        nonce:noncePair.hashed,
         ux_mode:'popup',
         use_fedcm_for_button:true,
         button_auto_select:false,
@@ -117,6 +136,7 @@
       });
     }catch(err){
       if(!dialogContent.contains(mount)) return;
+      googleNonceRaw='';
       mount.innerHTML=`<button class="provider-button" type="button" data-google-fallback>${providerIcon('google')}<span>Continue with Google</span></button>`;
       mount.querySelector('[data-google-fallback]')?.addEventListener('click',()=>startOAuth('google'));
       console.warn('Direct Google sign-in unavailable; using OAuth redirect fallback.',err);
