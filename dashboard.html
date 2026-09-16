@@ -4,9 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0b0d12" />
-  <meta name="description" content="Manage DigitalDeviceHub listings, analytics, messages, favorites and profile." />
+  <meta name="description" content="Manage DigitalDeviceHub listings, analytics, messages, saved searches, notifications and profile." />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="/dashboard.css" />
+  <link rel="stylesheet" href="/dashboard-engagement.css" />
   <title>Account Dashboard — DigitalDeviceHub</title>
 </head>
 <body>
@@ -22,70 +23,43 @@
         <button class="nav-item" data-view="profile">Profile & Settings</button>
       </nav>
       <div class="sidebar-bottom">
-        <a href="/">← Marketplace</a>
+        <a href="/marketplace.html">← Marketplace</a>
         <button id="signOutButton" class="text-action">Sign out</button>
       </div>
     </aside>
 
     <main class="dashboard-main">
       <header class="dash-header">
-        <div>
-          <p class="eyebrow">Your account</p>
-          <h1 id="pageTitle">Overview</h1>
-        </div>
-        <a class="primary-button" href="/#sell">+ List a device</a>
+        <div><p class="eyebrow">Your account</p><h1 id="pageTitle">Overview</h1></div>
+        <a class="primary-button" href="/sell.html">+ List a device</a>
       </header>
 
       <div id="authGate" class="auth-gate" hidden>
         <h2>Sign in to open your dashboard.</h2>
-        <p>Your listings, analytics, messages and favorites are connected to your DigitalDeviceHub account.</p>
+        <p>Your listings, analytics, messages, favorites and account tools are connected to your DigitalDeviceHub account.</p>
         <a class="primary-button" href="/?signin=1">Return to sign in</a>
       </div>
 
       <section class="dash-view active" data-panel="overview">
-        <div class="welcome-card">
-          <div><p class="eyebrow">Marketplace command center</p><h2 id="welcomeTitle">Your marketplace at a glance.</h2><p>Manage listings, buyer interest and conversations from one place.</p></div>
-          <a href="/#sell" class="secondary-button">List another device</a>
-        </div>
+        <div class="welcome-card"><div><p class="eyebrow">Marketplace command center</p><h2 id="welcomeTitle">Your marketplace at a glance.</h2><p>Manage listings, buyer interest and conversations from one place.</p></div><a href="/sell.html" class="secondary-button">List another device</a></div>
         <div class="kpi-grid" id="overviewKpis"></div>
-        <div class="two-column">
-          <article class="panel"><div class="panel-heading"><div><p class="eyebrow">Recent performance</p><h2>Views over 30 days</h2></div></div><div id="overviewChart" class="chart-wrap"></div></article>
-          <article class="panel"><div class="panel-heading"><div><p class="eyebrow">Needs attention</p><h2>Account activity</h2></div></div><div id="attentionList" class="activity-list"></div></article>
-        </div>
+        <div class="two-column"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Recent performance</p><h2>Views over 30 days</h2></div></div><div id="overviewChart" class="chart-wrap"></div></article><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Needs attention</p><h2>Account activity</h2></div></div><div id="attentionList" class="activity-list"></div></article></div>
         <article class="panel"><div class="panel-heading"><div><p class="eyebrow">Your products</p><h2>Top listing activity</h2></div><button class="link-button" data-go="listings">Manage all</button></div><div id="topListings" class="compact-list"></div></article>
       </section>
 
-      <section class="dash-view" data-panel="listings">
-        <article class="panel"><div class="panel-heading"><div><p class="eyebrow">Product management</p><h2>My Listings</h2><p>Edit pricing and details, pause availability, mark devices sold or archive listings.</p></div><a href="/#sell" class="primary-button">+ New listing</a></div><div id="myListings" class="listing-manager"></div></article>
-      </section>
+      <section class="dash-view" data-panel="listings"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Product management</p><h2>My Listings</h2><p>Edit pricing and details, pause availability, mark devices sold or archive listings.</p></div><a href="/sell.html" class="primary-button">+ New listing</a></div><div id="myListings" class="listing-manager"></div></article></section>
 
-      <section class="dash-view" data-panel="analytics">
-        <div class="kpi-grid" id="analyticsKpis"></div>
-        <article class="panel"><div class="panel-heading"><div><p class="eyebrow">Performance trend</p><h2>Listing views</h2></div><select id="analyticsRange"><option value="7">7 days</option><option value="30" selected>30 days</option><option value="90">90 days</option></select></div><div id="analyticsChart" class="chart-wrap large"></div></article>
-        <article class="panel"><div class="panel-heading"><div><p class="eyebrow">Product insights</p><h2>Performance by listing</h2></div></div><div id="analyticsTable" class="analytics-table"></div></article>
-        <article class="panel insight-panel"><p class="eyebrow">Self-service insight</p><h2 id="performanceInsight">Publish a listing to begin collecting performance signals.</h2><p id="performanceInsightBody">Views, unique visitors, favorites and buyer conversations will appear here.</p></article>
-      </section>
+      <section class="dash-view" data-panel="analytics"><div class="kpi-grid" id="analyticsKpis"></div><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Performance trend</p><h2>Listing views</h2></div><select id="analyticsRange"><option value="7">7 days</option><option value="30" selected>30 days</option><option value="90">90 days</option></select></div><div id="analyticsChart" class="chart-wrap large"></div></article><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Product insights</p><h2>Performance by listing</h2></div></div><div id="analyticsTable" class="analytics-table"></div></article><article class="panel insight-panel"><p class="eyebrow">Self-service insight</p><h2 id="performanceInsight">Publish a listing to begin collecting performance signals.</h2><p id="performanceInsightBody">Views, unique visitors, favorites and buyer conversations will appear here.</p></article></section>
 
-      <section class="dash-view" data-panel="messages">
-        <article class="panel"><div class="panel-heading"><div><p class="eyebrow">Conversations</p><h2>Messages</h2><p>Keep buyer and seller conversations tied to the relevant device.</p></div></div><div id="messageList" class="message-list"></div></article>
-      </section>
+      <section class="dash-view" data-panel="messages"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Conversations</p><h2>Messages</h2><p>Keep buyer and seller conversations tied to the relevant device.</p></div></div><div id="messageList" class="message-list"></div></article></section>
 
-      <section class="dash-view" data-panel="favorites">
-        <article class="panel"><div class="panel-heading"><div><p class="eyebrow">Saved devices</p><h2>Favorites</h2></div></div><div id="favoriteList" class="favorite-grid"></div></article>
-      </section>
+      <section class="dash-view" data-panel="favorites"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Saved devices</p><h2>Favorites</h2></div><a class="secondary-button" href="/marketplace.html">Browse devices</a></div><div id="favoriteList" class="favorite-grid"></div></article></section>
 
-      <section class="dash-view" data-panel="profile">
-        <div class="two-column profile-layout">
-          <article class="panel"><p class="eyebrow">Public profile</p><h2>Seller identity</h2><form id="profileForm" class="form-grid"><label>Display name<input name="display_name" maxlength="80" /></label><label>City<input name="city" maxlength="80" /></label><label>Account email<input id="profileEmail" disabled /></label><label>Local currency<input id="profileCurrency" disabled /></label><button class="primary-button" type="submit">Save profile</button></form></article>
-          <article class="panel"><p class="eyebrow">Account tools</p><h2>Useful shortcuts</h2><div class="settings-list"><a href="/#sell">List a new device <span>→</span></a><button data-go="analytics">Review product performance <span>→</span></button><button data-go="messages">Open conversations <span>→</span></button><a href="/privacy.html">Privacy information <span>→</span></a></div></article>
-        </div>
-      </section>
+      <section class="dash-view" data-panel="profile"><div class="two-column profile-layout"><article class="panel"><p class="eyebrow">Public profile</p><h2>Seller identity</h2><form id="profileForm" class="form-grid"><label>Display name<input name="display_name" maxlength="80" /></label><label>City<input name="city" maxlength="80" /></label><label>Account email<input id="profileEmail" disabled /></label><label>Local currency<input id="profileCurrency" disabled /></label><button class="primary-button" type="submit">Save profile</button></form></article><article class="panel"><p class="eyebrow">Account tools</p><h2>Useful shortcuts</h2><div class="settings-list"><a href="/sell.html">List a new device <span>→</span></a><button data-go="analytics">Review product performance <span>→</span></button><button data-go="messages">Open conversations <span>→</span></button><a href="/privacy.html">Privacy information <span>→</span></a></div></article></div></section>
     </main>
   </div>
 
-  <nav class="mobile-nav" aria-label="Dashboard mobile navigation">
-    <button class="active" data-view="overview">Home</button><button data-view="listings">Listings</button><button data-view="analytics">Analytics</button><button data-view="messages">Messages</button><button data-view="profile">Account</button>
-  </nav>
+  <nav class="mobile-nav" aria-label="Dashboard mobile navigation"><button class="active" data-view="overview">Home</button><button data-view="listings">Listings</button><button data-view="analytics">Analytics</button><button data-view="messages">Messages</button><button data-view="profile">Account</button></nav>
 
   <dialog id="dashboardDialog"><button class="dialog-close" aria-label="Close">×</button><div id="dashboardDialogContent"></div></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -93,5 +67,6 @@
   <script src="/config.js"></script>
   <script src="/localization.js" defer></script>
   <script src="/dashboard.js" defer></script>
+  <script src="/dashboard-engagement.js" defer></script>
 </body>
 </html>
