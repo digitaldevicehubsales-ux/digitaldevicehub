@@ -8,6 +8,10 @@
   const resultCount=document.querySelector('#resultCount');
   const filters=document.querySelector('#filters');
   const controls={search:document.querySelector('#searchInput'),category:document.querySelector('#categoryFilter'),brand:document.querySelector('#brandFilter'),condition:document.querySelector('#conditionFilter'),min:document.querySelector('#minPrice'),max:document.querySelector('#maxPrice'),location:document.querySelector('#locationFilter'),sort:document.querySelector('#sortFilter')};
+  const params=new URLSearchParams(location.search);
+  controls.search.value=params.get('q')||'';
+  const requestedCategory=params.get('category');
+  if(requestedCategory&&[...controls.category.options].some(o=>o.value===requestedCategory))controls.category.value=requestedCategory;
   let rows=[];let images=new Map();let sellers=new Map();
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const money=(amount,currency)=>{try{return new Intl.NumberFormat(undefined,{style:'currency',currency:currency||'NGN',maximumFractionDigits:4}).format(Number(amount)||0)}catch{return `${currency||'NGN'} ${Number(amount||0).toLocaleString()}`}};
