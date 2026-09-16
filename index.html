@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0b0d12" />
-  <meta name="description" content="DigitalDeviceHub — buy and sell phones, laptops, tablets and accessories with transparent condition details and seller trust signals." />
+  <meta name="description" content="DigitalDeviceHub — buy and sell phones, laptops, tablets and accessories with transparent New or Used condition details and seller trust signals." />
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="/styles.css" />
@@ -33,7 +33,7 @@
       <div class="hero-copy">
         <div class="eyebrow">Device marketplace • built for trust</div>
         <h1>Buy better devices.<br/>Sell with confidence.</h1>
-        <p>Compare phones, laptops, tablets and accessories with structured specs, clear condition grades and seller trust signals.</p>
+        <p>Compare phones, laptops, tablets and accessories with structured specs, clear New or Used condition labels and seller trust signals.</p>
         <div class="hero-actions">
           <a class="button" href="#marketplace">Browse devices</a>
           <a class="button secondary" href="#sell">List a device</a>
@@ -50,12 +50,12 @@
           <div class="phone-screen">
             <span class="mini-label">Featured</span>
             <strong>Flagship Phone</strong>
-            <span>256 GB • Excellent</span>
+            <span>256 GB • Used</span>
             <b>₦620,000</b>
           </div>
         </div>
         <div class="floating-card card-one">Verified seller</div>
-        <div class="floating-card card-two">Condition: Excellent</div>
+        <div class="floating-card card-two">Condition: Used</div>
       </div>
     </section>
 
@@ -68,7 +68,7 @@
       </div>
       <div class="category-grid">
         <button class="category-card active" data-category="all"><span>◫</span><b>All devices</b><small>Everything in one place</small></button>
-        <button class="category-card" data-category="Phones"><span>▯</span><b>Phones</b><small>New, used & refurbished</small></button>
+        <button class="category-card" data-category="Phones"><span>▯</span><b>Phones</b><small>New & used</small></button>
         <button class="category-card" data-category="Laptops"><span>▱</span><b>Laptops</b><small>Work, study & gaming</small></button>
         <button class="category-card" data-category="Tablets"><span>▭</span><b>Tablets</b><small>Portable productivity</small></button>
         <button class="category-card" data-category="Accessories"><span>⌁</span><b>Accessories</b><small>Audio, chargers & more</small></button>
@@ -86,9 +86,7 @@
           <select id="conditionFilter" aria-label="Filter by condition">
             <option value="all">All conditions</option>
             <option>New</option>
-            <option>Excellent</option>
-            <option>Good</option>
-            <option>Fair</option>
+            <option>Used</option>
           </select>
         </div>
       </div>
@@ -105,7 +103,7 @@
         </div>
         <div class="trust-grid">
           <article><b>01</b><h3>Seller checks</h3><p>Manual verification can be used first, with automated KYC added only when volume justifies it.</p></article>
-          <article><b>02</b><h3>Clear conditions</h3><p>Listings use consistent grades and structured specs so buyers can compare like-for-like.</p></article>
+          <article><b>02</b><h3>Clear conditions</h3><p>Every listing is clearly marked New or Used, with structured specs so buyers can compare like-for-like.</p></article>
           <article><b>03</b><h3>Protected workflow</h3><p>The product is designed to support delayed seller payout and documented disputes when payments go live.</p></article>
           <article><b>04</b><h3>Post-sale reviews</h3><p>Reviews are intended for completed transactions, reducing low-quality reputation signals.</p></article>
         </div>
@@ -136,9 +134,7 @@
             <select name="condition" required>
               <option value="">Choose condition</option>
               <option value="new">New</option>
-              <option value="excellent">Excellent</option>
-              <option value="good">Good</option>
-              <option value="fair">Fair</option>
+              <option value="used">Used</option>
             </select>
           </label>
           <label>Storage<input name="storage" maxlength="60" placeholder="e.g. 256 GB" /></label>
