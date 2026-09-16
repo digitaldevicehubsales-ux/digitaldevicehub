@@ -33,6 +33,11 @@ const money = n => new Intl.NumberFormat('en-NG',{style:'currency',currency:'NGN
 const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const titleCase = value => String(value || '').replace(/^./, c => c.toUpperCase());
 const iconFor = category => ({Phones:'▯',Laptops:'▱',Tablets:'▭',Accessories:'⌁',Wearables:'◉'}[category] || '◫');
+const publicListingImageUrl = path => {
+  if(!path) return '';
+  const encodedPath = String(path).split('/').map(encodeURIComponent).join('/');
+  return `${supabaseUrl}/storage/v1/object/public/listing-images/${encodedPath}`;
+};
 
 function showDialog(html){
   dialogContent.innerHTML = html;
@@ -132,7 +137,7 @@ function render(){
   );
   grid.innerHTML = filtered.map(x => `
     <article class="listing-card" tabindex="0" data-id="${escapeHtml(x.id)}" aria-label="${escapeHtml(x.name)}, ${escapeHtml(money(x.price))}">
-      <div class="listing-art" aria-hidden="true">${escapeHtml(x.icon)}</div>
+      <div class="listing-art">${x.image_url ? `<img src="${escapeHtml(x.image_url)}" alt="${escapeHtml(x.name)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;" />` : `<span aria-hidden="true">${escapeHtml(x.icon)}</span>`}</div>
       <div class="listing-body">
         <div class="listing-meta"><span>${escapeHtml(x.category)}</span><span>${escapeHtml(x.condition)}</span></div>
         <h3>${escapeHtml(x.name)}</h3>
@@ -160,6 +165,19 @@ async function loadListings(){
       const profiles = await apiFetch(`/rest/v1/profiles?select=id,display_name&id=in.(${encodeURIComponent(inList)})`).catch(()=>[]);
       sellers = new Map((profiles || []).map(p=>[p.id,p.display_name]));
     }
+
+    const listingIds = [...new Set((rows || []).map(r=>r.id).filter(Boolean))];
+    const firstImages = new Map();
+    if(listingIds.length){
+      const inList = listingIds.map(id=>`\"${id}\"`).join(',');
+      const images = await apiFetch(`/rest/v1/listing_images?select=listing_id,storage_path,sort_order&listing_id=in.(${encodeURIComponent(inList)})&order=sort_order.asc`).catch(()=>[]);
+      for(const image of images || []){
+        if(image?.listing_id && image?.storage_path && !firstImages.has(image.listing_id)){
+          firstImages.set(image.listing_id, publicListingImageUrl(image.storage_path));
+        }
+      }
+    }
+
     listings = (rows || []).map(r=>({
       id:r.id,
       category:r.category,
@@ -171,6 +189,7 @@ async function loadListings(){
       seller_id:r.seller_id,
       verified:false,
       icon:iconFor(r.category),
+      image_url:firstImages.get(r.id) || '',
       source:'supabase'
     }));
     render();
@@ -190,7 +209,8 @@ function openListing(id){
       <button class="button" data-message="${escapeHtml(x.id)}">Message seller</button>
     </div>` : '';
   const previewNote = x.source === 'demo' ? '<p class="status-note">Preview listing — real marketplace data will replace these examples when the free backend project is connected.</p>' : '';
-  showDialog(`<div class="dialog-product"><span class="eyebrow">${escapeHtml(x.category)} • ${escapeHtml(x.condition)}</span><h2>${escapeHtml(x.name)}</h2><p>${escapeHtml(x.storage || 'Details available')} • Seller: ${escapeHtml(x.seller || 'Seller')}${x.verified?' • Verified':''}</p><div class="price">${escapeHtml(money(x.price))}</div>${previewNote}${realActions}<button class="button secondary" data-dialog-close>Continue browsing</button></div>`);
+  const imageMarkup = x.image_url ? `<img src="${escapeHtml(x.image_url)}" alt="${escapeHtml(x.name)}" style="width:100%;max-height:420px;object-fit:contain;border-radius:18px;background:#f3f5fa;margin:0 0 18px;" />` : '';
+  showDialog(`<div class="dialog-product">${imageMarkup}<span class="eyebrow">${escapeHtml(x.category)} • ${escapeHtml(x.condition)}</span><h2>${escapeHtml(x.name)}</h2><p>${escapeHtml(x.storage || 'Details available')} • Seller: ${escapeHtml(x.seller || 'Seller')}${x.verified?' • Verified':''}</p><div class="price">${escapeHtml(money(x.price))}</div>${previewNote}${realActions}<button class="button secondary" data-dialog-close>Continue browsing</button></div>`);
   dialogContent.querySelector('[data-dialog-close]')?.addEventListener('click',()=>dialog.close());
   dialogContent.querySelector('[data-favorite]')?.addEventListener('click',()=>saveFavorite(x));
   dialogContent.querySelector('[data-message]')?.addEventListener('click',()=>openMessageForm(x));
