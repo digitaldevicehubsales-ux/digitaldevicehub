@@ -1,10 +1,10 @@
 (() => {
   'use strict';
 
-  const BASE_CURRENCY = 'NGN';
   const DEFAULT_COUNTRY = 'NG';
-  const LOCALIZATION_KEY = 'ddh_localization_v1';
-  const FX_KEY = 'ddh_fx_ngn_v1';
+  const DEFAULT_CURRENCY = 'NGN';
+  const LOCALIZATION_KEY = 'ddh_localization_v2';
+  const FX_KEY = 'ddh_fx_target_v2';
   const SESSION_KEY = 'ddh_supabase_session';
   const LOCALIZATION_TTL = 24 * 60 * 60 * 1000;
   const FX_TTL = 12 * 60 * 60 * 1000;
@@ -27,9 +27,10 @@
 
   const state = {
     country: DEFAULT_COUNTRY,
-    currency: BASE_CURRENCY,
-    rate: 1,
-    detectedAt: 0
+    currency: DEFAULT_CURRENCY,
+    rates: { NGN: 1 },
+    detectedAt: 0,
+    fxAt: 0
   };
 
   let lastPersistSignature = '';
@@ -92,72 +93,107 @@
       if (currency) return currency;
     } catch {}
 
-    return BASE_CURRENCY;
+    return DEFAULT_CURRENCY;
   }
 
-  async function getFxRate(currency) {
-    if (currency === BASE_CURRENCY) return 1;
-
+  async function getFxRates(targetCurrency) {
     const cached = readJson(FX_KEY);
-    const cachedRate = Number(cached?.rates?.[currency]);
-    const cacheFresh = cached && Date.now() - Number(cached.ts || 0) < FX_TTL;
-    if (cacheFresh && Number.isFinite(cachedRate) && cachedRate > 0) return cachedRate;
+    const cacheFresh = cached && cached.base === targetCurrency && Date.now() - Number(cached.ts || 0) < FX_TTL;
+    if (cacheFresh && cached.rates && typeof cached.rates === 'object') {
+      return { rates: cached.rates, ts: Number(cached.ts) || Date.now() };
+    }
 
     try {
-      const response = await fetch('https://open.er-api.com/v6/latest/NGN', {
+      const response = await fetch(`https://open.er-api.com/v6/latest/${encodeURIComponent(targetCurrency)}`, {
         cache: 'no-store',
         credentials: 'omit'
       });
       if (!response.ok) throw new Error('FX service unavailable');
       const data = await response.json();
       if (data?.result !== 'success' || !data?.rates) throw new Error('Invalid FX response');
-      writeJson(FX_KEY, { ts: Date.now(), rates: data.rates });
-      const rate = Number(data.rates[currency]);
-      if (!Number.isFinite(rate) || rate <= 0) throw new Error('Currency rate unavailable');
-      return rate;
+      const payload = { base: targetCurrency, ts: Date.now(), rates: data.rates };
+      writeJson(FX_KEY, payload);
+      return { rates: data.rates, ts: payload.ts };
     } catch (error) {
-      if (Number.isFinite(cachedRate) && cachedRate > 0) return cachedRate;
+      if (cached?.base === targetCurrency && cached?.rates) {
+        return { rates: cached.rates, ts: Number(cached.ts) || 0 };
+      }
       throw error;
     }
   }
 
-  function formatNGN(amount) {
-    const baseAmount = Number(amount);
-    const converted = Number.isFinite(baseAmount) ? baseAmount * state.rate : 0;
+  function fractionDigits(currency) {
     try {
-      return new Intl.NumberFormat(undefined, {
-        style: 'currency',
-        currency: state.currency,
-        minimumFractionDigits: 0,
-        maximumFractionDigits: state.currency === 'NGN' ? 0 : 2
-      }).format(converted);
+      const options = new Intl.NumberFormat(undefined,{style:'currency',currency}).resolvedOptions();
+      return Math.min(4, Number(options.maximumFractionDigits) || 0);
     } catch {
-      return `₦${Math.round(baseAmount || 0).toLocaleString('en-NG')}`;
+      return 2;
     }
   }
 
-  function extractBasePrice(element) {
-    const existing = Number(element.dataset.ngnPrice);
-    if (Number.isFinite(existing) && existing >= 0) return existing;
+  function formatCurrency(amount, currency) {
+    const code = validCurrency(currency) || DEFAULT_CURRENCY;
+    const value = Number(amount) || 0;
+    try {
+      return new Intl.NumberFormat(undefined, {
+        style: 'currency',
+        currency: code,
+        maximumFractionDigits: fractionDigits(code)
+      }).format(value);
+    } catch {
+      return `${code} ${value.toLocaleString()}`;
+    }
+  }
+
+  function convertedValue(amount, sourceCurrency) {
+    const source = validCurrency(sourceCurrency) || DEFAULT_CURRENCY;
+    const value = Number(amount);
+    if (!Number.isFinite(value)) return null;
+    if (source === state.currency) return { amount: value, currency: state.currency, converted: false };
+
+    const sourcePerTarget = Number(state.rates?.[source]);
+    if (Number.isFinite(sourcePerTarget) && sourcePerTarget > 0) {
+      return { amount: value / sourcePerTarget, currency: state.currency, converted: true };
+    }
+
+    return { amount: value, currency: source, converted: false };
+  }
+
+  function extractOriginalPrice(element) {
+    const dataAmount = Number(element.dataset.priceAmount);
+    const dataCurrency = validCurrency(element.dataset.priceCurrency);
+    if (Number.isFinite(dataAmount) && dataAmount >= 0 && dataCurrency) {
+      return { amount: dataAmount, currency: dataCurrency };
+    }
 
     const text = String(element.textContent || '').trim();
     if (!text || (!text.includes('₦') && !/\bNGN\b/i.test(text))) return null;
     const amount = Number(text.replace(/[^0-9.-]/g, ''));
     if (!Number.isFinite(amount) || amount < 0) return null;
-    element.dataset.ngnPrice = String(amount);
-    return amount;
+    element.dataset.priceAmount = String(amount);
+    element.dataset.priceCurrency = 'NGN';
+    return { amount, currency: 'NGN' };
   }
 
   function localizePrices(root = document) {
     const elements = root.querySelectorAll?.('.price, .phone-screen b') || [];
     for (const element of elements) {
-      const amount = extractBasePrice(element);
-      if (amount === null) continue;
-      const signature = `${state.currency}:${state.rate}`;
+      const original = extractOriginalPrice(element);
+      if (!original) continue;
+
+      const signature = `${original.currency}:${original.amount}:${state.currency}:${state.fxAt}`;
       if (element.dataset.currencySignature === signature) continue;
-      element.textContent = formatNGN(amount);
+
+      const display = convertedValue(original.amount, original.currency);
+      if (!display) continue;
+      const displayText = formatCurrency(display.amount, display.currency);
+      const originalText = formatCurrency(original.amount, original.currency);
+
+      element.textContent = displayText;
       element.dataset.currencySignature = signature;
-      element.setAttribute('aria-label', `${element.textContent} in local currency`);
+      element.setAttribute('aria-label', display.converted ? `${displayText}; seller price ${originalText}` : displayText);
+      if (display.converted) element.title = `Seller price: ${originalText}`;
+      else element.removeAttribute('title');
     }
   }
 
@@ -230,18 +266,18 @@
 
     if (!currency) currency = await currencyForCountry(country);
 
-    let rate = 1;
-    try {
-      rate = await getFxRate(currency);
-    } catch {
-      currency = BASE_CURRENCY;
-      rate = 1;
-    }
-
     state.country = country;
     state.currency = currency;
-    state.rate = rate;
     state.detectedAt = Date.now();
+
+    try {
+      const fx = await getFxRates(currency);
+      state.rates = fx.rates || { [currency]: 1 };
+      state.fxAt = fx.ts || Date.now();
+    } catch {
+      state.rates = { [currency]: 1 };
+      state.fxAt = Date.now();
+    }
 
     writeJson(LOCALIZATION_KEY, {
       country: state.country,
@@ -254,6 +290,7 @@
 
     localizePrices(document);
     await persistForSignedInUser();
+    document.dispatchEvent(new CustomEvent('ddh:localization-ready',{detail:{country:state.country,currency:state.currency}}));
     return { ...state };
   }
 
@@ -265,7 +302,8 @@
   window.DDH_LOCALIZATION = {
     ready,
     state,
-    formatNGN,
+    formatCurrency,
+    convertAmount: convertedValue,
     refresh: scheduleRefresh,
     persistProfile: persistForSignedInUser
   };
