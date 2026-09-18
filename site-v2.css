@@ -115,3 +115,12 @@ footer a{min-height:44px;display:inline-flex;align-items:center}
 .offer-actions{grid-template-columns:1.1fr 1fr auto}
 .transaction-scope-note{font-size:12px;line-height:1.55;color:var(--muted);margin:-10px 0 18px}
 @media(max-width:760px){.offer-actions{grid-template-columns:1fr}.transaction-scope-note{margin-top:-6px}}
+
+.offer-list{display:grid;gap:12px}
+.offer-list .panel-heading{margin-top:6px}
+.offer-sent-heading{margin-top:28px!important}
+.offer-row{grid-template-columns:1fr auto}
+@media(max-width:760px){
+  .offer-row{grid-template-columns:1fr}
+  .mobile-nav{grid-template-columns:repeat(6,minmax(58px,1fr));overflow-x:auto}
+}
