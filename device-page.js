@@ -6,10 +6,10 @@
   const id=new URLSearchParams(location.search).get('id');
   const SESSION_KEY='ddh_supabase_session';
   const VISITOR_KEY='ddh_visitor_id';
-  let listing=null,seller=null,images=[];
+  let listing=null,seller=null,images=[];const countryName=code=>window.DDH_COUNTRIES?.name?.(code)||code||'';
 
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const money=(a,c)=>{try{return new Intl.NumberFormat(undefined,{style:'currency',currency:c||'NGN',maximumFractionDigits:4}).format(Number(a)||0)}catch{return `${c||'NGN'} ${Number(a||0).toLocaleString()}`}};
+  const money=(a,c)=>{try{return new Intl.NumberFormat(undefined,{style:'currency',currency:c||'USD',maximumFractionDigits:4}).format(Number(a)||0)}catch{return `${c||'USD'} ${Number(a||0).toLocaleString()}`}};
   const publicImage=p=>p?`${base}/storage/v1/object/public/listing-images/${String(p).split('/').map(encodeURIComponent).join('/')}`:'';
   const session=()=>{try{return JSON.parse(localStorage.getItem(SESSION_KEY)||'null')}catch{return null}};
   function visitor(){let v='';try{v=localStorage.getItem(VISITOR_KEY)||''}catch{}if(!/^[0-9a-f-]{36}$/i.test(v)){v=crypto.randomUUID();try{localStorage.setItem(VISITOR_KEY,v)}catch{}}return v}
@@ -33,8 +33,8 @@
     const rows=[
       ['Category',listing.category],['Condition',listing.condition==='new'?'New':'Used'],['Brand',listing.brand],['Model',listing.model],
       ['Storage',listing.storage],['Colour',listing.color],['Battery health',s.battery_health],['Network status',s.network_status],
-      ['Repairs',s.repair_history],['Included',s.accessories],['Delivery',String(listing.delivery_mode||'pickup').replaceAll('_',' ')],
-      ['Warranty',listing.warranty_text],['Location',[listing.city,listing.country_code].filter(Boolean).join(', ')]
+      ['Repairs',s.repair_history],['Included',s.accessories],['Delivery',({pickup:'Local pickup only',domestic:'Ships within seller country',international:'International shipping',pickup_domestic:'Pickup + domestic shipping',all:'Pickup + domestic + international shipping'})[listing.delivery_mode]||'Delivery details available'],
+      ['Warranty',listing.warranty_text],['Location',[listing.city,countryName(listing.country_code)].filter(Boolean).join(', ')]
     ].filter(x=>x[1]);
     return rows.map(([a,b])=>`<div class="spec"><span>${esc(a)}</span><strong>${esc(String(b))}</strong></div>`).join('');
   }
@@ -72,17 +72,17 @@
       const rows=await get(`/rest/v1/listings?select=id,seller_id,title,category,brand,model,condition,price_amount,price_currency,description,storage,color,city,country_code,delivery_mode,warranty_text,specs,created_at&status=eq.published&id=eq.${encodeURIComponent(id)}&limit=1`);
       listing=rows?.[0]; if(!listing)throw new Error('This listing is no longer available.');
       images=await get(`/rest/v1/listing_images?select=storage_path,sort_order&listing_id=eq.${encodeURIComponent(id)}&order=sort_order.asc`).catch(()=>[]);
-      const profiles=await get(`/rest/v1/public_profiles?select=id,display_name,created_at&id=eq.${encodeURIComponent(listing.seller_id)}&limit=1`).catch(()=>[]);
+      const profiles=await get(`/rest/v1/public_profiles?select=id,display_name,created_at,verification_tier,rating_avg,rating_count,sales_count,response_rate,response_time_mins&id=eq.${encodeURIComponent(listing.seller_id)}&limit=1`).catch(()=>[]);
       seller=profiles?.[0]||null;
-      document.title=`${listing.title} — DigitalDeviceHub`;
+      document.title=`${listing.title} — DigitalDeviceHub`;const canonical=`${location.origin}/device.html?id=${encodeURIComponent(listing.id)}`;let canonicalEl=document.querySelector('link[rel="canonical"]');if(!canonicalEl){canonicalEl=document.createElement('link');canonicalEl.rel='canonical';document.head.appendChild(canonicalEl)}canonicalEl.href=canonical;const meta=(name,value,prop=false)=>{let el=document.head.querySelector(`meta[${prop?'property':'name'}="${name}"]`);if(!el){el=document.createElement('meta');el.setAttribute(prop?'property':'name',name);document.head.appendChild(el)}el.content=value};meta('og:title',document.title,true);meta('og:url',canonical,true);meta('og:type','product',true);
       document.querySelector('meta[name="description"]')?.setAttribute('content',`${listing.title} — ${listing.condition==='new'?'New':'Used'} ${listing.storage||''} device listed on DigitalDeviceHub.`);
       renderGallery();
       const sellerPrice=money(listing.price_amount,listing.price_currency);
-      document.querySelector('#deviceMeta').innerHTML=`<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><a href="/marketplace.html?category=${encodeURIComponent(listing.category)}">${esc(listing.category)}</a><span>›</span><span>${esc(listing.brand||listing.title)}</span></nav><span class="eyebrow">${esc(listing.category)} · ${esc(listing.condition==='new'?'New':'Used')}</span><h1>${esc(listing.title)}</h1><div class="subline">${esc(listing.storage||'Details available')}${listing.city?` · ${esc(listing.city)}`:''}</div><div class="seller-price-primary device-price">${esc(sellerPrice)}</div><div class="converted-line">Local estimate: <span class="price local-estimate" data-price-amount="${esc(listing.price_amount)}" data-price-currency="${esc(listing.price_currency)}">${esc(sellerPrice)}</span></div>`;
+      document.querySelector('#deviceBreadcrumbs').innerHTML=`<a href="/">Home</a><span>›</span><a href="/marketplace.html?category=${encodeURIComponent(listing.category)}">${esc(listing.category)}</a><span>›</span><span>${esc(listing.brand||listing.title)}</span>`;document.querySelector('#deviceMeta').innerHTML=`<span class="eyebrow">${esc(listing.category)} · ${esc(listing.condition==='new'?'New':'Used')}</span><h1>${esc(listing.title)}</h1><div class="subline">${esc(listing.storage||'Details available')}${listing.city?` · ${esc(listing.city)}`:''}</div><div class="seller-price-primary device-price">${esc(sellerPrice)}</div><div class="converted-line">Local estimate: <span class="price local-estimate" data-price-amount="${esc(listing.price_amount)}" data-price-currency="${esc(listing.price_currency)}">${esc(sellerPrice)}</span></div>`;
       document.querySelector('#deviceDescription').textContent=listing.description||'The seller has not added a description yet.';
       document.querySelector('#deviceSpecs').innerHTML=specRows();
-      const joined=seller?.created_at?new Date(seller.created_at).toLocaleDateString(undefined,{year:'numeric',month:'short'}):'';
-      document.querySelector('#sellerPanel').innerHTML=`<div class="spec"><span>Listed by</span><strong><a href="/seller.html?id=${encodeURIComponent(listing.seller_id)}">${esc(seller?.display_name||'DigitalDeviceHub seller')} →</a></strong></div><div class="spec"><span>Account status</span><strong>Email authenticated</strong></div>${joined?`<div class="spec"><span>Member since</span><strong>${esc(joined)}</strong></div>`:''}<div class="spec"><span>Listed</span><strong>${esc(new Date(listing.created_at).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}))}</strong></div>`;
+      const joined=seller?.created_at?new Date(seller.created_at).toLocaleDateString(undefined,{year:'numeric',month:'short'}):'';const trust=[seller?.verification_tier&&seller.verification_tier!=='none'?seller.verification_tier.replaceAll('_',' ')+' verified':null,Number(seller?.sales_count)>0?`${seller.sales_count} completed sale${Number(seller.sales_count)===1?'':'s'}`:null,Number(seller?.rating_count)>0?`${Number(seller.rating_avg).toFixed(1)}★ from ${seller.rating_count} review${Number(seller.rating_count)===1?'':'s'}`:null].filter(Boolean).join(' · ');
+      document.querySelector('#sellerPanel').innerHTML=`<div class="spec"><span>Listed by</span><strong><a href="/seller.html?id=${encodeURIComponent(listing.seller_id)}">${esc(seller?.display_name||'DigitalDeviceHub seller')} →</a></strong></div><div class="spec"><span>Seller trust</span><strong>${esc(trust||'Account authenticated')}</strong></div>${joined?`<div class="spec"><span>Member since</span><strong>${esc(joined)}</strong></div>`:''}<div class="spec"><span>Listed</span><strong>${esc(new Date(listing.created_at).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}))}</strong></div>`;
       window.DDH_LOCALIZATION?.refresh?.();
       recordView();
       loadRelated();
