@@ -205,10 +205,10 @@ async function loadListings(){
     const firstImages = new Map();
     if(listingIds.length){
       const inList = listingIds.map(id=>`\"${id}\"`).join(',');
-      const images = await apiFetch(`/rest/v1/listing_images?select=listing_id,storage_path,sort_order&listing_id=in.(${encodeURIComponent(inList)})&order=sort_order.asc`).catch(()=>[]);
+      const images = await apiFetch(`/rest/v1/listing_images?select=listing_id,storage_path,variants,sort_order&listing_id=in.(${encodeURIComponent(inList)})&order=sort_order.asc`).catch(()=>[]);
       for(const image of images || []){
         if(image?.listing_id && image?.storage_path && !firstImages.has(image.listing_id)){
-          firstImages.set(image.listing_id, publicListingImageUrl(image.storage_path));
+          firstImages.set(image.listing_id, publicListingImageUrl(image.variants?.card||image.storage_path));
         }
       }
     }
