@@ -436,7 +436,6 @@ async function submitListing(event){
     condition:String(form.get('condition') || ''),
     price_amount:roundedPrice,
     price_currency:priceCurrency,
-    price_ngn:priceCurrency === 'NGN' ? Math.round(price) : null,
     storage:String(form.get('storage') || '').trim() || null,
     city:String(form.get('city') || '').trim() || null,
     description:String(form.get('description') || '').trim(),
