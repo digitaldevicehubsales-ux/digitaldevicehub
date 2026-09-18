@@ -87,6 +87,7 @@
         </div>
       </a>
       <button class="card-save" type="button" data-save-id="${esc(item.id)}" aria-label="Save ${esc(item.title)}" title="Save device">♡</button>
+      <button class="card-compare" type="button" data-compare-id="${esc(item.id)}" data-compare-title="${esc(item.title)}" aria-label="Add ${esc(item.title)} to comparison">Compare</button>
     </article>`;
   }
   function activeChipData(){
