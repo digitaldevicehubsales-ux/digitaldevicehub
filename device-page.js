@@ -91,6 +91,21 @@
     }
   }
 
+  async function makeOffer(){
+    const s=session();
+    if(!s?.user?.id)return modal('<p class="eyebrow">Account required</p><h2>Sign in to make an offer.</h2><p>Your offer stays tied to your account and this listing.</p><a class="btn" href="/?signin=1">Go to sign in</a>');
+    if(s.user.id===listing.seller_id)return toast('You cannot make an offer on your own listing.');
+    const current=money(listing.price_amount,listing.price_currency);
+    modal(`<p class="eyebrow">Make an offer</p><h2>${esc(listing.title)}</h2><p>Seller asking price: <strong>${esc(current)}</strong></p><form id="offerForm"><div class="form-grid"><label class="field">Offer amount<input class="control" name="amount" type="number" min="0.0001" step="0.0001" inputmode="decimal" value="${esc(listing.price_amount)}" required></label><label class="field">Currency<input class="control" name="currency" value="${esc(listing.price_currency)}" readonly></label><label class="field full">Note to seller<textarea class="control" name="note" rows="4" maxlength="1000" placeholder="Optional: explain pickup, shipping destination, timing or questions."></textarea></label></div><p class="transaction-scope-note">This is a non-payment offer request. Do not send passwords, one-time codes or payment details in the note.</p><button class="btn blue full-action" type="submit">Send offer</button></form>`);
+    document.querySelector('#offerForm').onsubmit=async e=>{
+      e.preventDefault();const fd=new FormData(e.currentTarget);const amount=Number(fd.get('amount'));if(!Number.isFinite(amount)||amount<=0)return toast('Enter a valid offer amount.');
+      try{
+        await write('/rest/v1/offers','POST',{listing_id:listing.id,buyer_id:s.user.id,seller_id:listing.seller_id,amount:Math.round(amount*10000)/10000,currency:listing.price_currency,note:String(fd.get('note')||'').trim()||null});
+        document.querySelector('#deviceDialog').close();toast('Offer sent to the seller.');
+      }catch(err){toast(err.message)}
+    };
+  }
+
   async function favorite(){
     const s=session();
     if(!s?.user?.id)return modal('<p class="eyebrow">Account required</p><h2>Sign in to save devices.</h2><p>Your saved devices appear in your account dashboard.</p><a class="btn" href="/?signin=1">Go to sign in</a>');
@@ -127,6 +142,7 @@
     };
   }
 
+  document.querySelector('#makeOffer').onclick=makeOffer;
   document.querySelector('#messageSeller').onclick=message;
   document.querySelector('#saveDevice').onclick=favorite;
   document.querySelector('#reportDevice').onclick=reportListing;
