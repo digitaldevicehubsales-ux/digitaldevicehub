@@ -29,8 +29,8 @@ const publicListingImageUrl = path => {
   return `${supabaseUrl}/storage/v1/object/public/listing-images/${encodedPath}`;
 };
 
-function money(amount,currency='NGN'){
-  const code = validCurrency(currency) || 'NGN';
+function money(amount,currency='USD'){
+  const code = validCurrency(currency) || 'USD';
   const value = Number(amount) || 0;
   try{
     return new Intl.NumberFormat(undefined,{style:'currency',currency:code,maximumFractionDigits:4}).format(value);
@@ -55,7 +55,7 @@ function currencyDisplayName(code){
 
 function populateSellerCurrencySelect(){
   if(!sellerCurrency) return;
-  const current = validCurrency(sellerCurrency.value) || 'NGN';
+  const current = validCurrency(sellerCurrency.value) || 'USD';
   const codes = [...new Set(supportedCurrencyCodes().map(validCurrency).filter(Boolean))].sort();
   sellerCurrency.innerHTML = codes.map(code=>`<option value="${code}">${code} — ${escapeHtml(currencyDisplayName(code))}</option>`).join('');
   sellerCurrency.value = codes.includes(current) ? current : 'NGN';
@@ -156,7 +156,7 @@ async function apiFetch(path,{method='GET',body,headers={},requireAuth=false,raw
 }
 
 function priceMarkup(x){
-  const currency = validCurrency(x.currency) || 'NGN';
+  const currency = validCurrency(x.currency) || 'USD';
   const amount = Number(x.price) || 0;
   return `<div class="price" data-price-amount="${escapeHtml(amount)}" data-price-currency="${currency}">${escapeHtml(money(amount,currency))}</div>`;
 }
@@ -192,7 +192,7 @@ async function loadListings(){
     return;
   }
   try{
-    const rows = await apiFetch('/rest/v1/listings?select=id,title,category,condition,storage,price_amount,price_currency,price_ngn,seller_id&status=eq.published&order=created_at.desc&limit=40');
+    const rows = await apiFetch('/rest/v1/listings?select=id,title,category,condition,storage,price_amount,price_currency,seller_id&status=eq.published&order=created_at.desc&limit=40');
     const sellerIds = [...new Set((rows || []).map(r=>r.seller_id).filter(Boolean))];
     let sellers = new Map();
     if(sellerIds.length){
@@ -219,8 +219,8 @@ async function loadListings(){
       name:r.title,
       condition:titleCase(r.condition),
       storage:r.storage || '',
-      price:Number(r.price_amount ?? r.price_ngn),
-      currency:validCurrency(r.price_currency) || 'NGN',
+      price:Number(r.price_amount),
+      currency:validCurrency(r.price_currency) || 'USD',
       seller:sellers.get(r.seller_id) || 'Seller',
       seller_id:r.seller_id,
       verified:false,
