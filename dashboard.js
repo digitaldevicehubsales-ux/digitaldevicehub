@@ -19,6 +19,8 @@
   let messages = [];
   let favorites = [];
   let favoriteListings = [];
+  let offers = [];
+  let offerListings = new Map();
 
   const esc = value => String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const titleCase = value => String(value || '').replace(/^./, c => c.toUpperCase());
@@ -80,7 +82,7 @@
   function showPanel(name){
     document.querySelectorAll('[data-panel]').forEach(el=>el.classList.toggle('active',el.dataset.panel===name));
     document.querySelectorAll('[data-view]').forEach(el=>el.classList.toggle('active',el.dataset.view===name));
-    document.querySelector('#pageTitle').textContent=({overview:'Overview',listings:'My Listings',analytics:'Analytics',messages:'Messages',favorites:'Favorites',profile:'Profile & Settings'})[name]||'Dashboard';
+    document.querySelector('#pageTitle').textContent=({overview:'Overview',listings:'My Listings',analytics:'Analytics',messages:'Messages',favorites:'Favorites',offers:'Offers',profile:'Profile & Settings'})[name]||'Dashboard';
     window.scrollTo({top:0,behavior:'smooth'});
   }
 
@@ -156,29 +158,60 @@
     document.querySelector('#messageList').innerHTML=conversations.map(c=>{const item=listings.find(x=>x.id===c.listing_id);const m=latest.get(c.id);const role=c.seller_id===session.user.id?'Buyer conversation':'Seller conversation';return `<button class="message-row" data-conversation="${c.id}"><div><h3>${esc(item?.title||'Marketplace conversation')}</h3><span>${esc(role)}${m?` · ${esc(String(m.body).slice(0,90))}`:''}</span></div><span>${m?new Date(m.created_at).toLocaleDateString():new Date(c.created_at).toLocaleDateString()}</span></button>`}).join('')||'<div class="empty-box">No conversations yet.</div>';
   }
 
+  function renderOffers(){
+    const received=offers.filter(o=>o.seller_id===session.user.id),sent=offers.filter(o=>o.buyer_id===session.user.id);
+    const row=(o,mode)=>{
+      const item=offerListings.get(o.listing_id),pending=o.status==='pending';
+      const actions=mode==='received'&&pending?`<button class="mini-button primary" data-offer-action="accepted" data-offer-id="${o.id}">Accept</button><button class="mini-button" data-offer-action="rejected" data-offer-id="${o.id}">Decline</button>`:mode==='sent'&&pending?`<button class="mini-button" data-offer-action="withdrawn" data-offer-id="${o.id}">Withdraw</button>`:'';
+      return `<article class="manager-card offer-row"><div class="manager-meta"><h3>${esc(item?.title||'Device offer')}</h3><p><strong>${esc(money(o.amount,o.currency))}</strong> · ${statusPill(o.status)}</p><p>${esc(o.note||'No note added')} · ${new Date(o.created_at).toLocaleDateString()}</p></div><div class="manager-actions">${actions}<a class="mini-button" href="/device.html?id=${encodeURIComponent(o.listing_id)}">View device</a></div></article>`;
+    };
+    document.querySelector('#offerList').innerHTML=`<div class="panel-heading"><div><p class="eyebrow">Received</p><h3>Offers on your listings</h3></div></div>${received.map(o=>row(o,'received')).join('')||'<div class="empty-box">No offers received yet.</div>'}<div class="panel-heading offer-sent-heading"><div><p class="eyebrow">Sent</p><h3>Your offers</h3></div></div>${sent.map(o=>row(o,'sent')).join('')||'<div class="empty-box">You have not made any offers yet.</div>'}`;
+  }
+
   function renderFavorites(){
     document.querySelector('#favoriteList').innerHTML=favoriteListings.map(x=>`<article class="favorite-card"><h3>${esc(x.title)}</h3><p>${esc(titleCase(x.condition))} · ${esc(x.storage||'Details available')}</p><p class="price" data-price-amount="${esc(x.price_amount)}" data-price-currency="${esc(x.price_currency)}">${esc(money(x.price_amount,x.price_currency))}</p><a href="/#marketplace">View marketplace →</a></article>`).join('')||'<div class="empty-box">Devices you save will appear here.</div>';
     window.DDH_LOCALIZATION?.refresh?.();
   }
 
   function renderProfile(){
-    const form=document.querySelector('#profileForm');form.elements.display_name.value=profile?.display_name||'';form.elements.city.value=profile?.city||'';
+    const form=document.querySelector('#profileForm');form.elements.display_name.value=profile?.display_name||'';form.elements.city.value=profile?.city||'';window.DDH_COUNTRIES?.populate?.(form.elements.country_code,profile?.country_code||window.DDH_LOCALIZATION?.state?.country||'');
     document.querySelector('#profileEmail').value=session?.user?.email||'';
     document.querySelector('#profileCurrency').value=profile?.currency_code||window.DDH_LOCALIZATION?.state?.currency||'USD';
   }
 
-  function renderAll(){renderKpis();renderOverview();renderListings();renderAnalytics();renderMessages();renderFavorites();renderProfile()}
+  function renderAll(){renderKpis();renderOverview();renderListings();renderAnalytics();renderMessages();renderOffers();renderFavorites();renderProfile()}
 
   function currencyOptions(selected){
     let codes=[];try{codes=Intl.supportedValuesOf?.('currency')||[]}catch{}
-    if(!codes.length)codes=['NGN','USD','GBP','EUR','GHS','ZAR','KES','CAD','AUD','JPY','CNY','INR','AED'];
+    if(!codes.length)codes=['USD','EUR','GBP','CAD','AUD','JPY','CNY','INR','AED','NGN','GHS','ZAR','KES'];
     if(selected&&!codes.includes(selected))codes.push(selected);
     return [...new Set(codes)].sort().map(c=>`<option value="${c}" ${c===selected?'selected':''}>${c}</option>`).join('');
   }
 
   function openEdit(id){
     const x=listings.find(item=>item.id===id);if(!x)return;
-    dialogContent.innerHTML=`<div><p class="eyebrow">Edit listing</p><h2>${esc(x.title)}</h2><p>Price and availability changes can stay live. Major identity changes are sent back for review.</p><form id="editListingForm" class="edit-form"><label>Category<select name="category"><option ${x.category==='Phones'?'selected':''}>Phones</option><option ${x.category==='Laptops'?'selected':''}>Laptops</option><option ${x.category==='Tablets'?'selected':''}>Tablets</option><option ${x.category==='Accessories'?'selected':''}>Accessories</option><option ${x.category==='Wearables'?'selected':''}>Wearables</option></select></label><label>Condition<select name="condition"><option value="new" ${x.condition==='new'?'selected':''}>New</option><option value="used" ${x.condition==='used'?'selected':''}>Used</option></select></label><label>Brand<input name="brand" value="${esc(x.brand)}" required maxlength="80" /></label><label>Model<input name="model" value="${esc(x.model)}" required maxlength="100" /></label><label>Storage<input name="storage" value="${esc(x.storage||'')}" maxlength="60" /></label><label>City<input name="city" value="${esc(x.city||'')}" maxlength="80" /></label><label>Asking price<input name="price" type="number" min="0.0001" step="0.0001" value="${esc(x.price_amount)}" required /></label><label>Currency<select name="currency">${currencyOptions(x.price_currency)}</select></label><label class="full">Description<textarea name="description" rows="5" maxlength="2000">${esc(x.description||'')}</textarea></label><div class="full dialog-actions"><button class="primary-button" type="submit">Save changes</button><button class="secondary-button" type="button" data-cancel>Cancel</button></div></form></div>`;
+    const specs=x.specs||{};
+    const countries=(window.DDH_COUNTRIES?.sorted?.()||[]).map(o=>`<option value="${o.code}" ${o.code===x.country_code?'selected':''}>${esc(o.name)}</option>`).join('');
+    dialogContent.innerHTML=`<div><p class="eyebrow">Edit listing</p><h2>${esc(x.title)}</h2><p>You can update the full listing at any time. Major identity changes are sent back for review.</p><form id="editListingForm" class="edit-form">
+      <label>Category<select name="category"><option ${x.category==='Phones'?'selected':''}>Phones</option><option ${x.category==='Laptops'?'selected':''}>Laptops</option><option ${x.category==='Tablets'?'selected':''}>Tablets</option><option ${x.category==='Accessories'?'selected':''}>Accessories</option><option ${x.category==='Wearables'?'selected':''}>Wearables</option></select></label>
+      <label>Condition<select name="condition"><option value="new" ${x.condition==='new'?'selected':''}>New</option><option value="used" ${x.condition==='used'?'selected':''}>Used</option></select></label>
+      <label>Brand<input name="brand" value="${esc(x.brand)}" required maxlength="80" /></label>
+      <label>Model<input name="model" value="${esc(x.model)}" required maxlength="100" /></label>
+      <label>Storage<input name="storage" value="${esc(x.storage||'')}" maxlength="60" /></label>
+      <label>Colour<input name="color" value="${esc(x.color||'')}" maxlength="60" /></label>
+      <label>Battery health<input name="battery_health" value="${esc(specs.battery_health||'')}" maxlength="40" /></label>
+      <label>Network status<select name="network_status"><option value="">Not specified</option><option ${specs.network_status==='Unlocked'?'selected':''}>Unlocked</option><option ${specs.network_status==='Carrier locked'?'selected':''}>Carrier locked</option></select></label>
+      <label class="full">Repair history<input name="repair_history" value="${esc(specs.repair_history||'')}" maxlength="140" /></label>
+      <label class="full">Included accessories<input name="accessories" value="${esc(specs.accessories||'')}" maxlength="180" /></label>
+      <label>City / locality<input name="city" value="${esc(x.city||'')}" maxlength="80" required /></label>
+      <label>Country / region<select name="country_code" required><option value="">Choose country / region</option>${countries}</select></label>
+      <label>Delivery<select name="delivery_mode"><option value="pickup" ${x.delivery_mode==='pickup'?'selected':''}>Local pickup only</option><option value="domestic" ${x.delivery_mode==='domestic'?'selected':''}>Ship within my country</option><option value="international" ${x.delivery_mode==='international'?'selected':''}>International shipping only</option><option value="pickup_domestic" ${x.delivery_mode==='pickup_domestic'?'selected':''}>Pickup + domestic shipping</option><option value="all" ${x.delivery_mode==='all'?'selected':''}>Pickup + domestic + international shipping</option></select></label>
+      <label>Warranty / guarantee<input name="warranty_text" value="${esc(x.warranty_text||'')}" maxlength="180" /></label>
+      <label>Asking price<input name="price" type="number" min="0.0001" step="0.0001" value="${esc(x.price_amount)}" required /></label>
+      <label>Currency<select name="currency">${currencyOptions(x.price_currency)}</select></label>
+      <label class="full">Description<textarea name="description" rows="6" maxlength="2000" required>${esc(x.description||'')}</textarea></label>
+      <div class="full dialog-actions"><button class="primary-button" type="submit">Save changes</button><button class="secondary-button" type="button" data-cancel>Cancel</button></div>
+    </form></div>`;
     dialog.showModal();
     dialogContent.querySelector('[data-cancel]').onclick=()=>dialog.close();
     dialogContent.querySelector('#editListingForm').onsubmit=e=>saveEdit(e,x);
@@ -188,11 +221,26 @@
     event.preventDefault();const form=new FormData(event.currentTarget);
     const price=Number(form.get('price'));const currency=validCurrency(form.get('currency'));
     if(!Number.isFinite(price)||price<=0||!currency)return notify('Enter a valid price and currency.');
-    const category=String(form.get('category'));const brand=String(form.get('brand')).trim();const model=String(form.get('model')).trim();
-    const identityChanged=category!==original.category||brand!==original.brand||model!==original.model;
+    const category=String(form.get('category')),brand=String(form.get('brand')).trim(),model=String(form.get('model')).trim(),condition=String(form.get('condition')),country=String(form.get('country_code')||'').toUpperCase();
+    if(!/^[A-Z]{2}$/.test(country))return notify('Choose a valid country or region.');
+    const identityChanged=category!==original.category||brand!==original.brand||model!==original.model||condition!==original.condition;
     let nextStatus=original.status;
     if(original.status==='rejected'||(original.status==='published'&&identityChanged))nextStatus='pending';
-    const payload={category,brand,model,title:`${brand} ${model}`.trim(),condition:String(form.get('condition')),storage:String(form.get('storage')).trim()||null,city:String(form.get('city')).trim()||null,description:String(form.get('description')).trim(),price_amount:Math.round(price*10000)/10000,price_currency:currency,status:nextStatus};
+    const payload={
+      category,brand,model,title:`${brand} ${model}`.trim(),condition,
+      storage:String(form.get('storage')||'').trim()||null,color:String(form.get('color')||'').trim()||null,
+      city:String(form.get('city')||'').trim()||null,country_code:country,
+      delivery_mode:String(form.get('delivery_mode')||'pickup'),
+      warranty_text:String(form.get('warranty_text')||'').trim()||null,
+      description:String(form.get('description')||'').trim(),
+      price_amount:Math.round(price*10000)/10000,price_currency:currency,status:nextStatus,
+      specs:{
+        battery_health:String(form.get('battery_health')||'').trim()||null,
+        network_status:String(form.get('network_status')||'').trim()||null,
+        repair_history:String(form.get('repair_history')||'').trim()||null,
+        accessories:String(form.get('accessories')||'').trim()||null
+      }
+    };
     try{await apiFetch(`/rest/v1/listings?id=eq.${encodeURIComponent(original.id)}`,{method:'PATCH',body:payload,headers:{Prefer:'return=minimal'}});dialog.close();notify(nextStatus==='pending'&&original.status==='published'?'Changes saved and sent for review.':'Listing updated.');await loadData();}
     catch(err){notify(err.message)}
   }
@@ -211,25 +259,37 @@
 
   async function loadData(){
     const uid=session.user.id;
-    const [profileRows,listingRows,statRows,trendRows,conversationRows,messageRows,favoriteRows]=await Promise.all([
+    const [profileRows,listingRows,statRows,trendRows,conversationRows,messageRows,favoriteRows,offerRows]=await Promise.all([
       apiFetch(`/rest/v1/profiles?select=id,display_name,city,country_code,currency_code&id=eq.${encodeURIComponent(uid)}&limit=1`).catch(()=>[]),
-      apiFetch(`/rest/v1/listings?select=id,title,category,brand,model,condition,price_amount,price_currency,description,storage,city,status,created_at,updated_at,paused_at,sold_at&seller_id=eq.${encodeURIComponent(uid)}&order=created_at.desc`).catch(()=>[]),
+      apiFetch(`/rest/v1/listings?select=id,title,category,brand,model,condition,price_amount,price_currency,description,storage,color,city,country_code,delivery_mode,warranty_text,specs,status,created_at,updated_at,paused_at,sold_at&seller_id=eq.${encodeURIComponent(uid)}&order=created_at.desc`).catch(()=>[]),
       rpc('get_my_listing_stats').catch(()=>[]),
       rpc('get_my_listing_trend',{p_days:Number(document.querySelector('#analyticsRange').value||30)}).catch(()=>[]),
       apiFetch(`/rest/v1/conversations?select=id,listing_id,buyer_id,seller_id,created_at&or=(buyer_id.eq.${uid},seller_id.eq.${uid})&order=created_at.desc`).catch(()=>[]),
       apiFetch('/rest/v1/messages?select=id,conversation_id,sender_id,body,created_at&order=created_at.desc&limit=100').catch(()=>[]),
-      apiFetch(`/rest/v1/favorites?select=listing_id,created_at&user_id=eq.${encodeURIComponent(uid)}&order=created_at.desc`).catch(()=>[])
+      apiFetch(`/rest/v1/favorites?select=listing_id,created_at&user_id=eq.${encodeURIComponent(uid)}&order=created_at.desc`).catch(()=>[]),
+      apiFetch(`/rest/v1/offers?select=id,listing_id,buyer_id,seller_id,amount,currency,note,status,created_at,updated_at&or=(buyer_id.eq.${uid},seller_id.eq.${uid})&order=created_at.desc`).catch(()=>[])
     ]);
-    profile=profileRows?.[0]||null;listings=listingRows||[];stats=new Map((statRows||[]).map(s=>[s.listing_id,s]));trend=trendRows||[];conversations=conversationRows||[];messages=messageRows||[];favorites=favoriteRows||[];
-    const listingIds=listings.map(x=>x.id);images=new Map();if(listingIds.length){const inList=listingIds.map(id=>`"${id}"`).join(',');const rows=await apiFetch(`/rest/v1/listing_images?select=listing_id,storage_path,sort_order&listing_id=in.(${encodeURIComponent(inList)})&order=sort_order.asc`).catch(()=>[]);for(const row of rows||[])if(!images.has(row.listing_id))images.set(row.listing_id,row.storage_path)}
+    profile=profileRows?.[0]||null;listings=listingRows||[];stats=new Map((statRows||[]).map(s=>[s.listing_id,s]));trend=trendRows||[];conversations=conversationRows||[];messages=messageRows||[];favorites=favoriteRows||[];offers=offerRows||[];
+    const listingIds=listings.map(x=>x.id);images=new Map();if(listingIds.length){const inList=listingIds.map(id=>`"${id}"`).join(',');const rows=await apiFetch(`/rest/v1/listing_images?select=listing_id,storage_path,variants,sort_order&listing_id=in.(${encodeURIComponent(inList)})&order=sort_order.asc`).catch(()=>[]);for(const row of rows||[])if(!images.has(row.listing_id))images.set(row.listing_id,row.variants?.card||row.storage_path)}
     const favoriteIds=[...new Set(favorites.map(x=>x.listing_id))];favoriteListings=[];if(favoriteIds.length){const inList=favoriteIds.map(id=>`"${id}"`).join(',');favoriteListings=await apiFetch(`/rest/v1/listings?select=id,title,condition,storage,price_amount,price_currency&id=in.(${encodeURIComponent(inList)})`).catch(()=>[])}
+    const offerIds=[...new Set(offers.map(o=>o.listing_id))];offerListings=new Map();
+    if(offerIds.length){const inList=offerIds.map(id=>`"${id}"`).join(',');const offerItems=await apiFetch(`/rest/v1/listings?select=id,title&id=in.(${encodeURIComponent(inList)})`).catch(()=>[]);offerListings=new Map((offerItems||[]).map(x=>[x.id,x]))}
     renderAll();
   }
 
   async function saveProfile(event){
-    event.preventDefault();const form=new FormData(event.currentTarget);const body={display_name:String(form.get('display_name')).trim()||'DigitalDeviceHub user',city:String(form.get('city')).trim()||null};
+    event.preventDefault();const form=new FormData(event.currentTarget);const country=String(form.get('country_code')||'').toUpperCase();const body={display_name:String(form.get('display_name')).trim()||'DigitalDeviceHub user',city:String(form.get('city')).trim()||null,country_code:/^[A-Z]{2}$/.test(country)?country:null};
     try{await apiFetch(`/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}`,{method:'PATCH',body,headers:{Prefer:'return=minimal'}});notify('Profile saved.');await loadData()}
     catch(err){notify(err.message)}
+  }
+
+  async function actOnOffer(id,action){
+    try{
+      if(action==='withdrawn')await rpc('withdraw_offer',{p_offer_id:id});
+      else await rpc('respond_to_offer',{p_offer_id:id,p_action:action});
+      notify(action==='accepted'?'Offer accepted.':action==='rejected'?'Offer declined.':'Offer withdrawn.');
+      await loadData();
+    }catch(err){notify(err.message)}
   }
 
   async function signOut(){
@@ -248,6 +308,7 @@
   document.querySelectorAll('[data-go]').forEach(btn=>btn.addEventListener('click',()=>showPanel(btn.dataset.go)));
   document.querySelector('#myListings').addEventListener('click',e=>{const edit=e.target.closest('[data-edit]');if(edit)return openEdit(edit.dataset.edit);const status=e.target.closest('[data-status]');if(status)setStatus(status.dataset.id,status.dataset.status)});
   document.querySelector('#messageList').addEventListener('click',e=>{const row=e.target.closest('[data-conversation]');if(row)openConversation(row.dataset.conversation)});
+  document.querySelector('#offerList').addEventListener('click',e=>{const action=e.target.closest('[data-offer-action]');if(action)actOnOffer(action.dataset.offerId,action.dataset.offerAction)});
   document.querySelector('#analyticsRange').addEventListener('change',async()=>{trend=await rpc('get_my_listing_trend',{p_days:Number(document.querySelector('#analyticsRange').value)}).catch(()=>[]);renderAnalytics()});
   document.querySelector('#profileForm').addEventListener('submit',saveProfile);
   document.querySelector('#signOutButton').addEventListener('click',signOut);
