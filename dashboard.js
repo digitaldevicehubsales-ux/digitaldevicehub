@@ -255,3 +255,5 @@
 
   initialize().catch(err=>{console.error(err);notify('Dashboard could not load. Refresh and try again.')});
 })();
+
+;(() => {try{const s=JSON.parse(localStorage.getItem('ddh_supabase_session')||'null');const token=String(s?.access_token||'').split('.')[1];if(!token)return;const payload=JSON.parse(atob(token.replace(/-/g,'+').replace(/_/g,'/')));if(payload?.app_metadata?.role==='admin'){const el=document.querySelector('#adminEntry');if(el)el.hidden=false}}catch{}})();
