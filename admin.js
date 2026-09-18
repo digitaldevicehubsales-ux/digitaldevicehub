@@ -3,7 +3,7 @@
 const cfg=window.DDH_CONFIG||{},base=String(cfg.supabaseUrl||'').replace(/\/$/,''),key=String(cfg.supabasePublishableKey||''),SESSION_KEY='ddh_supabase_session';
 const gate=document.querySelector('#adminGate'),app=document.querySelector('#adminApp'),queue=document.querySelector('#moderationQueue'),reports=document.querySelector('#reportQueue'),kpis=document.querySelector('#adminKpis');
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const money=(a,c)=>{try{return new Intl.NumberFormat(undefined,{style:'currency',currency:c||'NGN'}).format(Number(a)||0)}catch{return `${c} ${a}`}};
+const money=(a,c)=>{try{return new Intl.NumberFormat(undefined,{style:'currency',currency:c||'USD'}).format(Number(a)||0)}catch{return `${c} ${a}`}};
 const sess=()=>{try{return JSON.parse(localStorage.getItem(SESSION_KEY)||'null')}catch{return null}};
 const role=()=>{try{return JSON.parse(atob(String(sess()?.access_token||'').split('.')[1].replace(/-/g,'+').replace(/_/g,'/')))?.app_metadata?.role||''}catch{return ''}};
 function toast(t){const el=document.querySelector('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),2600)}
