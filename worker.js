@@ -8,6 +8,11 @@ function imageUrl(path) {
   if (!path) return '';
   return `${SUPABASE_URL}/storage/v1/object/public/listing-images/${String(path).split('/').map(encodeURIComponent).join('/')}`;
 }
+function countryName(code) {
+  const value=String(code||'').toUpperCase();
+  if(!value)return '';
+  try{return new Intl.DisplayNames(['en'],{type:'region'}).of(value)||value}catch{return value}
+}
 function money(amount, currency) {
   const value = Number(amount) || 0;
   const code = String(currency || 'USD').toUpperCase();
@@ -24,9 +29,7 @@ function clean(obj) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    if (url.pathname !== '/device' && url.pathname !== '/device.html') {
-      return env.ASSETS.fetch(request);
-    }
+    if (url.pathname !== '/device' && url.pathname !== '/device.html') return env.ASSETS.fetch(request);
 
     const shellUrl = new URL('/device-shell.html', url.origin);
     const shell = await env.ASSETS.fetch(new Request(shellUrl.toString(), { method:'GET', headers:request.headers }));
@@ -48,7 +51,7 @@ export default {
       const ogImage = imageUrl(firstImage);
 
       const condition = listing.condition === 'new' ? 'New' : 'Used';
-      const location = [listing.city, listing.country_code].filter(Boolean).join(', ');
+      const location = [listing.city, countryName(listing.country_code)].filter(Boolean).join(', ');
       const formattedPrice = money(listing.price_amount, listing.price_currency);
       const title = `${listing.title}${listing.storage ? ` ${listing.storage}` : ''} ${condition} — ${formattedPrice}${location ? ` in ${location}` : ''} | DigitalDeviceHub`;
       const description = `${condition} ${listing.title}${listing.storage ? ` ${listing.storage}` : ''} listed on DigitalDeviceHub${location ? ` in ${location}` : ''}. Seller asking price: ${formattedPrice}. View structured device details, seller context and delivery scope.`;
@@ -70,7 +73,8 @@ export default {
           price:String(listing.price_amount),
           priceCurrency:listing.price_currency,
           availability:'https://schema.org/InStock',
-          url:canonical
+          url:canonical,
+          areaServed:countryName(listing.country_code)||undefined
         }
       });
       const breadcrumbSchema = {
