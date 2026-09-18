@@ -1,13 +1,4 @@
-const demoListings = [
-  {id:1,category:'Phones',name:'iPhone 15 Pro',condition:'Used',storage:'256 GB',price:620000,currency:'NGN',seller:'Metro Devices',verified:true,icon:'▯',source:'demo'},
-  {id:2,category:'Phones',name:'Galaxy S24 Ultra',condition:'Used',storage:'256 GB',price:540000,currency:'NGN',seller:'Prime Mobile',verified:true,icon:'▯',source:'demo'},
-  {id:3,category:'Laptops',name:'MacBook Air M2',condition:'Used',storage:'512 GB',price:870000,currency:'NGN',seller:'Tech Corner',verified:false,icon:'▱',source:'demo'},
-  {id:4,category:'Laptops',name:'ThinkPad X1 Carbon',condition:'Used',storage:'1 TB',price:690000,currency:'NGN',seller:'Workstation Hub',verified:true,icon:'▱',source:'demo'},
-  {id:5,category:'Tablets',name:'iPad Air 5',condition:'Used',storage:'256 GB',price:485000,currency:'NGN',seller:'Metro Devices',verified:true,icon:'▭',source:'demo'},
-  {id:6,category:'Accessories',name:'USB-C 100W Charger',condition:'New',storage:'GaN',price:32000,currency:'NGN',seller:'Accessory Point',verified:false,icon:'⌁',source:'demo'},
-  {id:7,category:'Phones',name:'Pixel 9 Pro',condition:'New',storage:'256 GB',price:710000,currency:'NGN',seller:'Prime Mobile',verified:true,icon:'▯',source:'demo'},
-  {id:8,category:'Tablets',name:'Galaxy Tab S9',condition:'Used',storage:'128 GB',price:395000,currency:'NGN',seller:'Device Loft',verified:false,icon:'▭',source:'demo'}
-];
+const demoListings = [];
 
 const cfg = window.DDH_CONFIG || {};
 const supabaseUrl = String(cfg.supabaseUrl || '').replace(/\/$/, '');
@@ -191,14 +182,14 @@ function render(){
         <div class="seller">${escapeHtml(x.seller || 'Seller')} ${x.verified ? '<span class="verified">✓ Verified</span>' : ''}</div>
       </div>
     </article>`).join('');
-  empty.textContent = backendReady ? 'No published devices match this search yet.' : 'No matching preview devices yet.';
+  empty.textContent = backendReady ? 'No published devices match this search yet.' : 'We are onboarding our first sellers. List a device and help build the marketplace.';
   empty.hidden = filtered.length !== 0;
   window.DDH_LOCALIZATION?.refresh?.();
 }
 
 async function loadListings(){
   if(!backendReady){
-    listings = [...demoListings];
+    listings = [];
     render();
     return;
   }
@@ -208,7 +199,7 @@ async function loadListings(){
     let sellers = new Map();
     if(sellerIds.length){
       const inList = sellerIds.map(id=>`\"${id}\"`).join(',');
-      const profiles = await apiFetch(`/rest/v1/profiles?select=id,display_name&id=in.(${encodeURIComponent(inList)})`).catch(()=>[]);
+      const profiles = await apiFetch(`/rest/v1/public_profiles?select=id,display_name&id=in.(${encodeURIComponent(inList)})`).catch(()=>[]);
       sellers = new Map((profiles || []).map(p=>[p.id,p.display_name]));
     }
 
