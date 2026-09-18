@@ -1,33 +1,34 @@
 # DigitalDeviceHub
 
-Zero-cost validation MVP for **digitaldevicehub.com**.
+DigitalDeviceHub is a **worldwide device marketplace** for New and Used phones, laptops, tablets, accessories and wearables.
+
+The product is designed around structured device information, seller-entered prices in their own currencies, buyer-facing local-currency estimates, country-aware discovery, and local/domestic/international delivery scopes. No single country or currency is treated as the marketplace's business identity or base market.
 
 ## Stack
 
 - Static HTML/CSS/JavaScript frontend at the repository root
-- Cloudflare Pages Free for deployment
+- Cloudflare Pages / Workers Free for deployment
 - Cloudflare DNS, SSL and DNSSEC
-- Supabase Free backend schema under `supabase/`
+- Supabase Free backend for authentication, database, storage, marketplace messaging, moderation and server-side marketplace services
 
-## Cloudflare Pages deployment
+## Global marketplace principles
 
-Connect this repository to Cloudflare Pages and use:
+- Listings require an ISO country/region code.
+- Sellers set the authoritative asking price in their chosen ISO 4217 currency.
+- Buyers may see a local-currency estimate based on detected locale and cached FX data.
+- Marketplace filters support country/region and city/locality.
+- Sellers can specify local pickup, domestic shipping, international shipping, or a combination.
+- Legal, privacy, safety and transaction disclosures are written for international use and defer to applicable local law.
 
-- Framework preset: **None**
-- Build command: **leave blank**
-- Build output directory: **/** (repository root)
+## Cloudflare deployment
 
-Then add these custom domains in the Pages project:
+Connect this repository to Cloudflare and serve the repository root as the static asset directory. Custom domains:
 
 - `digitaldevicehub.com`
 - `www.digitaldevicehub.com`
 
-No paid hosting or build service is required for this static MVP.
-
 ## Backend
 
-The prepared Supabase migration is in:
+Supabase migrations define marketplace tables, Row Level Security, product-image storage policies, seller tools, moderation, analytics, multi-currency pricing, localization and global marketplace fields.
 
-`supabase/migrations/001_mvp_schema.sql`
-
-It includes marketplace tables, Row Level Security, product-image storage policies, and realtime messaging preparation. Payment processing is deliberately disabled until a compliant payment provider is integrated.
+Payment, escrow and logistics protections must only be represented as available when a compliant provider and complete transaction workflow exist for the relevant market.
