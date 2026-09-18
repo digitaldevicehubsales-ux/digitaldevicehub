@@ -1,6 +1,11 @@
 (() => {
   'use strict';
   function setup(){
+    const main=document.querySelector('main');
+    if(main&&!main.id)main.id='main-content';
+    if(main&&!document.querySelector('.skip-link')){const skip=document.createElement('a');skip.className='skip-link';skip.href='#'+main.id;skip.textContent='Skip to main content';document.body.prepend(skip)}
+    const footer=document.querySelector('footer');
+    if(footer&&!footer.querySelector('a[href="/about.html"]')){const box=document.createElement('div');box.className='footer-company-links';box.innerHTML='<a href="/about.html">About</a><a href="/contact.html">Contact</a>';footer.querySelector('.container,.shell,.footer-inner')?.append(box)}
     const header=document.querySelector('.global-header, .site-header');
     if(!header||header.querySelector('.mobile-menu-toggle'))return;
     const nav=header.querySelector('.global-nav, .desktop-nav');
@@ -25,10 +30,10 @@
     panel.innerHTML=links.filter((x,i,a)=>x.href&&a.findIndex(y=>y.href===x.href)===i).map(x=>`<a href="${x.href}">${x.label}</a>`).join('');
     header.append(toggle,panel);
 
-    const close=()=>{toggle.setAttribute('aria-expanded','false');panel.hidden=true;document.body.classList.remove('mobile-menu-open')};
+    const close=()=>{toggle.setAttribute('aria-expanded','false');panel.hidden=true;toggle.setAttribute('aria-label','Open navigation');document.body.classList.remove('mobile-menu-open')};
     toggle.addEventListener('click',()=>{
       const open=toggle.getAttribute('aria-expanded')==='true';
-      if(open) close(); else {toggle.setAttribute('aria-expanded','true');panel.hidden=false;document.body.classList.add('mobile-menu-open')}
+      if(open) close(); else {toggle.setAttribute('aria-expanded','true');toggle.setAttribute('aria-label','Close navigation');panel.hidden=false;document.body.classList.add('mobile-menu-open');panel.querySelector('a')?.focus()}
     });
     panel.addEventListener('click',e=>{if(e.target.closest('a'))close()});
     document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
