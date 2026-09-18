@@ -1,12 +1,10 @@
-const demoListings = [];
-
 const cfg = window.DDH_CONFIG || {};
 const supabaseUrl = String(cfg.supabaseUrl || '').replace(/\/$/, '');
 const supabaseKey = String(cfg.supabasePublishableKey || '');
 const backendReady = /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(supabaseUrl) && supabaseKey.length > 20;
 const SESSION_KEY = 'ddh_supabase_session';
 
-let listings = backendReady ? [] : [...demoListings];
+let listings = [];
 let activeCategory = 'all';
 let session = null;
 let pendingOtpEmail = '';
@@ -182,7 +180,7 @@ function render(){
         <div class="seller">${escapeHtml(x.seller || 'Seller')} ${x.verified ? '<span class="verified">✓ Verified</span>' : ''}</div>
       </div>
     </article>`).join('');
-  empty.textContent = backendReady ? 'No published devices match this search yet.' : 'We are onboarding our first sellers. List a device and help build the marketplace.';
+  empty.textContent = 'No published devices match this search yet. If the marketplace is empty, we are onboarding new sellers now.';
   empty.hidden = filtered.length !== 0;
   window.DDH_LOCALIZATION?.refresh?.();
 }
