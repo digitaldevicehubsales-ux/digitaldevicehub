@@ -16,7 +16,8 @@ export default {
 
     const id = url.searchParams.get('id');
     const assetUrl = new URL('/device.html', url.origin);
-    const assetResponse = await env.ASSETS.fetch(new Request(assetUrl, request));
+    const assetRequest = new Request(assetUrl.toString(), { method: 'GET', headers: request.headers });
+    const assetResponse = await env.ASSETS.fetch(assetRequest);
     if (!id || !/^[0-9a-f-]{36}$/i.test(id) || !assetResponse.ok) return assetResponse;
 
     try {
