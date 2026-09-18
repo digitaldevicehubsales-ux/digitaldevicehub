@@ -1,0 +1,5 @@
+Contact: mailto:digitaldevicehubsales@gmail.com
+Canonical: https://digitaldevicehub.com/.well-known/security.txt
+Policy: https://digitaldevicehub.com/trust.html
+Preferred-Languages: en
+Expires: 2027-09-17T23:59:59Z
