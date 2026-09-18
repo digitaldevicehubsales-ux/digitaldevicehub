@@ -40,6 +40,25 @@
   function restore(){try{const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||'null');if(!d)return;for(const [k,v] of Object.entries(d)){const el=form.elements[k];if(el&&typeof v==='string')el.value=v}}catch{}}
   function review(){const d=Object.fromEntries([...new FormData(form).entries()].filter(([,v])=>!(v instanceof File)));const cur=validCurrency(d.currency)||'USD';const amount=Number(d.price||0);let asking=`${cur} ${Number.isFinite(amount)?amount.toLocaleString():''}`;try{asking=new Intl.NumberFormat(undefined,{style:'currency',currency:cur,maximumFractionDigits:4}).format(amount)}catch{}document.querySelector('#reviewBox').innerHTML=`<strong>${d.brand||''} ${d.model||''}</strong><p class="review-muted">${d.condition==='new'?'New':'Used'} · ${d.storage||'Storage not specified'} · ${d.city||'Location not specified'}</p><div class="price-confirmation"><span>You are asking</span><strong>${asking}</strong><small>Confirm the currency before submitting. Buyers may see a local-currency estimate, but this remains your official asking price.</small></div>`}
   async function api(path,{method='GET',body,raw=false,contentType,headers:extraHeaders={}}={}){const s=session();if(!s?.access_token)throw new Error('Please sign in first.');const headers={apikey:key,Authorization:`Bearer ${s.access_token}`,...extraHeaders};if(body!==undefined&&!raw)headers['Content-Type']='application/json';if(contentType)headers['Content-Type']=contentType;const r=await fetch(`${base}${path}`,{method,headers,body:body===undefined?undefined:(raw?body:JSON.stringify(body))});const text=await r.text();let data=null;try{data=text?JSON.parse(text):null}catch{}if(!r.ok)throw new Error(data?.message||data?.error||`Request failed (${r.status})`);return data}
+  async function resizeImage(file,maxWidth,quality=.82){
+    let bitmap;
+    try{bitmap=await createImageBitmap(file,{imageOrientation:'from-image'})}
+    catch{bitmap=await createImageBitmap(file)}
+    const scale=Math.min(1,maxWidth/bitmap.width);
+    const width=Math.max(1,Math.round(bitmap.width*scale));
+    const height=Math.max(1,Math.round(bitmap.height*scale));
+    const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+    const ctx=canvas.getContext('2d',{alpha:false});ctx.drawImage(bitmap,0,0,width,height);bitmap.close?.();
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',quality));
+    if(!blob)throw new Error('This photo could not be processed. Try another image.');
+    return {blob,width,height};
+  }
+  async function uploadProcessed(blob,path){
+    await api(`/storage/v1/object/listing-images/${path.split('/').map(encodeURIComponent).join('/')}`,{
+      method:'POST',body:blob,raw:true,contentType:'image/webp',
+      headers:{'cache-control':'max-age=31536000'}
+    });
+  }
   async function uploadFiles(files,listingId,userId){
     const chosen=[...files].filter(f=>f instanceof File&&f.size);
     if(!chosen.length)throw new Error('Add at least one real product photo.');
@@ -47,11 +66,25 @@
     for(let i=0;i<chosen.length;i++){
       const file=chosen[i];
       if(file.size>5*1024*1024)throw new Error(`Photo ${i+1} must be 5 MB or smaller.`);
-      const ext=({'image/jpeg':'jpg','image/png':'png','image/webp':'webp'})[file.type];
-      if(!ext)throw new Error('Use JPEG, PNG or WebP photos only.');
-      const path=`${userId}/${listingId}/${crypto.randomUUID()}.${ext}`;
-      await api(`/storage/v1/object/listing-images/${path.split('/').map(encodeURIComponent).join('/')}`,{method:'POST',body:file,raw:true,contentType:file.type});
-      await api('/rest/v1/listing_images',{method:'POST',body:{listing_id:listingId,storage_path:path,sort_order:i}});
+      if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw new Error('Use JPEG, PNG or WebP photos only.');
+      const root=`${userId}/${listingId}/${crypto.randomUUID()}`;
+      const [thumb,card,detail]=await Promise.all([
+        resizeImage(file,480,.78),resizeImage(file,900,.82),resizeImage(file,1600,.86)
+      ]);
+      const thumbPath=`${root}-480.webp`,cardPath=`${root}-900.webp`,detailPath=`${root}-1600.webp`;
+      await Promise.all([
+        uploadProcessed(thumb.blob,thumbPath),
+        uploadProcessed(card.blob,cardPath),
+        uploadProcessed(detail.blob,detailPath)
+      ]);
+      await api('/rest/v1/listing_images',{method:'POST',body:{
+        listing_id:listingId,
+        storage_path:detailPath,
+        sort_order:i,
+        width:detail.width,
+        height:detail.height,
+        variants:{thumb:thumbPath,card:cardPath,detail:detailPath}
+      }});
     }
   }
   async function submitListing(e){e.preventDefault();if(!validateCurrent())return;const s=session();if(!s?.user?.id){authGate.hidden=false;form.hidden=true;return}const fd=new FormData(form);const price=Number(fd.get('price'));const cur=validCurrency(fd.get('currency'));if(!Number.isFinite(price)||price<=0||!cur)return toast('Enter a valid price and currency.');const brand=String(fd.get('brand')||'').trim(),model=String(fd.get('model')||'').trim();const country=String(fd.get('country_code')||'').trim().toUpperCase();const payload={seller_id:s.user.id,title:`${brand} ${model}`.trim(),category:String(fd.get('category')),brand,model,condition:String(fd.get('condition')),price_amount:Math.round(price*10000)/10000,price_currency:cur,storage:String(fd.get('storage')||'').trim()||null,color:String(fd.get('color')||'').trim()||null,city:String(fd.get('city')||'').trim()||null,country_code:/^[A-Z]{2}$/.test(country)?country:null,delivery_mode:String(fd.get('delivery_mode')||'pickup'),warranty_text:String(fd.get('warranty_text')||'').trim()||null,description:String(fd.get('description')||'').trim(),specs:{battery_health:String(fd.get('battery_health')||'').trim()||null,network_status:String(fd.get('network_status')||'').trim()||null,repair_history:String(fd.get('repair_history')||'').trim()||null,accessories:String(fd.get('accessories')||'').trim()||null},status:'pending'};submit.disabled=true;submit.textContent='Submitting…';try{const created=await api('/rest/v1/listings',{method:'POST',body:payload});let row=Array.isArray(created)?created[0]:created;if(!row?.id){const find=await api(`/rest/v1/listings?select=id&seller_id=eq.${encodeURIComponent(s.user.id)}&title=eq.${encodeURIComponent(payload.title)}&order=created_at.desc&limit=1`);row=find?.[0]}if(!row?.id)throw new Error('Listing was created but could not be reopened.');await uploadFiles(fd.getAll('images'),row.id,s.user.id);localStorage.removeItem(DRAFT_KEY);await api(`/rest/v1/listing_drafts?user_id=eq.${encodeURIComponent(s.user.id)}`,{method:'DELETE'}).catch(()=>{});form.reset();toast('Listing submitted for review.');setTimeout(()=>location.assign('/dashboard.html'),900)}catch(err){toast(err.message)}finally{submit.disabled=false;submit.textContent='Submit for review'}}
