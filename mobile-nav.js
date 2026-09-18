@@ -1,11 +1,20 @@
 (() => {
   'use strict';
+  function loadLocalePicker(){
+    if(!document.querySelector('.locale-chip')||document.querySelector('script[data-locale-picker]'))return;
+    const script=document.createElement('script');
+    script.src='/locale-picker.js';
+    script.defer=true;
+    script.dataset.localePicker='true';
+    document.head.appendChild(script);
+  }
   function setup(){
     const main=document.querySelector('main');
     if(main&&!main.id)main.id='main-content';
     if(main&&!document.querySelector('.skip-link')){const skip=document.createElement('a');skip.className='skip-link';skip.href='#'+main.id;skip.textContent='Skip to main content';document.body.prepend(skip)}
     const footer=document.querySelector('footer');
     if(footer&&!footer.querySelector('a[href="/about.html"]')){const box=document.createElement('div');box.className='footer-company-links';box.innerHTML='<a href="/about.html">About</a><a href="/contact.html">Contact</a>';footer.querySelector('.container,.shell,.footer-inner')?.append(box)}
+    loadLocalePicker();
     const header=document.querySelector('.global-header, .site-header');
     if(!header||header.querySelector('.mobile-menu-toggle'))return;
     const nav=header.querySelector('.global-nav, .desktop-nav');
