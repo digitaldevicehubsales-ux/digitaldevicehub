@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0b0d12" />
-  <meta name="description" content="Manage DigitalDeviceHub listings, analytics, messages, saved searches, notifications and profile." />
+  <meta name="description" content="Manage worldwide DigitalDeviceHub listings, offers, analytics, messages, saved searches, notifications and profile." />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   
   
@@ -18,7 +18,7 @@
         <button class="nav-item active" data-view="overview">Overview</button>
         <button class="nav-item" data-view="listings">My Listings</button>
         <button class="nav-item" data-view="analytics">Analytics</button>
-        <button class="nav-item" data-view="messages">Messages</button>
+        <button class="nav-item" data-view="messages">Messages</button><button class="nav-item" data-view="offers">Offers</button>
         <button class="nav-item" data-view="favorites">Favorites</button>
         <button class="nav-item" data-view="profile">Profile & Settings</button>
       </nav>
@@ -53,18 +53,21 @@
 
       <section class="dash-view" data-panel="messages"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Conversations</p><h2>Messages</h2><p>Keep buyer and seller conversations tied to the relevant device.</p></div></div><div id="messageList" class="message-list"></div></article></section>
 
+      <section class="dash-view" data-panel="offers"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Marketplace negotiation</p><h2>Offers</h2><p>Review offers you received and track offers you sent. Offers do not process payment.</p></div></div><div id="offerList" class="offer-list"></div></article></section>
+
       <section class="dash-view" data-panel="favorites"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Saved devices</p><h2>Favorites</h2></div><a class="secondary-button" href="/marketplace.html">Browse devices</a></div><div id="favoriteList" class="favorite-grid"></div></article></section>
 
-      <section class="dash-view" data-panel="profile"><div class="two-column profile-layout"><article class="panel"><p class="eyebrow">Public profile</p><h2>Seller identity</h2><form id="profileForm" class="form-grid"><label>Display name<input name="display_name" maxlength="80" /></label><label>City<input name="city" maxlength="80" /></label><label>Account email<input id="profileEmail" disabled /></label><label>Local currency<input id="profileCurrency" disabled /></label><button class="primary-button" type="submit">Save profile</button></form></article><article class="panel"><p class="eyebrow">Account tools</p><h2>Useful shortcuts</h2><div class="settings-list"><a href="/sell.html">List a new device <span>→</span></a><button data-go="analytics">Review product performance <span>→</span></button><button data-go="messages">Open conversations <span>→</span></button><a href="/privacy.html">Privacy information <span>→</span></a></div></article></div></section>
+      <section class="dash-view" data-panel="profile"><div class="two-column profile-layout"><article class="panel"><p class="eyebrow">Public profile</p><h2>Seller identity</h2><form id="profileForm" class="form-grid"><label>Display name<input name="display_name" maxlength="80" /></label><label>City / locality<input name="city" maxlength="80" /></label><label>Country / region<select name="country_code" id="profileCountry"><option value="">Choose country / region</option></select></label><label>Account email<input id="profileEmail" disabled /></label><label>Local currency<input id="profileCurrency" disabled /></label><button class="primary-button" type="submit">Save profile</button></form></article><article class="panel"><p class="eyebrow">Account tools</p><h2>Useful shortcuts</h2><div class="settings-list"><a href="/sell.html">List a new device <span>→</span></a><button data-go="analytics">Review product performance <span>→</span></button><button data-go="messages">Open conversations <span>→</span></button><button data-go="offers">Review offers <span>→</span></button><a href="/privacy.html">Privacy information <span>→</span></a></div></article></div></section>
     </main>
   </div>
 
-  <nav class="mobile-nav" aria-label="Dashboard mobile navigation"><button class="active" data-view="overview">Home</button><button data-view="listings">Listings</button><button data-view="analytics">Analytics</button><button data-view="messages">Messages</button><button data-view="profile">Account</button></nav>
+  <nav class="mobile-nav" aria-label="Dashboard mobile navigation"><button class="active" data-view="overview">Home</button><button data-view="listings">Listings</button><button data-view="analytics">Analytics</button><button data-view="messages">Messages</button><button data-view="offers">Offers</button><button data-view="profile">Account</button></nav>
 
   <dialog id="dashboardDialog"><button class="dialog-close" aria-label="Close">×</button><div id="dashboardDialogContent"></div></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script src="/config.js"></script>
+  <script src="/countries.js"></script>
   <script src="/localization.js" defer></script>
   <script src="/dashboard.js" defer></script>
   <script src="/dashboard-engagement.js" defer></script>
