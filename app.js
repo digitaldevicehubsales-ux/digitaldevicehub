@@ -244,7 +244,7 @@ function openListing(id){
       <button class="button secondary" data-favorite="${escapeHtml(x.id)}">Save to favorites</button>
       <button class="button" data-message="${escapeHtml(x.id)}">Message seller</button>
     </div>` : '';
-  const previewNote = x.source === 'demo' ? '<p class="status-note">Preview listing — real marketplace data will replace these examples when the free backend project is connected.</p>' : '';
+  const previewNote = '';
   const imageMarkup = x.image_url ? `<img src="${escapeHtml(x.image_url)}" alt="${escapeHtml(x.name)}" style="width:100%;max-height:420px;object-fit:contain;border-radius:18px;background:#f3f5fa;margin:0 0 18px;" />` : '';
   showDialog(`<div class="dialog-product">${imageMarkup}<span class="eyebrow">${escapeHtml(x.category)} • ${escapeHtml(x.condition)}</span><h2>${escapeHtml(x.name)}</h2><p>${escapeHtml(x.storage || 'Details available')} • Listed by ${escapeHtml(x.seller || 'Seller')}${x.verified?' • Verified':''}</p>${priceMarkup(x)}${previewNote}${realActions}<button class="button secondary" data-dialog-close>Continue browsing</button></div>`);
   window.DDH_LOCALIZATION?.refresh?.();
