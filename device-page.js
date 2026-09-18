@@ -22,7 +22,7 @@
     if(!listing)return;
     const s=session();
     const country=String(window.DDH_LOCALIZATION?.state?.country||'').toUpperCase();
-    fetch(`${base}/rest/v1/listing_events`,{method:'POST',headers:{apikey:key,'Content-Type':'application/json',Prefer:'return=minimal',...(s?.access_token?{Authorization:`Bearer ${s.access_token}`}:{})},body:JSON.stringify({listing_id:listing.id,visitor_id:visitor(),user_id:s?.user?.id||null,event_type:'view',country_code:/^[A-Z]{2}$/.test(country)?country:null}),keepalive:true}).catch(()=>{});
+    fetch(`${base}/rest/v1/rpc/record_listing_event`,{method:'POST',headers:{apikey:key,'Content-Type':'application/json',Prefer:'return=minimal',...(s?.access_token?{Authorization:`Bearer ${s.access_token}`}:{})},body:JSON.stringify({p_listing_id:listing.id,p_visitor_id:visitor(),p_event_type:'view',p_country_code:/^[A-Z]{2}$/.test(country)?country:null}),keepalive:true}).catch(()=>{});
     if(s?.user?.id&&s.user.id!==listing.seller_id){
       fetch(`${base}/rest/v1/recently_viewed`,{method:'POST',headers:{apikey:key,Authorization:`Bearer ${s.access_token}`,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({user_id:s.user.id,listing_id:listing.id,viewed_at:new Date().toISOString()})}).catch(()=>{});
     }
