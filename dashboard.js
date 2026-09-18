@@ -23,8 +23,8 @@
   const esc = value => String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const titleCase = value => String(value || '').replace(/^./, c => c.toUpperCase());
   const validCurrency = value => /^[A-Z]{3}$/.test(String(value || '').toUpperCase()) ? String(value).toUpperCase() : '';
-  const money = (amount,currency='NGN') => {
-    const code = validCurrency(currency) || 'NGN';
+  const money = (amount,currency='USD') => {
+    const code = validCurrency(currency) || 'USD';
     try{return new Intl.NumberFormat(undefined,{style:'currency',currency:code,maximumFractionDigits:4}).format(Number(amount)||0)}
     catch{return `${code} ${Number(amount||0).toLocaleString()}`}
   };
@@ -164,7 +164,7 @@
   function renderProfile(){
     const form=document.querySelector('#profileForm');form.elements.display_name.value=profile?.display_name||'';form.elements.city.value=profile?.city||'';
     document.querySelector('#profileEmail').value=session?.user?.email||'';
-    document.querySelector('#profileCurrency').value=profile?.currency_code||window.DDH_LOCALIZATION?.state?.currency||'NGN';
+    document.querySelector('#profileCurrency').value=profile?.currency_code||window.DDH_LOCALIZATION?.state?.currency||'USD';
   }
 
   function renderAll(){renderKpis();renderOverview();renderListings();renderAnalytics();renderMessages();renderFavorites();renderProfile()}
@@ -192,7 +192,7 @@
     const identityChanged=category!==original.category||brand!==original.brand||model!==original.model;
     let nextStatus=original.status;
     if(original.status==='rejected'||(original.status==='published'&&identityChanged))nextStatus='pending';
-    const payload={category,brand,model,title:`${brand} ${model}`.trim(),condition:String(form.get('condition')),storage:String(form.get('storage')).trim()||null,city:String(form.get('city')).trim()||null,description:String(form.get('description')).trim(),price_amount:Math.round(price*10000)/10000,price_currency:currency,price_ngn:currency==='NGN'?Math.round(price):null,status:nextStatus};
+    const payload={category,brand,model,title:`${brand} ${model}`.trim(),condition:String(form.get('condition')),storage:String(form.get('storage')).trim()||null,city:String(form.get('city')).trim()||null,description:String(form.get('description')).trim(),price_amount:Math.round(price*10000)/10000,price_currency:currency,status:nextStatus};
     try{await apiFetch(`/rest/v1/listings?id=eq.${encodeURIComponent(original.id)}`,{method:'PATCH',body:payload,headers:{Prefer:'return=minimal'}});dialog.close();notify(nextStatus==='pending'&&original.status==='published'?'Changes saved and sent for review.':'Listing updated.');await loadData();}
     catch(err){notify(err.message)}
   }
@@ -213,7 +213,7 @@
     const uid=session.user.id;
     const [profileRows,listingRows,statRows,trendRows,conversationRows,messageRows,favoriteRows]=await Promise.all([
       apiFetch(`/rest/v1/profiles?select=id,display_name,city,country_code,currency_code&id=eq.${encodeURIComponent(uid)}&limit=1`).catch(()=>[]),
-      apiFetch(`/rest/v1/listings?select=id,title,category,brand,model,condition,price_amount,price_currency,price_ngn,description,storage,city,status,created_at,updated_at,paused_at,sold_at&seller_id=eq.${encodeURIComponent(uid)}&order=created_at.desc`).catch(()=>[]),
+      apiFetch(`/rest/v1/listings?select=id,title,category,brand,model,condition,price_amount,price_currency,description,storage,city,status,created_at,updated_at,paused_at,sold_at&seller_id=eq.${encodeURIComponent(uid)}&order=created_at.desc`).catch(()=>[]),
       rpc('get_my_listing_stats').catch(()=>[]),
       rpc('get_my_listing_trend',{p_days:Number(document.querySelector('#analyticsRange').value||30)}).catch(()=>[]),
       apiFetch(`/rest/v1/conversations?select=id,listing_id,buyer_id,seller_id,created_at&or=(buyer_id.eq.${uid},seller_id.eq.${uid})&order=created_at.desc`).catch(()=>[]),
