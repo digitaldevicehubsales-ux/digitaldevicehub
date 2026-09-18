@@ -49,10 +49,10 @@
     }
     const show=index=>{
       const img=images[index];
-      main.innerHTML=`<img src="${esc(publicImage(img.storage_path))}" alt="${esc(listing.title)} photo ${index+1}" width="1200" height="900">`;
+      main.innerHTML=`<img src="${esc(publicImage(img.variants?.detail||img.storage_path))}" alt="${esc(listing.title)} photo ${index+1}" width="1200" height="900">`;
       [...thumbs.querySelectorAll('button')].forEach((b,i)=>b.classList.toggle('active',i===index));
     };
-    thumbs.innerHTML=images.map((img,i)=>`<button type="button" aria-label="View photo ${i+1}"><img src="${esc(publicImage(img.storage_path))}" alt="" loading="lazy" width="120" height="90"></button>`).join('');
+    thumbs.innerHTML=images.map((img,i)=>`<button type="button" aria-label="View photo ${i+1}"><img src="${esc(publicImage(img.variants?.thumb||img.storage_path))}" alt="" loading="lazy" width="120" height="90"></button>`).join('');
     [...thumbs.querySelectorAll('button')].forEach((b,i)=>b.onclick=()=>show(i));
     show(0);
   }
@@ -71,7 +71,7 @@
       await window.DDH_LOCALIZATION?.ready;
       const rows=await get(`/rest/v1/listings?select=id,seller_id,title,category,brand,model,condition,price_amount,price_currency,description,storage,color,city,country_code,delivery_mode,warranty_text,specs,created_at&status=eq.published&id=eq.${encodeURIComponent(id)}&limit=1`);
       listing=rows?.[0]; if(!listing)throw new Error('This listing is no longer available.');
-      images=await get(`/rest/v1/listing_images?select=storage_path,sort_order&listing_id=eq.${encodeURIComponent(id)}&order=sort_order.asc`).catch(()=>[]);
+      images=await get(`/rest/v1/listing_images?select=storage_path,variants,sort_order&listing_id=eq.${encodeURIComponent(id)}&order=sort_order.asc`).catch(()=>[]);
       const profiles=await get(`/rest/v1/public_profiles?select=id,display_name,created_at,verification_tier,rating_avg,rating_count,sales_count,response_rate,response_time_mins&id=eq.${encodeURIComponent(listing.seller_id)}&limit=1`).catch(()=>[]);
       seller=profiles?.[0]||null;
       document.title=`${listing.title} — DigitalDeviceHub`;const canonical=`${location.origin}/device.html?id=${encodeURIComponent(listing.id)}`;let canonicalEl=document.querySelector('link[rel="canonical"]');if(!canonicalEl){canonicalEl=document.createElement('link');canonicalEl.rel='canonical';document.head.appendChild(canonicalEl)}canonicalEl.href=canonical;const meta=(name,value,prop=false)=>{let el=document.head.querySelector(`meta[${prop?'property':'name'}="${name}"]`);if(!el){el=document.createElement('meta');el.setAttribute(prop?'property':'name',name);document.head.appendChild(el)}el.content=value};meta('og:title',document.title,true);meta('og:url',canonical,true);meta('og:type','product',true);
