@@ -164,6 +164,13 @@ function priceMarkup(x){
 function render(){
   const q = search.value.trim().toLowerCase();
   const cond = condition.value;
+  if(listings.length < 12){
+    grid.innerHTML='';
+    empty.innerHTML='<strong>The worldwide marketplace is growing.</strong><br>We are onboarding the first wave of real sellers. Browse the full marketplace or list a device from your country.';
+    empty.hidden=false;
+    window.DDH_LOCALIZATION?.refresh?.();
+    return;
+  }
   const filtered = listings.filter(x =>
     (activeCategory === 'all' || x.category === activeCategory) &&
     (cond === 'all' || x.condition === cond) &&
