@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0c0f14"><meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/site-v2.css"><link rel="stylesheet" href="/admin.css">
+<title>Moderation — DigitalDeviceHub</title>
+</head><body>
+<header class="global-header">
+<a class="global-brand" href="/"><span class="global-brand-mark">D</span><span>DigitalDeviceHub</span></a>
+<nav class="global-nav"><a href="/marketplace.html">Marketplace</a><a href="/dashboard.html">Dashboard</a></nav>
+<div class="global-actions"><a class="btn secondary small" href="/dashboard.html">Account</a></div>
+</header>
+<main class="container admin-shell">
+<section class="page-hero admin-hero"><span class="eyebrow">Internal moderation</span><h1>Review marketplace activity.</h1><p>Approve or reject pending listings and review safety reports. Every decision is written to the moderation audit log.</p></section>
+<div id="adminGate" class="empty-box" hidden>Administrator access is required. Sign out and sign in again if your admin role was just added.</div>
+<section id="adminApp" hidden>
+<div class="admin-kpis" id="adminKpis"></div>
+<section class="admin-section"><div class="admin-heading"><div><span class="eyebrow">Listing queue</span><h2>Pending review</h2></div><button class="btn secondary small" id="refreshAdmin">Refresh</button></div><div id="moderationQueue" class="admin-list"></div></section>
+<section class="admin-section"><div class="admin-heading"><div><span class="eyebrow">Safety</span><h2>Open reports</h2></div></div><div id="reportQueue" class="admin-list"></div></section>
+</section>
+</main>
+<div class="toast" id="toast"></div>
+<script src="/config.js"></script><script src="/admin.js" defer></script><script src="/mobile-nav.js" defer></script>
+</body></html>
