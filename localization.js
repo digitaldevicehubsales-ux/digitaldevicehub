@@ -104,16 +104,21 @@
     }
 
     try {
-      const response = await fetch(`https://open.er-api.com/v6/latest/${encodeURIComponent(targetCurrency)}`, {
+      const runtimeCfg = window.DDH_CONFIG || {};
+      const root = String(runtimeCfg.supabaseUrl || '').replace(/\/$/, '');
+      const publishableKey = String(runtimeCfg.supabasePublishableKey || '');
+      if (!root || !publishableKey) throw new Error('FX service unavailable');
+      const response = await fetch(`${root}/functions/v1/fx-rates?currency=${encodeURIComponent(targetCurrency)}`, {
         cache: 'no-store',
-        credentials: 'omit'
+        credentials: 'omit',
+        headers: { apikey: publishableKey }
       });
       if (!response.ok) throw new Error('FX service unavailable');
       const data = await response.json();
-      if (data?.result !== 'success' || !data?.rates) throw new Error('Invalid FX response');
-      const payload = { base: targetCurrency, ts: Date.now(), rates: data.rates };
+      if (!data?.rates) throw new Error('Invalid FX response');
+      const payload = { base: targetCurrency, ts: Date.now(), rates: data.rates, source: data.source || 'DigitalDeviceHub FX', as_of: data.as_of || null };
       writeJson(FX_KEY, payload);
-      return { rates: data.rates, ts: payload.ts };
+      return { rates: data.rates, ts: payload.ts, source: payload.source, as_of: payload.as_of };
     } catch (error) {
       if (cached?.base === targetCurrency && cached?.rates) {
         return { rates: cached.rates, ts: Number(cached.ts) || 0 };
