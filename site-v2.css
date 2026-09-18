@@ -124,3 +124,9 @@ footer a{min-height:44px;display:inline-flex;align-items:center}
   .offer-row{grid-template-columns:1fr}
   .mobile-nav{grid-template-columns:repeat(6,minmax(58px,1fr));overflow-x:auto}
 }
+
+.card-compare{position:absolute;top:64px;right:12px;z-index:3;min-height:36px;border:1px solid rgba(12,15,20,.12);background:rgba(255,255,255,.94);border-radius:999px;padding:0 10px;font-size:11px;font-weight:800;cursor:pointer}
+.card-compare.selected{background:#0c0f14;color:#fff}
+.compare-tray{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:85;background:#fff;border:1px solid var(--line);box-shadow:0 18px 55px rgba(14,18,28,.18);border-radius:18px;padding:10px 12px;display:flex;align-items:center;gap:10px}
+.compare-tray[hidden]{display:none}
+.compare-tray span{font-size:12px;font-weight:800}
