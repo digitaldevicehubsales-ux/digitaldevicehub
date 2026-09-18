@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const DEFAULT_COUNTRY = 'NG';
-  const DEFAULT_CURRENCY = 'NGN';
+  const DEFAULT_COUNTRY = 'US';
+  const DEFAULT_CURRENCY = 'USD';
   const LOCALIZATION_KEY = 'ddh_localization_v2';
   const FX_KEY = 'ddh_fx_target_v2';
   const SESSION_KEY = 'ddh_supabase_session';
@@ -28,9 +28,11 @@
   const state = {
     country: DEFAULT_COUNTRY,
     currency: DEFAULT_CURRENCY,
-    rates: { NGN: 1 },
+    rates: { USD: 1 },
     detectedAt: 0,
-    fxAt: 0
+    fxAt: 0,
+    fxSource: '',
+    fxAsOf: ''
   };
 
   let lastPersistSignature = '';
@@ -100,7 +102,7 @@
     const cached = readJson(FX_KEY);
     const cacheFresh = cached && cached.base === targetCurrency && Date.now() - Number(cached.ts || 0) < FX_TTL;
     if (cacheFresh && cached.rates && typeof cached.rates === 'object') {
-      return { rates: cached.rates, ts: Number(cached.ts) || Date.now() };
+      return { rates: cached.rates, ts: Number(cached.ts) || Date.now(), source: cached.source || 'DigitalDeviceHub FX', as_of: cached.as_of || null };
     }
 
     try {
@@ -121,7 +123,7 @@
       return { rates: data.rates, ts: payload.ts, source: payload.source, as_of: payload.as_of };
     } catch (error) {
       if (cached?.base === targetCurrency && cached?.rates) {
-        return { rates: cached.rates, ts: Number(cached.ts) || 0 };
+        return { rates: cached.rates, ts: Number(cached.ts) || 0, source: cached.source || 'DigitalDeviceHub FX', as_of: cached.as_of || null };
       }
       throw error;
     }
@@ -196,9 +198,13 @@
 
       element.textContent = displayText;
       element.dataset.currencySignature = signature;
+      const convertedLine = element.closest('.converted-line');
+      if (convertedLine) convertedLine.hidden = !display.converted;
       element.setAttribute('aria-label', display.converted ? `${displayText}; seller price ${originalText}` : displayText);
-      if (display.converted) element.title = `Seller price: ${originalText}`;
-      else element.removeAttribute('title');
+      if (display.converted) {
+        const asOf = state.fxAsOf ? ` · rate as of ${new Date(state.fxAsOf).toLocaleString()}` : '';
+        element.title = `Seller price: ${originalText}${asOf}`;
+      } else element.removeAttribute('title');
     }
   }
 
@@ -279,9 +285,13 @@
       const fx = await getFxRates(currency);
       state.rates = fx.rates || { [currency]: 1 };
       state.fxAt = fx.ts || Date.now();
+      state.fxSource = fx.source || 'DigitalDeviceHub FX';
+      state.fxAsOf = fx.as_of || '';
     } catch {
       state.rates = { [currency]: 1 };
       state.fxAt = Date.now();
+      state.fxSource = '';
+      state.fxAsOf = '';
     }
 
     writeJson(LOCALIZATION_KEY, {
