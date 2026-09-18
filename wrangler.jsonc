@@ -1,7 +1,10 @@
 {
   "name": "digitaldevicehub",
-  "compatibility_date": "2026-09-13",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-18",
   "assets": {
-    "directory": "."
+    "directory": ".",
+    "binding": "ASSETS",
+    "run_worker_first": ["/device", "/device.html"]
   }
 }
