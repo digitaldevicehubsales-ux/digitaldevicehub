@@ -12,14 +12,15 @@
 <div class="global-actions"><a class="btn secondary small" href="/dashboard.html">Account</a></div>
 </header>
 <main class="container admin-shell">
-<section class="page-hero admin-hero"><span class="eyebrow">Internal moderation</span><h1>Review marketplace activity.</h1><p>Approve or reject pending listings and review safety reports. Every decision is written to the moderation audit log.</p></section>
-<div id="adminGate" class="empty-box" hidden>Administrator access is required. Sign out and sign in again if your admin role was just added.</div>
+<section class="page-hero admin-hero"><span class="eyebrow">Internal moderation</span><h1>Review marketplace activity.</h1><p>Approve or reject listings, investigate safety reports and manage account access. Every decision is written to the moderation audit log.</p></section>
+<div id="adminGate" class="empty-box" hidden>Administrator access is required.</div>
 <section id="adminApp" hidden>
 <div class="admin-kpis" id="adminKpis"></div>
-<section class="admin-section"><div class="admin-heading"><div><span class="eyebrow">Listing queue</span><h2>Pending review</h2></div><button class="btn secondary small" id="refreshAdmin">Refresh</button></div><div id="moderationQueue" class="admin-list"></div></section>
+<section class="admin-section"><div class="admin-heading"><div><span class="eyebrow">Listing queue</span><h2>Pending review</h2></div><button class="btn secondary small" id="refreshAdmin">Refresh</button></div><div class="admin-bulk"><label><input type="checkbox" id="selectAllListings"> Select all visible</label><input class="control" id="bulkNote" placeholder="Bulk review note / rejection reason"><button class="btn blue small" data-bulk="published">Approve selected</button><button class="btn secondary small" data-bulk="rejected">Reject selected</button></div><div id="moderationQueue" class="admin-list"></div></section>
 <section class="admin-section"><div class="admin-heading"><div><span class="eyebrow">Safety</span><h2>Open reports</h2></div></div><div id="reportQueue" class="admin-list"></div></section>
+<section class="admin-section"><div class="admin-heading"><div><span class="eyebrow">Accounts</span><h2>User search & access</h2></div></div><form id="userSearchForm" class="admin-search"><input class="control" id="userSearch" placeholder="Search display name, city or exact user ID"><button class="btn secondary" type="submit">Search</button></form><p class="admin-help">Suspending an account blocks new marketplace activity and removes active listings from public results. Reinstatement does not automatically republish listings.</p><div id="userResults" class="admin-list"></div></section>
 </section>
 </main>
 <div class="toast" id="toast"></div>
-<script src="/config.js"></script><script src="/admin.js" defer></script><script src="/mobile-nav.js" defer></script>
+<script src="/config.js"></script><script src="/admin-v2.js" defer></script><script src="/mobile-nav.js" defer></script>
 </body></html>
