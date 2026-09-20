@@ -16,8 +16,6 @@ const condition = document.querySelector('#conditionFilter');
 const dialog = document.querySelector('#dialog');
 const dialogContent = document.querySelector('#dialogContent');
 const signInButton = document.querySelector('[data-action="signin"]');
-const sellForm = document.querySelector('#sellForm');
-const sellerCurrency = document.querySelector('#sellerCurrency');
 
 const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const titleCase = value => String(value || '').replace(/^./, c => c.toUpperCase());
@@ -29,42 +27,15 @@ const publicListingImageUrl = path => {
   return `${supabaseUrl}/storage/v1/object/public/listing-images/${encodedPath}`;
 };
 
-function money(amount,currency='USD'){
-  const code = validCurrency(currency) || 'USD';
+function money(amount,currency){
   const value = Number(amount) || 0;
+  const code = validCurrency(currency);
+  if(!code) return value.toLocaleString();
   try{
     return new Intl.NumberFormat(undefined,{style:'currency',currency:code,maximumFractionDigits:4}).format(value);
   }catch{
     return `${code} ${value.toLocaleString()}`;
   }
-}
-
-function supportedCurrencyCodes(){
-  try{
-    if(typeof Intl.supportedValuesOf === 'function') return Intl.supportedValuesOf('currency');
-  }catch{}
-  return ['AED','AUD','BRL','CAD','CHF','CNY','DKK','EGP','EUR','GBP','GHS','HKD','IDR','INR','JPY','KES','KRW','KWD','MAD','MXN','MYR','NGN','NOK','NZD','PHP','PKR','PLN','QAR','SAR','SEK','SGD','THB','TRY','TWD','TZS','UGX','USD','VND','ZAR'];
-}
-
-function currencyDisplayName(code){
-  try{
-    const names = new Intl.DisplayNames([navigator.language || 'en'],{type:'currency'});
-    return names.of(code) || code;
-  }catch{return code;}
-}
-
-function populateSellerCurrencySelect(){
-  if(!sellerCurrency) return;
-  const current = validCurrency(sellerCurrency.value) || 'USD';
-  const codes = [...new Set(supportedCurrencyCodes().map(validCurrency).filter(Boolean))].sort();
-  sellerCurrency.innerHTML = codes.map(code=>`<option value="${code}">${code} — ${escapeHtml(currencyDisplayName(code))}</option>`).join('');
-  sellerCurrency.value = codes.includes(current) ? current : 'NGN';
-}
-
-function setSellerCurrency(code){
-  if(!sellerCurrency) return;
-  const normalized = validCurrency(code);
-  if(normalized && [...sellerCurrency.options].some(option=>option.value===normalized)) sellerCurrency.value = normalized;
 }
 
 function showDialog(html){
@@ -134,17 +105,17 @@ async function ensureSession(){
   }
 }
 
-async function apiFetch(path,{method='GET',body,headers={},requireAuth=false,rawBody=false}={}){
-  if(!backendReady) throw new Error('The free backend project has not been connected yet.');
+async function apiFetch(path,{method='GET',body,headers={},requireAuth=false}={}){
+  if(!backendReady) throw new Error('The marketplace backend is temporarily unavailable.');
   if(requireAuth) await ensureSession();
   if(requireAuth && !session?.access_token) throw new Error('Please sign in first.');
   const finalHeaders = {'apikey':supabaseKey,...headers};
   if(session?.access_token) finalHeaders.Authorization = `Bearer ${session.access_token}`;
-  if(body !== undefined && !rawBody && !finalHeaders['Content-Type']) finalHeaders['Content-Type'] = 'application/json';
+  if(body !== undefined && !finalHeaders['Content-Type']) finalHeaders['Content-Type'] = 'application/json';
   const res = await fetch(`${supabaseUrl}${path}`, {
     method,
     headers:finalHeaders,
-    body: body === undefined ? undefined : (rawBody ? body : JSON.stringify(body))
+    body: body === undefined ? undefined : JSON.stringify(body)
   });
   if(!res.ok){
     const err = await res.json().catch(()=>({}));
@@ -156,14 +127,16 @@ async function apiFetch(path,{method='GET',body,headers={},requireAuth=false,raw
 }
 
 function priceMarkup(x){
-  const currency = validCurrency(x.currency) || 'USD';
+  const currency = validCurrency(x.currency);
   const amount = Number(x.price) || 0;
-  return `<div class="price" data-price-amount="${escapeHtml(amount)}" data-price-currency="${currency}">${escapeHtml(money(amount,currency))}</div>`;
+  const currencyAttrs = currency ? ` data-price-amount="${escapeHtml(amount)}" data-price-currency="${currency}"` : '';
+  return `<div class="price"${currencyAttrs}>${escapeHtml(money(amount,currency))}</div>`;
 }
 
 function render(){
-  const q = search.value.trim().toLowerCase();
-  const cond = condition.value;
+  const q = search?.value.trim().toLowerCase() || '';
+  const cond = condition?.value || 'all';
+  if(!grid || !empty) return;
   if(listings.length < 12){
     grid.innerHTML='';
     empty.innerHTML='<strong>The worldwide marketplace is growing.</strong><br>We are onboarding the first wave of real sellers. Browse the full marketplace or list a device from your country.';
@@ -227,7 +200,7 @@ async function loadListings(){
       condition:titleCase(r.condition),
       storage:r.storage || '',
       price:Number(r.price_amount),
-      currency:validCurrency(r.price_currency) || 'USD',
+      currency:validCurrency(r.price_currency),
       seller:sellers.get(r.seller_id) || 'Seller',
       seller_id:r.seller_id,
       verified:false,
@@ -246,14 +219,13 @@ async function loadListings(){
 function openListing(id){
   const x = listings.find(item => String(item.id) === String(id));
   if(!x) return;
-  const realActions = x.source === 'supabase' ? `
+  const actions = x.source === 'supabase' ? `
     <div class="dialog-actions">
       <button class="button secondary" data-favorite="${escapeHtml(x.id)}">Save to favorites</button>
       <button class="button" data-message="${escapeHtml(x.id)}">Message seller</button>
     </div>` : '';
-  const previewNote = '';
   const imageMarkup = x.image_url ? `<img src="${escapeHtml(x.image_url)}" alt="${escapeHtml(x.name)}" style="width:100%;max-height:420px;object-fit:contain;border-radius:18px;background:#f3f5fa;margin:0 0 18px;" />` : '';
-  showDialog(`<div class="dialog-product">${imageMarkup}<span class="eyebrow">${escapeHtml(x.category)} • ${escapeHtml(x.condition)}</span><h2>${escapeHtml(x.name)}</h2><p>${escapeHtml(x.storage || 'Details available')} • Listed by ${escapeHtml(x.seller || 'Seller')}${x.verified?' • Verified':''}</p>${priceMarkup(x)}${previewNote}${realActions}<button class="button secondary" data-dialog-close>Continue browsing</button></div>`);
+  showDialog(`<div class="dialog-product">${imageMarkup}<span class="eyebrow">${escapeHtml(x.category)} • ${escapeHtml(x.condition)}</span><h2>${escapeHtml(x.name)}</h2><p>${escapeHtml(x.storage || 'Details available')} • Listed by ${escapeHtml(x.seller || 'Seller')}${x.verified?' • Verified':''}</p>${priceMarkup(x)}${actions}<button class="button secondary" data-dialog-close>Continue browsing</button></div>`);
   window.DDH_LOCALIZATION?.refresh?.();
   dialogContent.querySelector('[data-dialog-close]')?.addEventListener('click',()=>dialog.close());
   dialogContent.querySelector('[data-favorite]')?.addEventListener('click',()=>saveFavorite(x));
@@ -262,7 +234,7 @@ function openListing(id){
 
 function showAuthDialog(_mode='signin', message=''){
   if(!backendReady){
-    showNotice('Backend connection pending','The website is live, but the free Supabase project still needs to be created and connected before account access can be used.');
+    showNotice('Account access unavailable','Account services are temporarily unavailable. Please try again later.');
     return;
   }
   if(session?.user?.email){
@@ -375,8 +347,7 @@ function openMessageForm(listing){
 
 async function sendMessage(event,listing){
   event.preventDefault();
-  const formElement = event.currentTarget;
-  const form = new FormData(formElement);
+  const form = new FormData(event.currentTarget);
   await ensureSession();
   if(!session?.user?.id) return showAuthDialog('signin');
   const body = String(form.get('body') || '').trim();
@@ -395,93 +366,19 @@ async function sendMessage(event,listing){
   }
 }
 
-async function uploadListingImage(file,listingId,userId){
-  if(!file || !file.size) return null;
-  const allowed = ['image/jpeg','image/png','image/webp'];
-  if(!allowed.includes(file.type)) throw new Error('Images must be JPEG, PNG or WebP.');
-  if(file.size > 5 * 1024 * 1024) throw new Error('Image must be 5 MB or smaller.');
-  const ext = ({'image/jpeg':'jpg','image/png':'png','image/webp':'webp'})[file.type];
-  const objectPath = `${userId}/${listingId}/${crypto.randomUUID()}.${ext}`;
-  const encodedPath = objectPath.split('/').map(encodeURIComponent).join('/');
-  await apiFetch(`/storage/v1/object/listing-images/${encodedPath}`,{method:'POST',body:file,rawBody:true,headers:{'Content-Type':file.type,'x-upsert':'false'},requireAuth:true});
-  await apiFetch('/rest/v1/listing_images',{method:'POST',body:{listing_id:listingId,storage_path:objectPath,sort_order:0},headers:{Prefer:'return=minimal'},requireAuth:true});
-  return objectPath;
-}
-
-async function submitListing(event){
-  event.preventDefault();
-  const formElement = event.currentTarget;
-  const form = new FormData(formElement);
-  if(!backendReady){
-    showNotice('Backend connection pending','The listing form is ready, but nothing will be collected until the free Supabase backend is connected.');
-    return;
-  }
-  await ensureSession();
-  if(!session?.user?.id){
-    showAuthDialog('signin','Sign in before submitting a listing.');
-    return;
-  }
-  const price = Number(String(form.get('price') || '').replace(/,/g,'').trim());
-  const priceCurrency = validCurrency(form.get('currency'));
-  if(!Number.isFinite(price) || price <= 0 || price > 1000000000000000){
-    showNotice('Check the price','Enter a valid positive asking price.','error');
-    return;
-  }
-  if(!priceCurrency){
-    showNotice('Choose a currency','Select the currency for your asking price.','error');
-    return;
-  }
-  const brand = String(form.get('brand') || '').trim();
-  const model = String(form.get('model') || '').trim();
-  const roundedPrice = Math.round(price * 10000) / 10000;
-  const payload = {
-    seller_id:session.user.id,
-    title:`${brand} ${model}`.trim(),
-    category:String(form.get('category') || ''),
-    brand,
-    model,
-    condition:String(form.get('condition') || ''),
-    price_amount:roundedPrice,
-    price_currency:priceCurrency,
-    storage:String(form.get('storage') || '').trim() || null,
-    city:String(form.get('city') || '').trim() || null,
-    description:String(form.get('description') || '').trim(),
-    status:'pending'
-  };
-  try{
-    const created = await apiFetch('/rest/v1/listings',{method:'POST',body:payload,headers:{Prefer:'return=representation'},requireAuth:true});
-    const listing = created?.[0];
-    if(!listing?.id) throw new Error('The listing was not created.');
-    const file = form.get('image');
-    let imageWarning = '';
-    if(file instanceof File && file.size){
-      try{ await uploadListingImage(file,listing.id,session.user.id); }
-      catch(err){ imageWarning = ` The listing was saved, but the image was not uploaded: ${err.message}`; }
-    }
-    formElement.reset();
-    setSellerCurrency(window.DDH_LOCALIZATION?.state?.currency || priceCurrency);
-    showNotice('Listing submitted',`Your listing is saved at ${money(roundedPrice,priceCurrency)} and is pending review before it becomes public.${imageWarning}`);
-  }catch(err){
-    showNotice('Listing not submitted',err.message,'error');
-  }
-}
-
 document.querySelectorAll('[data-category]').forEach(btn => btn.addEventListener('click',()=>{
   document.querySelectorAll('[data-category]').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   activeCategory = btn.dataset.category;
   render();
 }));
-search.addEventListener('input',render);
-condition.addEventListener('change',render);
-grid.addEventListener('click',e=>{const card=e.target.closest('.listing-card'); if(card) openListing(card.dataset.id)});
-grid.addEventListener('keydown',e=>{const card=e.target.closest('.listing-card'); if(card && (e.key==='Enter'||e.key===' ')){e.preventDefault();openListing(card.dataset.id)}});
-document.querySelector('.dialog-close').addEventListener('click',()=>dialog.close());
-signInButton.addEventListener('click',()=>showAuthDialog('signin'));
-sellForm.addEventListener('submit',submitListing);
-document.addEventListener('ddh:localization-ready',event=>setSellerCurrency(event.detail?.currency));
+search?.addEventListener('input',render);
+condition?.addEventListener('change',render);
+grid?.addEventListener('click',e=>{const card=e.target.closest('.listing-card'); if(card) openListing(card.dataset.id)});
+grid?.addEventListener('keydown',e=>{const card=e.target.closest('.listing-card'); if(card && (e.key==='Enter'||e.key===' ')){e.preventDefault();openListing(card.dataset.id)}});
+document.querySelector('.dialog-close')?.addEventListener('click',()=>dialog.close());
+signInButton?.addEventListener('click',()=>showAuthDialog('signin'));
 
-populateSellerCurrencySelect();
 loadStoredSession();
 ensureSession().finally(()=>updateAccountButton());
 loadListings();
