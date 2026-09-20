@@ -1,8 +1,10 @@
 # DigitalDeviceHub
 
-DigitalDeviceHub is a **worldwide device marketplace** for New and Used phones, laptops, tablets, accessories and wearables.
+DigitalDeviceHub is **the global marketplace built specifically for digital devices** — New and Used phones, laptops, tablets, accessories, wearables and other approved technology categories.
 
-The product is designed around structured device information, seller-entered prices in their own currencies, buyer-facing local-currency estimates, country-aware discovery, and local/domestic/international delivery scopes. No single country or currency is treated as the marketplace's business identity or base market.
+The product is designed around structured device information, clear condition, seller context, seller-entered prices in their own currencies, buyer-facing local-currency estimates, country-aware discovery, and local/domestic/international delivery scopes. No single country or currency is treated as the marketplace's business identity or base market.
+
+**Positioning:** Clear condition. Seller context. Local relevance. Global reach.
 
 ## Stack
 
