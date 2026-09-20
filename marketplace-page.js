@@ -25,8 +25,10 @@
   let rows=[],images=new Map(),sellers=new Map(),visibleCount=PAGE_SIZE;
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const countryName=code=>window.DDH_COUNTRIES?.name?.(code)||code||'';
+  const validCurrency=value=>/^[A-Z]{3}$/.test(String(value||'').toUpperCase())?String(value).toUpperCase():'';
   const money=(amount,currency)=>{
-    const value=Number(amount)||0,code=currency||'USD';
+    const value=Number(amount)||0,code=validCurrency(currency);
+    if(!code)return value.toLocaleString();
     try{
       const max=new Intl.NumberFormat(undefined,{style:'currency',currency:code}).resolvedOptions().maximumFractionDigits;
       return new Intl.NumberFormat(undefined,{style:'currency',currency:code,minimumFractionDigits:Number.isInteger(value)?0:Math.min(2,max),maximumFractionDigits:Number.isInteger(value)?0:Math.min(2,max)}).format(value)
@@ -70,8 +72,8 @@
   }
   function listingHref(item){return `/device.html?id=${encodeURIComponent(item.id)}`}
   function card(item){
-    const path=images.get(item.id),seller=sellers.get(item.seller_id)||'Seller',original=money(item.price_amount,item.price_currency),place=[item.city,countryName(item.country_code)].filter(Boolean).join(', '),localCurrency=window.DDH_LOCALIZATION?.state?.currency||'USD';
-    const estimate=item.price_currency!==localCurrency?`<div class="converted-line">Local estimate: <span class="price local-estimate" data-price-amount="${esc(item.price_amount)}" data-price-currency="${esc(item.price_currency)}">${esc(original)}</span></div>`:'';
+    const path=images.get(item.id),seller=sellers.get(item.seller_id)||'Seller',original=money(item.price_amount,item.price_currency),place=[item.city,countryName(item.country_code)].filter(Boolean).join(', '),localCurrency=validCurrency(window.DDH_LOCALIZATION?.state?.currency);
+    const estimate=localCurrency&&item.price_currency!==localCurrency?`<div class="converted-line">Local estimate: <span class="price local-estimate" data-price-amount="${esc(item.price_amount)}" data-price-currency="${esc(item.price_currency)}">${esc(original)}</span></div>`:'';
     const battery=item.specs?.battery_health?`<span class="pill">Battery ${esc(item.specs.battery_health)}</span>`:'';
     const href=listingHref(item);
     return `<article class="product-card-shell">
@@ -119,7 +121,10 @@
     grid.innerHTML=page.map(card).join('');
     empty.hidden=filtered.length>0;
     if(!filtered.length)empty.innerHTML='No devices match those filters yet. <button type="button" class="link-button" id="relaxFilters">Clear filters</button> or save this search to come back later.';
-    resultCount.textContent=`${filtered.length.toLocaleString()} device${filtered.length===1?'':'s'} · prices shown in ${window.DDH_LOCALIZATION?.state?.currency||'your local currency'} where conversion is available`;
+    const displayCurrency=validCurrency(window.DDH_LOCALIZATION?.state?.currency);
+    resultCount.textContent=displayCurrency
+      ? `${filtered.length.toLocaleString()} device${filtered.length===1?'':'s'} · local estimates use ${displayCurrency} where conversion is available`
+      : `${filtered.length.toLocaleString()} device${filtered.length===1?'':'s'} · seller asking currencies shown; choose Region & currency for local estimates`;
     if(loadMore){loadMore.hidden=visibleCount>=filtered.length;loadMore.textContent=`Show more (${Math.min(PAGE_SIZE,filtered.length-visibleCount)} remaining)`}
     renderChips();
     window.DDH_LOCALIZATION?.refresh?.();
@@ -169,6 +174,10 @@
   document.querySelector('#clearFilters')?.addEventListener('click',clearFilters);
   document.querySelector('#filterToggle')?.addEventListener('click',e=>{const open=filters.classList.toggle('open');e.currentTarget.setAttribute('aria-expanded',String(open));if(open)filters.querySelector('input,select,button')?.focus()});
   loadMore?.addEventListener('click',()=>{visibleCount+=PAGE_SIZE;render()});
-  document.addEventListener('ddh:localization-ready',e=>{document.querySelector('#localeChip').textContent=`${countryName(e.detail.country)} · ${e.detail.currency}`;render()});
+  document.addEventListener('ddh:localization-ready',e=>{
+    const country=countryName(e.detail?.country),currency=validCurrency(e.detail?.currency);
+    document.querySelector('#localeChip').textContent=country&&currency?`${country} · ${currency}`:'Region & currency';
+    render();
+  });
   load();
 })();
