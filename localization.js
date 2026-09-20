@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const DEFAULT_COUNTRY = 'US';
-  const DEFAULT_CURRENCY = 'USD';
+  const DEFAULT_COUNTRY = '';
+  const DEFAULT_CURRENCY = '';
   const LOCALIZATION_KEY = 'ddh_localization_v2';
   const FX_KEY = 'ddh_fx_target_v2';
   const SESSION_KEY = 'ddh_supabase_session';
@@ -28,7 +28,7 @@
   const state = {
     country: DEFAULT_COUNTRY,
     currency: DEFAULT_CURRENCY,
-    rates: { USD: 1 },
+    rates: {},
     detectedAt: 0,
     fxAt: 0,
     fxSource: '',
@@ -81,6 +81,7 @@
   }
 
   async function currencyForCountry(country) {
+    if (!country) return '';
     if (EURO_COUNTRIES.has(country)) return 'EUR';
     if (COMMON_CURRENCIES[country]) return COMMON_CURRENCIES[country];
 
@@ -99,8 +100,10 @@
   }
 
   async function getFxRates(targetCurrency) {
+    const target = validCurrency(targetCurrency);
+    if (!target) throw new Error('Display currency unavailable');
     const cached = readJson(FX_KEY);
-    const cacheFresh = cached && cached.base === targetCurrency && Date.now() - Number(cached.ts || 0) < FX_TTL;
+    const cacheFresh = cached && cached.base === target && Date.now() - Number(cached.ts || 0) < FX_TTL;
     if (cacheFresh && cached.rates && typeof cached.rates === 'object') {
       return { rates: cached.rates, ts: Number(cached.ts) || Date.now(), source: cached.source || 'DigitalDeviceHub FX', as_of: cached.as_of || null };
     }
@@ -110,7 +113,7 @@
       const root = String(runtimeCfg.supabaseUrl || '').replace(/\/$/, '');
       const publishableKey = String(runtimeCfg.supabasePublishableKey || '');
       if (!root || !publishableKey) throw new Error('FX service unavailable');
-      const response = await fetch(`${root}/functions/v1/fx-rates?currency=${encodeURIComponent(targetCurrency)}`, {
+      const response = await fetch(`${root}/functions/v1/fx-rates?currency=${encodeURIComponent(target)}`, {
         cache: 'no-store',
         credentials: 'omit',
         headers: { apikey: publishableKey }
@@ -118,11 +121,11 @@
       if (!response.ok) throw new Error('FX service unavailable');
       const data = await response.json();
       if (!data?.rates) throw new Error('Invalid FX response');
-      const payload = { base: targetCurrency, ts: Date.now(), rates: data.rates, source: data.source || 'DigitalDeviceHub FX', as_of: data.as_of || null };
+      const payload = { base: target, ts: Date.now(), rates: data.rates, source: data.source || 'DigitalDeviceHub FX', as_of: data.as_of || null };
       writeJson(FX_KEY, payload);
       return { rates: data.rates, ts: payload.ts, source: payload.source, as_of: payload.as_of };
     } catch (error) {
-      if (cached?.base === targetCurrency && cached?.rates) {
+      if (cached?.base === target && cached?.rates) {
         return { rates: cached.rates, ts: Number(cached.ts) || 0, source: cached.source || 'DigitalDeviceHub FX', as_of: cached.as_of || null };
       }
       throw error;
@@ -139,8 +142,9 @@
   }
 
   function formatCurrency(amount, currency) {
-    const code = validCurrency(currency) || DEFAULT_CURRENCY;
+    const code = validCurrency(currency);
     const value = Number(amount) || 0;
+    if (!code) return value.toLocaleString();
     try {
       return new Intl.NumberFormat(undefined, {
         style: 'currency',
@@ -153,14 +157,15 @@
   }
 
   function convertedValue(amount, sourceCurrency) {
-    const source = validCurrency(sourceCurrency) || DEFAULT_CURRENCY;
+    const source = validCurrency(sourceCurrency);
     const value = Number(amount);
-    if (!Number.isFinite(value)) return null;
-    if (source === state.currency) return { amount: value, currency: state.currency, converted: false };
+    if (!Number.isFinite(value) || !source) return null;
+    const target = validCurrency(state.currency);
+    if (!target || source === target) return { amount: value, currency: source, converted: false };
 
     const sourcePerTarget = Number(state.rates?.[source]);
     if (Number.isFinite(sourcePerTarget) && sourcePerTarget > 0) {
-      return { amount: value / sourcePerTarget, currency: state.currency, converted: true };
+      return { amount: value / sourcePerTarget, currency: target, converted: true };
     }
 
     return { amount: value, currency: source, converted: false };
@@ -172,14 +177,7 @@
     if (Number.isFinite(dataAmount) && dataAmount >= 0 && dataCurrency) {
       return { amount: dataAmount, currency: dataCurrency };
     }
-
-    const text = String(element.textContent || '').trim();
-    if (!text || (!text.includes('₦') && !/\bNGN\b/i.test(text))) return null;
-    const amount = Number(text.replace(/[^0-9.-]/g, ''));
-    if (!Number.isFinite(amount) || amount < 0) return null;
-    element.dataset.priceAmount = String(amount);
-    element.dataset.priceCurrency = 'NGN';
-    return { amount, currency: 'NGN' };
+    return null;
   }
 
   function localizePrices(root = document) {
@@ -210,8 +208,10 @@
 
   function setPersistenceCookies() {
     const maxAge = 60 * 60 * 24 * 365;
-    document.cookie = `ddh_country=${encodeURIComponent(state.country)}; Path=/; Max-Age=${maxAge}; Secure; SameSite=Lax`;
-    document.cookie = `ddh_currency=${encodeURIComponent(state.currency)}; Path=/; Max-Age=${maxAge}; Secure; SameSite=Lax`;
+    if (validCountry(state.country)) document.cookie = `ddh_country=${encodeURIComponent(state.country)}; Path=/; Max-Age=${maxAge}; Secure; SameSite=Lax`;
+    else document.cookie = 'ddh_country=; Path=/; Max-Age=0; Secure; SameSite=Lax';
+    if (validCurrency(state.currency)) document.cookie = `ddh_currency=${encodeURIComponent(state.currency)}; Path=/; Max-Age=${maxAge}; Secure; SameSite=Lax`;
+    else document.cookie = 'ddh_currency=; Path=/; Max-Age=0; Secure; SameSite=Lax';
   }
 
   async function persistForSignedInUser() {
@@ -241,8 +241,8 @@
           Prefer: 'return=minimal'
         },
         body: JSON.stringify({
-          country_code: state.country,
-          currency_code: state.currency
+          country_code: validCountry(state.country) || null,
+          currency_code: validCurrency(state.currency) || null
         })
       });
       if (response.ok) lastPersistSignature = signature;
@@ -272,24 +272,31 @@
 
     if (!country) {
       try { country = await detectCountryFromIp(); }
-      catch { country = countryFromBrowserLocale() || DEFAULT_COUNTRY; }
+      catch { country = countryFromBrowserLocale(); }
     }
 
-    if (!currency) currency = await currencyForCountry(country);
+    if (!currency && country) currency = await currencyForCountry(country);
 
-    state.country = country;
-    state.currency = currency;
+    state.country = validCountry(country);
+    state.currency = validCurrency(currency);
     state.detectedAt = Date.now();
 
-    try {
-      const fx = await getFxRates(currency);
-      state.rates = fx.rates || { [currency]: 1 };
-      state.fxAt = fx.ts || Date.now();
-      state.fxSource = fx.source || 'DigitalDeviceHub FX';
-      state.fxAsOf = fx.as_of || '';
-    } catch {
-      state.rates = { [currency]: 1 };
-      state.fxAt = Date.now();
+    if (state.currency) {
+      try {
+        const fx = await getFxRates(state.currency);
+        state.rates = fx.rates || { [state.currency]: 1 };
+        state.fxAt = fx.ts || Date.now();
+        state.fxSource = fx.source || 'DigitalDeviceHub FX';
+        state.fxAsOf = fx.as_of || '';
+      } catch {
+        state.rates = { [state.currency]: 1 };
+        state.fxAt = Date.now();
+        state.fxSource = '';
+        state.fxAsOf = '';
+      }
+    } else {
+      state.rates = {};
+      state.fxAt = 0;
       state.fxSource = '';
       state.fxAsOf = '';
     }
