@@ -1,4 +1,4 @@
-const CACHE='ddh-v32';
+const CACHE='ddh-v33';
 const ASSETS=['/','/index.html','/site-v2.css','/config.js','/countries.js','/app.js','/auth-ui.js','/account-ui.js','/localization.js','/locale-picker.js','/locale-ui.js','/analytics.js','/open-signin.js','/mobile-nav.js','/marketplace.html','/marketplace-page.js','/marketplace-engagement.js','/device.html','/device-shell.html','/device-page.js','/sell.html','/sell-wizard.js','/seller.html','/seller-page.js','/trust.html','/help.html','/about.html','/contact.html','/phones.html','/laptops.html','/tablets.html','/accessories.html','/wearables.html','/compare.html','/compare.js','/404.html','/dashboard.html','/dashboard.js','/dashboard-engagement.js','/admin.html','/admin.css','/admin.js','/manifest.webmanifest','/favicon.svg','/resend-confirmation.html','/resend-confirmation.js'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));
