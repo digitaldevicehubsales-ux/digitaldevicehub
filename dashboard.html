@@ -6,8 +6,6 @@
   <meta name="theme-color" content="#0b0d12" />
   <meta name="description" content="Manage worldwide DigitalDeviceHub listings, offers, analytics, messages, saved searches, notifications and profile." />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  
-  
   <link rel="stylesheet" href="/site-v2.css"><title>Account Dashboard — DigitalDeviceHub</title>
 </head>
 <body>
@@ -22,7 +20,9 @@
         <button class="nav-item" data-view="favorites">Favorites</button>
         <button class="nav-item" data-view="profile">Profile & Settings</button>
       </nav>
-      <div class="sidebar-bottom"><a id="adminEntry" href="/admin.html" hidden>Admin moderation</a>
+      <div class="sidebar-bottom">
+        <a id="directorEntry" href="/director.html" hidden>Director Control Center</a>
+        <a id="adminEntry" href="/admin.html" hidden>Admin moderation</a>
         <a href="/marketplace.html">← Marketplace</a>
         <button id="signOutButton" class="text-action">Sign out</button>
       </div>
@@ -71,5 +71,6 @@
   <script src="/localization.js" defer></script>
   <script src="/dashboard.js" defer></script>
   <script src="/dashboard-engagement.js" defer></script>
+  <script src="/director-link.js" defer></script>
 </body>
 </html>
