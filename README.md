@@ -22,6 +22,10 @@ The product is designed around structured device information, clear condition, s
 - Sellers can specify local pickup, domestic shipping, international shipping, or a combination.
 - Legal, privacy, safety and transaction disclosures are written for international use and defer to applicable local law.
 
+## Director Control Center
+
+The authorized director account has a dedicated `/director.html` operations surface protected by Supabase authorization and Row Level Security. It includes executive overview, decision logging, listing management, user controls, orders, disputes, reports, offers, audit history, moderation shortcuts and system links. Ordinary visitors and non-director accounts cannot load director data.
+
 ## Cloudflare deployment
 
 Connect this repository to Cloudflare and serve the repository root as the static asset directory. Custom domains:
@@ -31,6 +35,6 @@ Connect this repository to Cloudflare and serve the repository root as the stati
 
 ## Backend
 
-Supabase migrations define marketplace tables, Row Level Security, product-image storage policies, seller tools, moderation, analytics, multi-currency pricing, localization and global marketplace fields.
+Supabase migrations define marketplace tables, Row Level Security, product-image storage policies, seller tools, moderation, analytics, multi-currency pricing, localization, director authorization and global marketplace fields.
 
 Payment, escrow and logistics protections must only be represented as available when a compliant provider and complete transaction workflow exist for the relevant market.
