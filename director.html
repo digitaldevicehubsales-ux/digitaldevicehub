@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0c0f14">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/director.css">
+  <title>Director Control Center — DigitalDeviceHub</title>
+</head>
+<body>
+  <div id="directorGate" class="gate" hidden>
+    <span class="eyebrow">Restricted access</span>
+    <h1>Director sign-in required.</h1>
+    <p id="directorGateMessage">This control center is available only to the DigitalDeviceHub director account.</p>
+    <a class="btn blue" href="/?signin=1">Sign in</a>
+  </div>
+
+  <div id="directorApp" class="director-shell" hidden>
+    <aside class="director-sidebar">
+      <div>
+        <a class="director-brand" href="/"><span class="director-mark">D</span><span>DigitalDeviceHub</span></a>
+        <div class="director-role">Director Control Center</div>
+      </div>
+      <nav class="director-nav" aria-label="Director navigation">
+        <button class="active" data-view="overview">Overview</button>
+        <button data-view="decisions">Decision Log</button>
+        <button data-view="listings">Listings</button>
+        <button data-view="users">Users</button>
+        <button data-view="orders">Orders</button>
+        <button data-view="disputes">Disputes</button>
+        <button data-view="reports">Reports</button>
+        <button data-view="offers">Offers</button>
+        <button data-view="audit">Audit Trail</button>
+        <button data-view="system">System</button>
+      </nav>
+      <div class="director-sidebar-bottom">
+        <a href="/admin.html">Moderation</a>
+        <a href="/dashboard.html">Account dashboard</a>
+        <a href="/marketplace.html">Marketplace</a>
+        <a href="/">Public site</a>
+      </div>
+    </aside>
+
+    <main class="director-main">
+      <header class="director-topbar">
+        <div><span class="eyebrow">Executive operations</span><h1 id="directorPageTitle">Overview</h1></div>
+        <div class="director-account">
+          <span class="chip ok">Director verified</span>
+          <span class="chip" id="directorEmail"></span>
+          <button class="btn secondary small" id="directorRefresh">Refresh</button>
+        </div>
+      </header>
+
+      <section class="director-panel active" data-panel="overview">
+        <div class="kpi-grid" id="directorKpis"></div>
+        <article class="panel"><div class="panel-heading"><div><span class="eyebrow">Needs attention</span><h2>Executive queue</h2><p>Items that may require a director decision.</p></div></div><div class="attention-list" id="directorAttention"></div></article>
+        <article class="panel"><div class="panel-heading"><div><span class="eyebrow">Recent actions</span><h2>Latest audit activity</h2></div><button class="btn secondary small" data-go="audit">Open full trail</button></div><div id="overviewAudit"></div></article>
+      </section>
+
+      <section class="director-panel" data-panel="decisions">
+        <article class="panel"><div class="panel-heading"><div><span class="eyebrow">Director decisions</span><h2>Decision register</h2><p>Record major operational, marketplace, safety, policy, or product decisions.</p></div><button class="btn blue" id="newDecision">+ New decision</button></div><div id="decisionGrid" class="decision-grid"></div></article>
+      </section>
+
+      <section class="director-panel" data-panel="listings">
+        <article class="panel"><div class="panel-heading"><div><span class="eyebrow">Marketplace inventory</span><h2>All listings</h2><p>Edit listing details, price, location, delivery scope, moderation notes and status.</p></div><a class="btn secondary" href="/sell.html">Create listing</a></div><div class="toolbar"><input class="control" type="search" id="listingSearch" placeholder="Search listings"><select class="control" id="listingStatusFilter"><option value="all">All statuses</option><option>draft</option><option>pending</option><option>published</option><option>paused</option><option>sold</option><option>rejected</option><option>archived</option></select></div><div id="listingTable"></div></article>
+      </section>
+
+      <section class="director-panel" data-panel="users">
+        <article class="panel"><div class="panel-heading"><div><span class="eyebrow">Accounts</span><h2>User control</h2><p>Review marketplace accounts, verification levels and account access.</p></div></div><div class="toolbar"><input class="control" type="search" id="userSearch" placeholder="Search name, city, country or user ID"><select class="control" id="userStatusFilter"><option value="all">All accounts</option><option value="active">Active</option><option value="suspended">Suspended</option></select></div><div id="userTable"></div></article>
+      </section>
+
+      <section class="director-panel" data-panel="orders">
+        <article class="panel"><div class="panel-heading"><div><span class="eyebrow">Transactions</span><h2>Orders</h2><p>Monitor and correct marketplace order states where operational intervention is required.</p></div></div><div class="toolbar"><input class="control" type="search" id="orderSearch" placeholder="Search order or listing ID"><select class="control" id="orderStatusFilter"><option value="all">All statuses</option><option>created</option><option>awaiting_payment</option><option>paid</option><option>shipped</option><option>delivered</option><option>completed</option><option>cancelled</option><option>refunded</option><option>disputed</option></select></div><div id="orderTable"></div></article>
+      </section>
+
+      <section class="director-panel" data-panel="disputes">
+        <article class="panel"><div class="panel-heading"><div><span class="eyebrow">Resolution</span><h2>Disputes</h2><p>Review open cases and record the resolution.</p></div></div><div id="disputeTable"></div></article>
+      </section>
+
+      <section class="director-panel" data-panel="reports">
+        <article class="panel"><div class="panel-heading"><div><span class="eyebrow">Trust & safety</span><h2>Reports</h2><p>Review, resolve, dismiss, or reopen marketplace reports.</p></div><a class="btn secondary" href="/admin.html">Open moderation</a></div><div id="reportTable"></div></article>
+      </section>
+
+      <section class="director-panel" data-panel="offers">
+        <article class="panel"><div class="panel-heading"><div><span class="eyebrow">Negotiation activity</span><h2>Offers</h2><p>Review offer activity and intervene only when an operational decision requires it.</p></div></div><div id="offerTable"></div></article>
+      </section>
+
+      <section class="director-panel" data-panel="audit">
+        <article class="panel"><div class="panel-heading"><div><span class="eyebrow">Accountability</span><h2>Audit trail</h2><p>Administrative and director actions recorded by the marketplace.</p></div></div><div id="auditTable"></div></article>
+      </section>
+
+      <section class="director-panel" data-panel="system">
+        <article class="panel"><div class="panel-heading"><div><span class="eyebrow">Operations</span><h2>System tools</h2><p>Direct access to the major operational surfaces of DigitalDeviceHub.</p></div></div><div class="system-grid">
+          <article class="system-card"><h3>Marketplace</h3><p>Inspect public listings, search, filters, currencies and seller presentation.</p><a class="btn secondary small" href="/marketplace.html">Open marketplace</a></article>
+          <article class="system-card"><h3>Moderation</h3><p>Review pending listings, safety reports and account moderation.</p><a class="btn secondary small" href="/admin.html">Open moderation</a></article>
+          <article class="system-card"><h3>Seller tools</h3><p>Create a listing and validate the seller workflow from end to end.</p><a class="btn secondary small" href="/sell.html">Open seller flow</a></article>
+          <article class="system-card"><h3>Account dashboard</h3><p>Review the signed-in marketplace account, listings, analytics, messages and offers.</p><a class="btn secondary small" href="/dashboard.html">Open dashboard</a></article>
+          <article class="system-card"><h3>Trust & Safety</h3><p>Review the public trust, safety and protection language shown to buyers and sellers.</p><a class="btn secondary small" href="/trust.html">Open Trust & Safety</a></article>
+          <article class="system-card"><h3>Help Center</h3><p>Review buyer and seller support information and marketplace guidance.</p><a class="btn secondary small" href="/help.html">Open Help Center</a></article>
+        </div></article>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="directorDialog"><div class="modal-card"><div class="modal-head"><div><span class="eyebrow" id="modalEyebrow">Director tool</span><h2 id="modalTitle">Edit</h2></div><button class="modal-close" id="modalClose" aria-label="Close">×</button></div><div id="modalBody"></div></div></dialog>
+  <div class="toast" id="directorToast" role="status" aria-live="polite"></div>
+
+  <script src="/config.js"></script>
+  <script src="/director.js" defer></script>
+</body>
+</html>
