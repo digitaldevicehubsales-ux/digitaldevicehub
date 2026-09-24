@@ -1,0 +1,18 @@
+body.dashboard-signed-out .sidebar,
+body.dashboard-signed-out .mobile-nav{
+  display:none !important;
+}
+body.dashboard-signed-out .dashboard-shell{
+  grid-template-columns:minmax(0,1fr);
+  min-height:100vh;
+}
+body.dashboard-signed-out .dashboard-main{
+  width:min(100%,1120px);
+  margin:0 auto;
+}
+body.dashboard-signed-out .dash-header .primary-button{
+  display:none !important;
+}
+body.dashboard-signed-out .auth-gate{
+  max-width:720px;
+}

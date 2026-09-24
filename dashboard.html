@@ -6,7 +6,9 @@
   <meta name="theme-color" content="#0b0d12" />
   <meta name="description" content="Manage worldwide DigitalDeviceHub listings, offers, analytics, messages, saved searches, notifications and profile." />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/site-v2.css"><title>Account Dashboard — DigitalDeviceHub</title>
+  <link rel="stylesheet" href="/site-v2.css">
+  <link rel="stylesheet" href="/dashboard-state.css">
+  <title>Account Dashboard — DigitalDeviceHub</title>
 </head>
 <body>
   <div class="dashboard-shell">
@@ -37,7 +39,7 @@
       <div id="authGate" class="auth-gate" hidden>
         <h2>Sign in to open your dashboard.</h2>
         <p>Your listings, analytics, messages, favorites and account tools are connected to your DigitalDeviceHub account.</p>
-        <a class="primary-button" href="/?signin=1">Return to sign in</a>
+        <div class="dialog-actions"><a class="primary-button" href="/?signin=1&returnTo=/dashboard.html">Sign in / Sign up</a><a class="secondary-button" href="/marketplace.html">Browse marketplace</a></div>
       </div>
 
       <section class="dash-view active" data-panel="overview">
@@ -70,6 +72,7 @@
   <script src="/countries.js"></script>
   <script src="/localization.js" defer></script>
   <script src="/dashboard.js" defer></script>
+  <script src="/dashboard-state.js" defer></script>
   <script src="/dashboard-engagement.js" defer></script>
   <script src="/director-link.js" defer></script>
 </body>
