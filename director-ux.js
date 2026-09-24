@@ -1,6 +1,13 @@
 (() => {
   'use strict';
 
+  if(!document.querySelector('link[href="/director-ux.css"]')){
+    const link=document.createElement('link');
+    link.rel='stylesheet';
+    link.href='/director-ux.css';
+    document.head.appendChild(link);
+  }
+
   const title = document.querySelector('#directorPageTitle');
   const gate = document.querySelector('#directorGate');
   const nav = document.querySelector('.director-nav');
