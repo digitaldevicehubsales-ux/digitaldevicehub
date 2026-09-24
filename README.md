@@ -26,6 +26,8 @@ The product is designed around structured device information, clear condition, s
 
 The authorized director account has a dedicated `/director.html` operations surface protected by Supabase authorization and Row Level Security. It includes executive overview, decision logging, listing management, user controls, orders, disputes, reports, offers, audit history, moderation shortcuts and system links. Ordinary visitors and non-director accounts cannot load director data.
 
+Authentication is role-aware after sign-in: directors are routed directly to the Director Control Center, administrators to moderation, and ordinary marketplace accounts to their dashboard. Direct visits to the Director Control Center preserve that destination through authentication so a bookmarked Director link does not require a dashboard detour.
+
 ## Cloudflare deployment
 
 Connect this repository to Cloudflare and serve the repository root as the static asset directory. Custom domains:
