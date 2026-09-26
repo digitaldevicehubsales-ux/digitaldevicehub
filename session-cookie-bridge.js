@@ -18,18 +18,12 @@
     if (!data?.user?.id) return false;
     const access = String(data.access_token || '');
     const refresh = String(data.refresh_token || '');
-    const expiresAt = Number(data.expires_at || 0);
     const now = Math.floor(Date.now() / 1000);
-    const payload = {};
+    const expiresAt = Number(data.expires_at || (data.expires_in ? now + Number(data.expires_in) : 0));
 
-    if (access && access !== SENTINEL && refresh && refresh !== SENTINEL && expiresAt > now + 45) {
-      payload.access_token = access;
-      payload.refresh_token = refresh;
-      payload.expires_in = Math.max(60, expiresAt - now);
-      payload.token_type = data.token_type || 'bearer';
-    } else if (refresh && refresh !== SENTINEL) {
-      payload.refresh_token = refresh;
-    } else {
+    // Only bridge a currently valid browser session. Do not rotate a refresh
+    // token here because the legacy client may be refreshing it at the same time.
+    if (!access || access === SENTINEL || !refresh || refresh === SENTINEL || expiresAt <= now + 45) {
       return false;
     }
 
@@ -38,7 +32,12 @@
         method: 'POST',
         credentials: 'same-origin',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          access_token: access,
+          refresh_token: refresh,
+          expires_in: Math.max(60, expiresAt - now),
+          token_type: data.token_type || 'bearer'
+        })
       });
       return response.ok;
     } catch {
@@ -64,7 +63,7 @@
     window.saveSession = function bridgedSaveSession(data) {
       const result = originalSaveSession.apply(this, arguments);
       if (data?.access_token) {
-        window.DDH_SESSION_COOKIE_READY = syncSession(data);
+        window.DDH_SESSION_COOKIE_READY = syncSession(storedSession() || data);
       } else {
         clearCookieSession();
       }
