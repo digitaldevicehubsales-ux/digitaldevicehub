@@ -16,3 +16,96 @@ body.dashboard-signed-out .dash-header .primary-button{
 body.dashboard-signed-out .auth-gate{
   max-width:720px;
 }
+
+/* Keep the white secondary action readable inside the dark welcome panel. */
+.welcome-card .secondary-button{
+  color:#0b0d12;
+  background:#fff;
+}
+
+.sidebar-admin[hidden],
+.director-dashboard-banner[hidden],
+#directorAccountBadge[hidden]{
+  display:none !important;
+}
+
+.sidebar-admin{
+  display:grid;
+  gap:8px;
+  margin:0 -4px 4px;
+  padding:12px;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:14px;
+  background:rgba(255,255,255,.04);
+}
+.sidebar-admin-label{
+  color:#70798a;
+  font-size:10px;
+  font-weight:850;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.sidebar-admin a{
+  color:#d8dde7;
+  font-weight:760;
+}
+.sidebar-admin a:hover{
+  color:#fff;
+}
+
+.director-dashboard-banner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  padding:24px 26px;
+  border:1px solid #d8e0ff;
+  border-radius:20px;
+  background:linear-gradient(135deg,#f7f9ff,#eef3ff);
+  box-shadow:0 10px 30px rgba(49,94,251,.06);
+}
+.director-dashboard-banner h2{
+  margin:5px 0 6px;
+  font-size:24px;
+  letter-spacing:-.035em;
+}
+.director-dashboard-banner p{
+  margin:0;
+  max-width:760px;
+  color:#596273;
+  line-height:1.55;
+}
+.director-dashboard-banner .primary-button{
+  flex:0 0 auto;
+  background:#315efb;
+}
+
+.director-account-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  margin-top:8px;
+  padding:7px 10px;
+  border-radius:999px;
+  background:#eaf7ef;
+  color:#16794b;
+  font-size:12px;
+  font-weight:850;
+}
+.director-account-badge::before{
+  content:'✓';
+}
+
+@media(max-width:760px){
+  .mobile-nav{
+    grid-template-columns:repeat(6,1fr);
+  }
+  .director-dashboard-banner{
+    align-items:flex-start;
+    flex-direction:column;
+    padding:20px;
+  }
+  .director-dashboard-banner .primary-button{
+    width:100%;
+  }
+}

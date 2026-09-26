@@ -23,8 +23,11 @@
         <button class="nav-item" data-view="profile">Profile & Settings</button>
       </nav>
       <div class="sidebar-bottom">
-        <a id="directorEntry" href="/director.html" hidden>Director Control Center</a>
-        <a id="adminEntry" href="/admin.html" hidden>Admin moderation</a>
+        <div id="adminTools" class="sidebar-admin" hidden>
+          <span class="sidebar-admin-label">Administration</span>
+          <a id="directorEntry" href="/director.html" hidden>Director Control Center →</a>
+          <a id="adminEntry" href="/admin.html" hidden>Admin moderation →</a>
+        </div>
         <a href="/marketplace.html">← Marketplace</a>
         <button id="signOutButton" class="text-action">Sign out</button>
       </div>
@@ -32,7 +35,11 @@
 
     <main class="dashboard-main">
       <header class="dash-header">
-        <div><p class="eyebrow">Your account</p><h1 id="pageTitle">Overview</h1></div>
+        <div>
+          <p class="eyebrow">Your account</p>
+          <h1 id="pageTitle">Overview</h1>
+          <span id="directorAccountBadge" class="director-account-badge" hidden>Director verified</span>
+        </div>
         <a class="primary-button" href="/sell.html">+ List a device</a>
       </header>
 
@@ -44,6 +51,16 @@
 
       <section class="dash-view active" data-panel="overview">
         <div class="welcome-card"><div><p class="eyebrow">Marketplace command center</p><h2 id="welcomeTitle">Your marketplace at a glance.</h2><p>Manage listings, buyer interest and conversations from one place.</p></div><a href="/sell.html" class="secondary-button">List another device</a></div>
+
+        <aside id="directorDashboardBanner" class="director-dashboard-banner" hidden aria-label="Director account tools">
+          <div>
+            <p class="eyebrow">Director verified</p>
+            <h2>Executive controls are ready.</h2>
+            <p>This page is your personal marketplace account. Use the Director Control Center to manage platform-wide listings, users, orders, disputes, reports, decisions and audit activity.</p>
+          </div>
+          <a class="primary-button" href="/director.html">Open Director Control Center</a>
+        </aside>
+
         <div class="kpi-grid" id="overviewKpis"></div>
         <div class="two-column"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Recent performance</p><h2>Views over 30 days</h2></div></div><div id="overviewChart" class="chart-wrap"></div></article><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Needs attention</p><h2>Account activity</h2></div></div><div id="attentionList" class="activity-list"></div></article></div>
         <article class="panel"><div class="panel-heading"><div><p class="eyebrow">Your products</p><h2>Top listing activity</h2></div><button class="link-button" data-go="listings">Manage all</button></div><div id="topListings" class="compact-list"></div></article>
@@ -72,6 +89,7 @@
   <script src="/countries.js"></script>
   <script src="/localization.js" defer></script>
   <script src="/dashboard.js" defer></script>
+  <script src="/session-cookie-bridge.js" defer></script>
   <script src="/dashboard-state.js" defer></script>
   <script src="/dashboard-engagement.js" defer></script>
   <script src="/director-link.js" defer></script>
