@@ -10,9 +10,18 @@
   const directorBanner=document.querySelector('#directorDashboardBanner');
   const directorBadge=document.querySelector('#directorAccountBadge');
   let s=null;try{s=JSON.parse(localStorage.getItem(SESSION_KEY)||'null')}catch{}
-  if(!s?.user?.id||!s?.access_token||!base||!key)return;
-  fetch(`${base}/rest/v1/admin_users?select=role&user_id=eq.${encodeURIComponent(s.user.id)}&limit=1`,{headers:{apikey:key,Authorization:`Bearer ${s.access_token}`}})
-    .then(r=>r.ok?r.json():[])
+  if(!s?.user?.id||!base||!key)return;
+
+  const path=`/rest/v1/admin_users?select=role&user_id=eq.${encodeURIComponent(s.user.id)}&limit=1`;
+  Promise.resolve(window.DDH_SESSION_COOKIE_READY).catch(()=>false)
+    .then(async cookieReady=>{
+      if(cookieReady){
+        return fetch(`/api/supabase?path=${encodeURIComponent(path)}`,{headers:{Accept:'application/json'}});
+      }
+      if(!s?.access_token)return null;
+      return fetch(`${base}${path}`,{headers:{apikey:key,Authorization:`Bearer ${s.access_token}`}});
+    })
+    .then(r=>r?.ok?r.json():[])
     .then(rows=>{
       const role=rows?.[0]?.role||'';
       const isAdmin=['admin','director'].includes(role);
