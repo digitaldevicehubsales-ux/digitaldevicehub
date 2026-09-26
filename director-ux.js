@@ -8,6 +8,13 @@
     document.head.appendChild(link);
   }
 
+  if(!document.querySelector('script[src="/director-listing-controls.js"]')){
+    const script=document.createElement('script');
+    script.src='/director-listing-controls.js';
+    script.defer=true;
+    document.body.appendChild(script);
+  }
+
   const title = document.querySelector('#directorPageTitle');
   const gate = document.querySelector('#directorGate');
   const nav = document.querySelector('.director-nav');
