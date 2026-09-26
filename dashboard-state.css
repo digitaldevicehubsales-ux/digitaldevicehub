@@ -97,6 +97,9 @@ body.dashboard-signed-out .auth-gate{
 }
 
 @media(max-width:760px){
+  .mobile-nav{
+    grid-template-columns:repeat(6,1fr);
+  }
   .director-dashboard-banner{
     align-items:flex-start;
     flex-direction:column;
