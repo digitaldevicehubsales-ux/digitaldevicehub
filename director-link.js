@@ -7,8 +7,7 @@
   const director=document.querySelector('#directorEntry');
   const admin=document.querySelector('#adminEntry');
   const adminTools=document.querySelector('#adminTools');
-  const directorBanner=document.querySelector('#directorDashboardBanner');
-  const directorBadge=document.querySelector('#directorAccountBadge');
+  const welcomeTitle=document.querySelector('#welcomeTitle');
   let s=null;try{s=JSON.parse(localStorage.getItem(SESSION_KEY)||'null')}catch{}
   if(!s?.user?.id||!base||!key)return;
 
@@ -29,8 +28,9 @@
       if(admin&&isAdmin)admin.hidden=false;
       if(director&&isDirector)director.hidden=false;
       if(adminTools&&isAdmin)adminTools.hidden=false;
-      if(directorBanner&&isDirector)directorBanner.hidden=false;
-      if(directorBadge&&isDirector)directorBadge.hidden=false;
-      if(isDirector)document.body.classList.add('role-director');
+      if(isDirector){
+        document.body.classList.add('role-director');
+        if(welcomeTitle)welcomeTitle.textContent='Welcome back, Director.';
+      }
     }).catch(()=>{});
 })();
