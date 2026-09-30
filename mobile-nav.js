@@ -1,6 +1,29 @@
 (() => {
   'use strict';
 
+  const icons={
+    browse:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>',
+    sell:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>',
+    account:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"></circle><path d="M5 20c.8-4 3.1-6 7-6s6.2 2 7 6"></path></svg>',
+    menu:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>',
+    close:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg>',
+    market:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16l-1 11H5L4 9Z"></path><path d="M8 9a4 4 0 0 1 8 0"></path></svg>',
+    trust:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 19 6v5c0 4.7-2.8 8-7 10-4.2-2-7-5.3-7-10V6l7-3Z"></path><path d="m9 12 2 2 4-4"></path></svg>',
+    help:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9.7 9a2.5 2.5 0 0 1 4.8 1c0 1.7-1.3 2.2-2.2 2.8-.6.4-.8.8-.8 1.7M12 18h.01"></path></svg>',
+    info:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7h.01"></path></svg>'
+  };
+
+  function iconFor(label=''){
+    const x=label.toLowerCase();
+    if(x.includes('market'))return icons.market;
+    if(x.includes('trust'))return icons.trust;
+    if(x.includes('help'))return icons.help;
+    if(x.includes('about'))return icons.info;
+    if(x.includes('sell'))return icons.sell;
+    if(x.includes('account'))return icons.account;
+    return icons.browse;
+  }
+
   function loadPremiumUi(){
     if(document.querySelector('link[data-premium-ui]'))return;
     const link=document.createElement('link');
@@ -27,31 +50,16 @@
     const section=document.createElement('section');
     section.className='purpose-section shell';
     section.setAttribute('aria-labelledby','purpose-title');
-    section.innerHTML=`
-      <div class="purpose-card">
-        <div class="purpose-visual">
-          <img src="/purpose-mark.svg" alt="Purpose compass" width="320" height="320" decoding="async">
-        </div>
-        <div class="purpose-copy">
-          <span class="eyebrow">Built with purpose</span>
-          <h2 id="purpose-title">Choose technology with confidence.</h2>
-          <p>Clear facts. Better decisions.</p>
-          <div class="purpose-points">
-            <div class="purpose-point">Find the right device.</div>
-            <div class="purpose-point">Understand every listing.</div>
-            <div class="purpose-point">Buy with more clarity.</div>
-          </div>
-        </div>
-      </div>`;
+    section.innerHTML=`<div class="purpose-card"><div class="purpose-visual"><img src="/purpose-mark.svg" alt="Purpose compass" width="320" height="320" decoding="async"></div><div class="purpose-copy"><span class="eyebrow">Built with purpose</span><h2 id="purpose-title">Choose technology confidently.</h2><p>Clear facts. Better decisions.</p><div class="purpose-points"><div class="purpose-point">Find the right device.</div><div class="purpose-point">Understand every listing.</div><div class="purpose-point">Buy with more clarity.</div></div></div></div>`;
     hero.insertAdjacentElement('afterend',section);
   }
 
-  function setupMobileDock(header){
+  function setupMobileDock(){
     if(document.querySelector('.mobile-action-dock'))return;
     const dock=document.createElement('nav');
     dock.className='mobile-action-dock';
     dock.setAttribute('aria-label','Quick actions');
-    dock.innerHTML='<a href="/marketplace.html">Browse</a><a class="primary" href="/sell.html">Sell</a><a href="/dashboard.html">Account</a>';
+    dock.innerHTML=`<a href="/marketplace.html">${icons.browse}<span>Browse</span></a><a class="primary" href="/sell.html">${icons.sell}<span>Sell</span></a><a href="/dashboard.html">${icons.account}<span>Account</span></a>`;
     document.body.appendChild(dock);
   }
 
@@ -79,20 +87,13 @@
     toggle.addEventListener('click',()=>setTimeout(sync,0));
     document.addEventListener('keydown',e=>{
       if(e.key==='Escape'&&filters.classList.contains('open')){
-        filters.classList.remove('open');
-        document.body.classList.remove('filters-open');
-        toggle.setAttribute('aria-expanded','false');
-        toggle.focus();
+        filters.classList.remove('open');document.body.classList.remove('filters-open');toggle.setAttribute('aria-expanded','false');toggle.focus();
       }
     });
     document.addEventListener('click',e=>{
       if(!filters.classList.contains('open'))return;
       if(filters.contains(e.target)||toggle.contains(e.target))return;
-      if(matchMedia('(max-width:1000px)').matches){
-        filters.classList.remove('open');
-        document.body.classList.remove('filters-open');
-        toggle.setAttribute('aria-expanded','false');
-      }
+      if(matchMedia('(max-width:1000px)').matches){filters.classList.remove('open');document.body.classList.remove('filters-open');toggle.setAttribute('aria-expanded','false')}
     });
   }
 
@@ -109,27 +110,17 @@
     const main=document.querySelector('main');
     if(main&&!main.id)main.id='main-content';
     if(main&&!document.querySelector('.skip-link')){
-      const skip=document.createElement('a');
-      skip.className='skip-link';
-      skip.href='#'+main.id;
-      skip.textContent='Skip to content';
-      document.body.prepend(skip);
+      const skip=document.createElement('a');skip.className='skip-link';skip.href='#'+main.id;skip.textContent='Skip to content';document.body.prepend(skip);
     }
     const footer=document.querySelector('footer');
     if(footer&&!footer.querySelector('a[href="/about.html"]')){
-      const box=document.createElement('div');
-      box.className='footer-company-links';
-      box.innerHTML='<a href="/about.html">About</a><a href="/contact.html">Contact</a>';
-      footer.querySelector('.container,.shell,.footer-inner')?.append(box);
+      const box=document.createElement('div');box.className='footer-company-links';box.innerHTML='<a href="/about.html">About</a><a href="/contact.html">Contact</a>';footer.querySelector('.container,.shell,.footer-inner')?.append(box);
     }
-    loadLocalePicker();
-    setupPurpose();
-    setupNetworkState();
-    setupFilterSheet();
+    loadLocalePicker();setupPurpose();setupNetworkState();setupFilterSheet();
 
     const header=document.querySelector('.global-header, .site-header');
     if(!header)return;
-    setupMobileDock(header);
+    setupMobileDock();
     if(header.querySelector('.mobile-menu-toggle'))return;
 
     const nav=header.querySelector('.global-nav, .desktop-nav');
@@ -138,39 +129,19 @@
     if(account)account.classList.add('mobile-account-visible');
 
     const toggle=document.createElement('button');
-    toggle.type='button';
-    toggle.className='mobile-menu-toggle';
-    toggle.setAttribute('aria-label','Open menu');
-    toggle.setAttribute('aria-expanded','false');
-    toggle.innerHTML='<span></span><span></span><span></span>';
+    toggle.type='button';toggle.className='mobile-menu-toggle';toggle.setAttribute('aria-label','Open menu');toggle.setAttribute('aria-expanded','false');toggle.innerHTML=icons.menu;
 
-    const panel=document.createElement('div');
-    panel.className='mobile-menu-panel';
-    panel.hidden=true;
-    const links=[];
-    nav?.querySelectorAll('a').forEach(a=>links.push({href:a.getAttribute('href'),label:a.textContent.trim()}));
+    const panel=document.createElement('div');panel.className='mobile-menu-panel';panel.hidden=true;
+    const links=[];nav?.querySelectorAll('a').forEach(a=>links.push({href:a.getAttribute('href'),label:a.textContent.trim()}));
     if(!links.some(x=>/sell/i.test(x.label)))links.push({href:'/sell.html',label:'Sell device'});
     if(!links.some(x=>/account/i.test(x.label)))links.push({href:'/dashboard.html',label:'Account'});
-    panel.innerHTML=links.filter((x,i,a)=>x.href&&a.findIndex(y=>y.href===x.href)===i).map(x=>`<a href="${x.href}">${x.label}</a>`).join('');
-    markCurrentPage(panel);
-    header.append(toggle,panel);
+    panel.innerHTML=links.filter((x,i,a)=>x.href&&a.findIndex(y=>y.href===x.href)===i).map(x=>`<a href="${x.href}">${iconFor(x.label)}<span>${x.label}</span></a>`).join('');
+    markCurrentPage(panel);header.append(toggle,panel);
 
-    const close=()=>{
-      toggle.setAttribute('aria-expanded','false');
-      panel.hidden=true;
-      toggle.setAttribute('aria-label','Open menu');
-      document.body.classList.remove('mobile-menu-open');
-    };
+    const close=()=>{toggle.setAttribute('aria-expanded','false');panel.hidden=true;toggle.setAttribute('aria-label','Open menu');toggle.innerHTML=icons.menu;document.body.classList.remove('mobile-menu-open')};
     toggle.addEventListener('click',()=>{
       const open=toggle.getAttribute('aria-expanded')==='true';
-      if(open)close();
-      else{
-        toggle.setAttribute('aria-expanded','true');
-        toggle.setAttribute('aria-label','Close menu');
-        panel.hidden=false;
-        document.body.classList.add('mobile-menu-open');
-        panel.querySelector('a')?.focus();
-      }
+      if(open)close();else{toggle.setAttribute('aria-expanded','true');toggle.setAttribute('aria-label','Close menu');toggle.innerHTML=icons.close;panel.hidden=false;document.body.classList.add('mobile-menu-open');panel.querySelector('a')?.focus()}
     });
     panel.addEventListener('click',e=>{if(e.target.closest('a'))close()});
     document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
