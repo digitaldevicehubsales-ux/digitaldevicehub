@@ -29,13 +29,6 @@
       button.type='button';button.className='profile-signout';button.setAttribute('data-signout','');button.innerHTML=`<span>Sign out</span>${icon}`;
       button.addEventListener('click',signOut);settings.appendChild(button);
     }
-
-    const nav=document.querySelector('.mobile-nav');
-    if(nav&&!nav.querySelector('.mobile-signout')){
-      const button=document.createElement('button');
-      button.type='button';button.className='mobile-signout';button.setAttribute('data-signout','');button.setAttribute('aria-label','Sign out');button.innerHTML=`${icon}<span>Sign out</span>`;
-      button.addEventListener('click',signOut);nav.appendChild(button);
-    }
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup);else setup();
