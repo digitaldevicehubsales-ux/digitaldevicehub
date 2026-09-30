@@ -19,6 +19,24 @@ body.dashboard-signed-out .auth-gate{
   max-width:720px;
 }
 
+/* Keep dashboard branding visible on dark sidebar. */
+.dash-brand .brand-mark{
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  flex:0 0 34px;
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:9px!important;
+  background:#fff!important;
+  color:#111214!important;
+  box-shadow:none!important;
+  font-weight:900;
+}
+.dash-brand{
+  color:#fff;
+}
+
 /* Keep the white secondary action readable inside the dark welcome panel. */
 .welcome-card .secondary-button{
   color:#0b0d12;
