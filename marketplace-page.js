@@ -13,6 +13,7 @@
     search:document.querySelector('#searchInput'),
     category:document.querySelector('#categoryFilter'),
     brand:document.querySelector('#brandFilter'),
+    model:document.querySelector('#modelFilter'),
     condition:document.querySelector('#conditionFilter'),
     min:document.querySelector('#minPrice'),
     max:document.querySelector('#maxPrice'),
@@ -51,6 +52,7 @@
     if(q)p.set('q',q);
     if(controls.category.value!=='all')p.set('category',controls.category.value);
     if(controls.brand.value!=='all')p.set('brand',controls.brand.value);
+    if(controls.model?.value&&controls.model.value!=='all')p.set('model',controls.model.value);
     if(controls.condition.value!=='all')p.set('condition',controls.condition.value);
     if(controls.min.value)p.set('min_price',controls.min.value);
     if(controls.max.value)p.set('max_price',controls.max.value);
@@ -60,10 +62,11 @@
     history.replaceState(null,'',location.pathname+(p.toString()?'?'+p.toString():''));
   }
   function matches(item){
-    const q=controls.search.value.trim().toLowerCase(),category=controls.category.value,brand=controls.brand.value,cond=controls.condition.value,country=controls.country.value,locq=controls.location.value.trim().toLowerCase(),amount=localAmount(item),min=Number(controls.min.value||0),max=Number(controls.max.value||0);
+    const q=controls.search.value.trim().toLowerCase(),category=controls.category.value,brand=controls.brand.value,model=controls.model?.value||'all',cond=controls.condition.value,country=controls.country.value,locq=controls.location.value.trim().toLowerCase(),amount=localAmount(item),min=Number(controls.min.value||0),max=Number(controls.max.value||0);
     const searchable=`${item.title} ${item.brand} ${item.model} ${item.category} ${item.storage||''} ${item.city||''} ${countryName(item.country_code)}`.toLowerCase();
     return(category==='all'||item.category===category)
       &&(brand==='all'||item.brand===brand)
+      &&(model==='all'||item.model===model)
       &&(cond==='all'||item.condition===cond)
       &&(country==='all'||item.country_code===country)
       &&(!q||searchable.includes(q))
@@ -97,7 +100,8 @@
     const add=(key,label,clear)=>out.push({key,label,clear});
     if(controls.search.value.trim())add('q',`Search: ${controls.search.value.trim()}`,()=>controls.search.value='');
     if(controls.category.value!=='all')add('category',controls.category.value,()=>controls.category.value='all');
-    if(controls.brand.value!=='all')add('brand',controls.brand.value,()=>controls.brand.value='all');
+    if(controls.brand.value!=='all')add('brand',controls.brand.value,()=>{controls.brand.value='all';updateModelOptions()});
+    if(controls.model?.value&&controls.model.value!=='all')add('model',controls.model.value,()=>controls.model.value='all');
     if(controls.condition.value!=='all')add('condition',controls.condition.value==='new'?'New':'Used',()=>controls.condition.value='all');
     if(controls.country.value!=='all')add('country',countryName(controls.country.value),()=>controls.country.value='all');
     if(controls.location.value.trim())add('location',controls.location.value.trim(),()=>controls.location.value='');
@@ -131,18 +135,45 @@
     document.querySelector('#relaxFilters')?.addEventListener('click',clearFilters);
   }
   function clearFilters(){
-    controls.search.value='';controls.category.value='all';controls.brand.value='all';controls.condition.value='all';controls.min.value='';controls.max.value='';controls.country.value='all';controls.location.value='';controls.sort.value='newest';visibleCount=PAGE_SIZE;render();
+    controls.search.value='';controls.category.value='all';controls.brand.value='all';if(controls.model)controls.model.value='all';controls.condition.value='all';controls.min.value='';controls.max.value='';controls.country.value='all';controls.location.value='';controls.sort.value='newest';updateModelOptions();visibleCount=PAGE_SIZE;render();
+  }
+  function catalogBrands(){return window.DDH_DEVICE_CATALOG?.brands?.()||[]}
+  function catalogModels(brand){return window.DDH_DEVICE_CATALOG?.models?.(brand)||[]}
+  function allBrands(){
+    return [...new Set([...catalogBrands(),...rows.map(x=>String(x.brand||'').trim()).filter(Boolean)])].sort((a,b)=>a.localeCompare(b));
+  }
+  function modelsForBrand(brand){
+    if(!brand||brand==='all')return [];
+    const fromCatalog=catalogModels(brand);
+    const fromRows=rows.filter(r=>r.brand===brand).map(r=>String(r.model||'').trim()).filter(Boolean);
+    return [...new Set([...fromCatalog,...fromRows])].sort((a,b)=>a.localeCompare(b));
+  }
+  function updateModelOptions(preferred){
+    if(!controls.model)return;
+    const brand=controls.brand.value;
+    if(brand==='all'){
+      controls.model.innerHTML='<option value="all">Select a brand first</option>';
+      controls.model.value='all';
+      controls.model.disabled=true;
+      return;
+    }
+    const models=modelsForBrand(brand);
+    controls.model.disabled=false;
+    controls.model.innerHTML='<option value="all">All models</option>'+models.map(m=>`<option value="${esc(m)}">${esc(m)}${rows.some(r=>r.brand===brand&&r.model===m)?` (${rows.filter(r=>r.brand===brand&&r.model===m).length})`:''}</option>`).join('');
+    const target=preferred||params.get('model');
+    controls.model.value=target&&models.includes(target)?target:'all';
   }
   function updateCounts(){
     const categories=['Phones','Laptops','Tablets','Accessories','Wearables'];
     controls.category.innerHTML=`<option value="all">All devices (${rows.length})</option>`+categories.map(cat=>`<option value="${cat}">${cat} (${rows.filter(r=>r.category===cat).length})</option>`).join('');
-    const brands=[...new Set(rows.map(x=>x.brand).filter(Boolean))].sort();
-    controls.brand.innerHTML='<option value="all">All brands</option>'+brands.map(b=>`<option value="${esc(b)}">${esc(b)} (${rows.filter(r=>r.brand===b).length})</option>`).join('');
+    const brands=allBrands();
+    controls.brand.innerHTML='<option value="all">All brands</option>'+brands.map(b=>{const count=rows.filter(r=>r.brand===b).length;return `<option value="${esc(b)}">${esc(b)}${count?` (${count})`:''}</option>`}).join('');
     const allCountries=window.DDH_COUNTRIES?.sorted?.()||[];
     const countryCounts=new Map();rows.forEach(r=>countryCounts.set(r.country_code,(countryCounts.get(r.country_code)||0)+1));
     controls.country.innerHTML='<option value="all">All countries / regions</option>'+allCountries.map(x=>`<option value="${x.code}">${esc(x.name)}${countryCounts.has(x.code)?` (${countryCounts.get(x.code)})`:''}</option>`).join('');
     const category=params.get('category');if(category&&categories.includes(category))controls.category.value=category;
     const brand=params.get('brand');if(brand&&brands.includes(brand))controls.brand.value=brand;
+    updateModelOptions(params.get('model'));
     const country=params.get('country');if(country&&window.DDH_COUNTRIES?.codes?.includes(country))controls.country.value=country;
   }
   function skeletons(){grid.innerHTML=Array.from({length:6},()=>'<div class="product-card skeleton-card"><div class="product-image skeleton"></div><div class="product-content"><div class="skeleton skeleton-line short"></div><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line medium"></div></div></div>').join('')}
@@ -170,7 +201,7 @@
   }
   hydrateFromUrl();
   let debounceTimer;
-  Object.values(controls).forEach(c=>{if(!c)return;const evt=c.tagName==='INPUT'?'input':'change';c.addEventListener(evt,()=>{visibleCount=PAGE_SIZE;if(evt==='input'){clearTimeout(debounceTimer);debounceTimer=setTimeout(render,180)}else render()})});
+  Object.entries(controls).forEach(([name,c])=>{if(!c)return;const evt=c.tagName==='INPUT'?'input':'change';c.addEventListener(evt,()=>{visibleCount=PAGE_SIZE;if(name==='brand')updateModelOptions();if(evt==='input'){clearTimeout(debounceTimer);debounceTimer=setTimeout(render,180)}else render()})});
   document.querySelector('#clearFilters')?.addEventListener('click',clearFilters);
   document.querySelector('#filterToggle')?.addEventListener('click',e=>{const open=filters.classList.toggle('open');e.currentTarget.setAttribute('aria-expanded',String(open));if(open)filters.querySelector('input,select,button')?.focus()});
   loadMore?.addEventListener('click',()=>{visibleCount+=PAGE_SIZE;render()});
