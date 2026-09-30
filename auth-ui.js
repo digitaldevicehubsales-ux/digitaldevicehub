@@ -205,7 +205,7 @@
       <form id="authForm" class="dialog-form auth-email-form">
         <label class="sr-only" for="authEmail">Email address</label>
         <input id="authEmail" name="email" type="email" required autocomplete="email" placeholder="Email address" />
-        <button class="button auth-submit" type="submit">Email me a 6-digit code</button>
+        <button class="button auth-submit" type="submit">Email me a code</button>
       </form>
       <p class="form-note auth-note">First-time users are registered automatically. Returning users are signed in to the same account.</p>
     </div>`);
