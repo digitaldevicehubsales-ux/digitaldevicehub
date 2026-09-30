@@ -17,14 +17,15 @@
     document.body.appendChild(script);
   }
 
-  // Turn the old seller-flow link into a first-class Director listing action.
+  // Replace the old seller-flow link with a native Director listing action.
   const createListingLink=document.querySelector('[data-panel="listings"] .panel-heading a[href="/sell.html"]');
   if(createListingLink){
-    createListingLink.id='directorCreateListing';
-    createListingLink.href='#';
-    createListingLink.textContent='+ List product';
-    createListingLink.className='btn blue';
-    createListingLink.setAttribute('role','button');
+    const createButton=document.createElement('button');
+    createButton.type='button';
+    createButton.id='directorCreateListing';
+    createButton.className='btn blue';
+    createButton.textContent='+ List product';
+    createListingLink.replaceWith(createButton);
   }
 
   // Load the shared brand/model catalog before the Director create-listing tool.
