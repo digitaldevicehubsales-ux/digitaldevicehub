@@ -7,6 +7,7 @@
   <meta name="description" content="Manage worldwide DigitalDeviceHub listings, offers, analytics, messages, saved searches, notifications and profile." />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="/site-v2.css">
+  <link rel="stylesheet" href="/premium-ui.css">
   <link rel="stylesheet" href="/dashboard-state.css">
   <title>Account Dashboard — DigitalDeviceHub</title>
 </head>
@@ -25,7 +26,7 @@
       <div class="sidebar-bottom">
         <div id="adminTools" class="sidebar-admin" hidden>
           <span class="sidebar-admin-label">Administration</span>
-          <a id="directorEntry" href="/director.html" hidden>Director Control Center →</a>
+          <a id="directorEntry" href="/director.html" hidden>Director controls →</a>
           <a id="adminEntry" href="/admin.html" hidden>Admin moderation →</a>
         </div>
         <a href="/marketplace.html">← Marketplace</a>
@@ -40,25 +41,25 @@
           <h1 id="pageTitle">Overview</h1>
           <span id="directorAccountBadge" class="director-account-badge" hidden>Director verified</span>
         </div>
-        <a class="primary-button" href="/sell.html">+ List a device</a>
+        <a class="primary-button" href="/sell.html">+ List device</a>
       </header>
 
       <div id="authGate" class="auth-gate" hidden>
-        <h2>Sign in to open your dashboard.</h2>
-        <p>Your listings, analytics, messages, favorites and account tools are connected to your DigitalDeviceHub account.</p>
-        <div class="dialog-actions"><a class="primary-button" href="/?signin=1&returnTo=/dashboard.html">Sign in / Sign up</a><a class="secondary-button" href="/marketplace.html">Browse marketplace</a></div>
+        <h2>Sign in to continue.</h2>
+        <p>Access your marketplace tools.</p>
+        <div class="dialog-actions"><a class="primary-button" href="/?signin=1&returnTo=/dashboard.html">Sign in</a><a class="secondary-button" href="/marketplace.html">Browse marketplace</a></div>
       </div>
 
       <section class="dash-view active" data-panel="overview">
-        <div class="welcome-card"><div><p class="eyebrow">Marketplace command center</p><h2 id="welcomeTitle">Your marketplace at a glance.</h2><p>Manage listings, buyer interest and conversations from one place.</p></div><a href="/sell.html" class="secondary-button">List another device</a></div>
+        <div class="welcome-card"><div><p class="eyebrow">Marketplace overview</p><h2 id="welcomeTitle">Your marketplace at glance.</h2><p>Manage everything from here.</p></div><a href="/sell.html" class="secondary-button">List another device</a></div>
 
         <aside id="directorDashboardBanner" class="director-dashboard-banner" hidden aria-label="Director account tools">
           <div>
             <p class="eyebrow">Director verified</p>
-            <h2>Executive controls are ready.</h2>
-            <p>This page is your personal marketplace account. Use the Director Control Center to manage platform-wide listings, users, orders, disputes, reports, decisions and audit activity.</p>
+            <h2>Executive controls ready.</h2>
+            <p>Manage platform-wide operations.</p>
           </div>
-          <a class="primary-button" href="/director.html">Open Director Control Center</a>
+          <a class="primary-button" href="/director.html">Open Director controls</a>
         </aside>
 
         <div class="kpi-grid" id="overviewKpis"></div>
@@ -66,17 +67,17 @@
         <article class="panel"><div class="panel-heading"><div><p class="eyebrow">Your products</p><h2>Top listing activity</h2></div><button class="link-button" data-go="listings">Manage all</button></div><div id="topListings" class="compact-list"></div></article>
       </section>
 
-      <section class="dash-view" data-panel="listings"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Product management</p><h2>My Listings</h2><p>Edit pricing and details, pause availability, mark devices sold or archive listings.</p></div><a href="/sell.html" class="primary-button">+ New listing</a></div><div id="myListings" class="listing-manager"></div></article></section>
+      <section class="dash-view" data-panel="listings"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Product management</p><h2>My Listings</h2><p>Manage price and availability.</p></div><a href="/sell.html" class="primary-button">+ New listing</a></div><div id="myListings" class="listing-manager"></div></article></section>
 
-      <section class="dash-view" data-panel="analytics"><div class="kpi-grid" id="analyticsKpis"></div><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Performance trend</p><h2>Listing views</h2></div><select id="analyticsRange"><option value="7">7 days</option><option value="30" selected>30 days</option><option value="90">90 days</option></select></div><div id="analyticsChart" class="chart-wrap large"></div></article><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Product insights</p><h2>Performance by listing</h2></div></div><div id="analyticsTable" class="analytics-table"></div></article><article class="panel insight-panel"><p class="eyebrow">Self-service insight</p><h2 id="performanceInsight">Publish a listing to begin collecting performance signals.</h2><p id="performanceInsightBody">Views, unique visitors, favorites and buyer conversations will appear here.</p></article></section>
+      <section class="dash-view" data-panel="analytics"><div class="kpi-grid" id="analyticsKpis"></div><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Performance trend</p><h2>Listing views</h2></div><select id="analyticsRange"><option value="7">7 days</option><option value="30" selected>30 days</option><option value="90">90 days</option></select></div><div id="analyticsChart" class="chart-wrap large"></div></article><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Product insights</p><h2>Performance by listing</h2></div></div><div id="analyticsTable" class="analytics-table"></div></article><article class="panel insight-panel"><p class="eyebrow">Performance insight</p><h2 id="performanceInsight">Publish to unlock insights.</h2><p id="performanceInsightBody">Views and interest appear here.</p></article></section>
 
-      <section class="dash-view" data-panel="messages"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Conversations</p><h2>Messages</h2><p>Keep buyer and seller conversations tied to the relevant device.</p></div></div><div id="messageList" class="message-list"></div></article></section>
+      <section class="dash-view" data-panel="messages"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Conversations</p><h2>Messages</h2><p>Keep device conversations organized.</p></div></div><div id="messageList" class="message-list"></div></article></section>
 
-      <section class="dash-view" data-panel="offers"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Marketplace negotiation</p><h2>Offers</h2><p>Review offers you received and track offers you sent. Offers do not process payment.</p></div></div><div id="offerList" class="offer-list"></div></article></section>
+      <section class="dash-view" data-panel="offers"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Marketplace negotiation</p><h2>Offers</h2><p>Review sent and received offers.</p></div></div><div id="offerList" class="offer-list"></div></article></section>
 
       <section class="dash-view" data-panel="favorites"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Saved devices</p><h2>Favorites</h2></div><a class="secondary-button" href="/marketplace.html">Browse devices</a></div><div id="favoriteList" class="favorite-grid"></div></article></section>
 
-      <section class="dash-view" data-panel="profile"><div class="two-column profile-layout"><article class="panel"><p class="eyebrow">Public profile</p><h2>Seller identity</h2><form id="profileForm" class="form-grid"><label>Display name<input name="display_name" maxlength="80" /></label><label>City / locality<input name="city" maxlength="80" /></label><label>Country / region<select name="country_code" id="profileCountry"><option value="">Choose country / region</option></select></label><label>Account email<input id="profileEmail" disabled /></label><label>Local currency<input id="profileCurrency" disabled /></label><button class="primary-button" type="submit">Save profile</button></form></article><article class="panel"><p class="eyebrow">Account tools</p><h2>Useful shortcuts</h2><div class="settings-list"><a href="/sell.html">List a new device <span>→</span></a><button data-go="analytics">Review product performance <span>→</span></button><button data-go="messages">Open conversations <span>→</span></button><button data-go="offers">Review offers <span>→</span></button><a href="/privacy.html">Privacy information <span>→</span></a></div></article></div></section>
+      <section class="dash-view" data-panel="profile"><div class="two-column profile-layout"><article class="panel"><p class="eyebrow">Public profile</p><h2>Seller identity</h2><form id="profileForm" class="form-grid"><label>Display name<input name="display_name" maxlength="80" /></label><label>City or locality<input name="city" maxlength="80" /></label><label>Country or region<select name="country_code" id="profileCountry"><option value="">Choose region</option></select></label><label>Account email<input id="profileEmail" disabled /></label><label>Local currency<input id="profileCurrency" disabled /></label><button class="primary-button" type="submit">Save profile</button></form></article><article class="panel"><p class="eyebrow">Account tools</p><h2>Useful shortcuts</h2><div class="settings-list"><a href="/sell.html">List new device <span>→</span></a><button data-go="analytics">Review performance <span>→</span></button><button data-go="messages">Open conversations <span>→</span></button><button data-go="offers">Review offers <span>→</span></button><a href="/privacy.html">Privacy information <span>→</span></a></div></article></div></section>
     </main>
   </div>
 
@@ -90,6 +91,7 @@
   <script src="/localization.js" defer></script>
   <script src="/dashboard.js" defer></script>
   <script src="/session-cookie-bridge.js" defer></script>
+  <script src="/dashboard-account-controls.js" defer></script>
   <script src="/dashboard-state.js" defer></script>
   <script src="/dashboard-engagement.js" defer></script>
   <script src="/director-link.js" defer></script>
