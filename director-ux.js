@@ -17,6 +17,36 @@
     document.body.appendChild(script);
   }
 
+  // Turn the old seller-flow link into a first-class Director listing action.
+  const createListingLink=document.querySelector('[data-panel="listings"] .panel-heading a[href="/sell.html"]');
+  if(createListingLink){
+    createListingLink.id='directorCreateListing';
+    createListingLink.href='#';
+    createListingLink.textContent='+ List product';
+    createListingLink.className='btn blue';
+    createListingLink.setAttribute('role','button');
+  }
+
+  // Load the shared brand/model catalog before the Director create-listing tool.
+  function loadDirectorListingCreate(){
+    if(document.querySelector('script[data-director-listing-create]'))return;
+    const script=document.createElement('script');
+    script.src='/director-listing-create.js?v=20260929-1';
+    script.dataset.directorListingCreate='1';
+    document.body.appendChild(script);
+  }
+  if(window.DDH_DEVICE_CATALOG)loadDirectorListingCreate();
+  else if(!document.querySelector('script[data-device-catalog]')){
+    const catalog=document.createElement('script');
+    catalog.src='/device-catalog.js?v=20260929-1';
+    catalog.dataset.deviceCatalog='1';
+    catalog.onload=loadDirectorListingCreate;
+    document.body.appendChild(catalog);
+  }else{
+    const existing=document.querySelector('script[data-device-catalog]');
+    existing.addEventListener('load',loadDirectorListingCreate,{once:true});
+  }
+
   const title=document.querySelector('#directorPageTitle');
   const gate=document.querySelector('#directorGate');
   const nav=document.querySelector('.director-nav');
