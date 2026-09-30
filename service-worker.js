@@ -1,5 +1,5 @@
-const CACHE='ddh-v40';
-const ASSETS=['/','/index.html','/site-v2.css','/config.js','/countries.js','/app.js','/home-preview-fix.js','/auth-ui.js','/account-ui.js','/session-cookie-bridge.js','/localization.js','/locale-picker.js','/locale-ui.js','/analytics.js','/role-router.js','/open-signin.js','/mobile-nav.js','/marketplace.html','/marketplace-page.js','/marketplace-engagement.js','/device.html','/device-shell.html','/device-page.js','/device-state-fix.js','/sell.html','/sell-wizard.js','/sell-select-hardening.js','/seller.html','/seller-page.js','/trust.html','/help.html','/about.html','/contact.html','/phones.html','/laptops.html','/tablets.html','/accessories.html','/wearables.html','/compare.html','/compare.js','/404.html','/dashboard.html','/dashboard.js','/dashboard-state.js','/dashboard-state.css','/dashboard-engagement.js','/director-link.js','/director.html','/director.css','/director-ux.css','/director.js','/director-api-bridge.js','/director-safety.js','/director-listing-controls.js','/admin.html','/admin.css','/admin.js','/admin-v2.js','/manifest.webmanifest','/favicon.svg','/resend-confirmation.html','/resend-confirmation.js'];
+const CACHE='ddh-v41';
+const ASSETS=['/','/index.html','/site-v2.css','/premium-ui.css','/purpose-mark.svg','/config.js','/countries.js','/app.js','/home-preview-fix.js','/auth-ui.js','/auth-otp-fix.js','/account-ui.js','/session-cookie-bridge.js','/localization.js','/locale-picker.js','/locale-ui.js','/analytics.js','/role-router.js','/open-signin.js','/mobile-nav.js','/marketplace.html','/marketplace-page.js','/marketplace-engagement.js','/device.html','/device-shell.html','/device-page.js','/device-state-fix.js','/sell.html','/sell-wizard.js','/sell-select-hardening.js','/seller.html','/seller-page.js','/trust.html','/help.html','/about.html','/contact.html','/phones.html','/laptops.html','/tablets.html','/accessories.html','/wearables.html','/compare.html','/compare.js','/404.html','/dashboard.html','/dashboard.js','/dashboard-state.js','/dashboard-state.css','/dashboard-account-controls.js','/dashboard-engagement.js','/director-link.js','/director.html','/director.css','/director-ux.css','/director.js','/director-api-bridge.js','/director-safety.js','/director-listing-controls.js','/admin.html','/admin.css','/admin.js','/admin-v2.js','/manifest.webmanifest','/favicon.svg','/resend-confirmation.html','/resend-confirmation.js'];
 const CACHEABLE_PATHS=new Set(ASSETS.map(path=>new URL(path,self.location.origin).pathname));
 
 self.addEventListener('install',event=>{
@@ -20,10 +20,7 @@ self.addEventListener('fetch',event=>{
 
   const url=new URL(request.url);
 
-  // Never intercept or cache cross-origin traffic, authenticated proxy calls,
-  // session endpoints, or dynamic API responses. The previous implementation
-  // cached every successful GET, which could persist private dashboard data in
-  // Cache Storage after sign-out and could return HTML as a failed API response.
+  // Never cache private or dynamic responses.
   if(url.origin!==self.location.origin)return;
   if(url.pathname.startsWith('/api/')||url.pathname.startsWith('/auth/')||url.pathname==='/sitemap.xml')return;
 
