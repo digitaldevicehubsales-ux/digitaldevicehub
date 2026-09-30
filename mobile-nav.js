@@ -10,7 +10,8 @@
     market:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16l-1 11H5L4 9Z"></path><path d="M8 9a4 4 0 0 1 8 0"></path></svg>',
     trust:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 19 6v5c0 4.7-2.8 8-7 10-4.2-2-7-5.3-7-10V6l7-3Z"></path><path d="m9 12 2 2 4-4"></path></svg>',
     help:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9.7 9a2.5 2.5 0 0 1 4.8 1c0 1.7-1.3 2.2-2.2 2.8-.6.4-.8.8-.8 1.7M12 18h.01"></path></svg>',
-    info:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7h.01"></path></svg>'
+    info:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7h.01"></path></svg>',
+    filter:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"></path></svg>'
   };
 
   function iconFor(label=''){
@@ -25,7 +26,7 @@
   }
 
   function loadPremiumUi(){
-    if(document.querySelector('link[data-premium-ui]'))return;
+    if(document.querySelector('link[data-premium-ui],link[href="/premium-ui.css"]'))return;
     const link=document.createElement('link');
     link.rel='stylesheet';
     link.href='/premium-ui.css';
@@ -40,18 +41,6 @@
     script.defer=true;
     script.dataset.localePicker='true';
     document.head.appendChild(script);
-  }
-
-  function setupPurpose(){
-    if(location.pathname!=='/'&&location.pathname!=='/index.html')return;
-    if(document.querySelector('.purpose-section'))return;
-    const hero=document.querySelector('.hero');
-    if(!hero)return;
-    const section=document.createElement('section');
-    section.className='purpose-section shell';
-    section.setAttribute('aria-labelledby','purpose-title');
-    section.innerHTML=`<div class="purpose-card"><div class="purpose-visual"><img src="/purpose-mark.svg" alt="Purpose compass" width="320" height="320" decoding="async"></div><div class="purpose-copy"><span class="eyebrow">Built with purpose</span><h2 id="purpose-title">Choose technology confidently.</h2><p>Clear facts. Better decisions.</p><div class="purpose-points"><div class="purpose-point">Find the right device.</div><div class="purpose-point">Understand every listing.</div><div class="purpose-point">Buy with more clarity.</div></div></div></div>`;
-    hero.insertAdjacentElement('afterend',section);
   }
 
   function setupMobileDock(){
@@ -83,6 +72,7 @@
     const filters=document.querySelector('#filters');
     const toggle=document.querySelector('#filterToggle');
     if(!filters||!toggle)return;
+    if(!toggle.querySelector('svg'))toggle.innerHTML=`${icons.filter}<span>Filters</span>`;
     const sync=()=>document.body.classList.toggle('filters-open',filters.classList.contains('open'));
     toggle.addEventListener('click',()=>setTimeout(sync,0));
     document.addEventListener('keydown',e=>{
@@ -116,7 +106,9 @@
     if(footer&&!footer.querySelector('a[href="/about.html"]')){
       const box=document.createElement('div');box.className='footer-company-links';box.innerHTML='<a href="/about.html">About</a><a href="/contact.html">Contact</a>';footer.querySelector('.container,.shell,.footer-inner')?.append(box);
     }
-    loadLocalePicker();setupPurpose();setupNetworkState();setupFilterSheet();
+    loadLocalePicker();
+    setupNetworkState();
+    setupFilterSheet();
 
     const header=document.querySelector('.global-header, .site-header');
     if(!header)return;
