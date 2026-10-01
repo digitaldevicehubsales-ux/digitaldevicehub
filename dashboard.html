@@ -12,6 +12,7 @@
   <title>Account Dashboard — DigitalDeviceHub</title>
 </head>
 <body>
+  <a class="skip-link" href="#dashboardMain">Skip to content</a>
   <div class="dashboard-shell">
     <aside class="sidebar">
       <a class="dash-brand" href="/"><span class="brand-mark">D</span><span>DigitalDeviceHub</span></a>
@@ -34,7 +35,7 @@
       </div>
     </aside>
 
-    <main class="dashboard-main">
+    <main class="dashboard-main" id="dashboardMain">
       <header class="dash-header">
         <div>
           <p class="eyebrow">Your account</p>
@@ -45,12 +46,12 @@
 
       <div id="authGate" class="auth-gate" hidden>
         <h2>Sign in to continue.</h2>
-        <p>Access your marketplace tools.</p>
+        <p>Access marketplace tools.</p>
         <div class="dialog-actions"><a class="primary-button" href="/?signin=1&returnTo=/dashboard.html">Sign in</a><a class="secondary-button" href="/marketplace.html">Browse marketplace</a></div>
       </div>
 
       <section class="dash-view active" data-panel="overview">
-        <div class="welcome-card"><div><p class="eyebrow">Marketplace overview</p><h2 id="welcomeTitle">Your marketplace at glance.</h2><p>Manage everything from here.</p></div><a href="/sell.html" class="secondary-button">List another device</a></div>
+        <div class="welcome-card"><div><p class="eyebrow">Marketplace overview</p><h2 id="welcomeTitle">Your marketplace overview.</h2><p>Manage everything here.</p></div><a href="/sell.html" class="secondary-button">List another device</a></div>
 
         <div class="kpi-grid" id="overviewKpis"></div>
         <div class="two-column"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Recent performance</p><h2>Views over 30 days</h2></div></div><div id="overviewChart" class="chart-wrap"></div></article><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Needs attention</p><h2>Account activity</h2></div></div><div id="attentionList" class="activity-list"></div></article></div>
@@ -71,7 +72,7 @@
     </main>
   </div>
 
-  <nav class="mobile-nav" aria-label="Dashboard mobile navigation"><button class="active" data-view="overview">Home</button><button data-view="listings">Listings</button><button data-view="analytics">Analytics</button><button data-view="messages">Messages</button><button data-view="offers">Offers</button><button data-view="profile">Account</button></nav>
+  <nav class="mobile-nav" aria-label="Dashboard mobile navigation"><button class="active" data-view="overview">Home</button><button data-view="listings">Listings</button><button data-view="analytics">Analytics</button><button data-view="messages">Messages</button><button data-view="offers">Offers</button><button data-view="favorites">Favorites</button><button data-view="profile">Account</button></nav>
 
   <dialog id="dashboardDialog"><button class="dialog-close" aria-label="Close">×</button><div id="dashboardDialogContent"></div></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
