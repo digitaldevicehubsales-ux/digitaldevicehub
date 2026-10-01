@@ -19,7 +19,6 @@ body.dashboard-signed-out .auth-gate{
   max-width:720px;
 }
 
-/* Keep dashboard branding visible on dark sidebar. */
 .dash-brand .brand-mark{
   display:grid;
   place-items:center;
@@ -33,21 +32,12 @@ body.dashboard-signed-out .auth-gate{
   box-shadow:none!important;
   font-weight:900;
 }
-.dash-brand{
-  color:#fff;
-}
-
-/* Keep the white secondary action readable inside the dark welcome panel. */
-.welcome-card .secondary-button{
-  color:#0b0d12;
-  background:#fff;
-}
+.dash-brand{color:#fff}
+.welcome-card .secondary-button{color:#0b0d12;background:#fff}
 
 .sidebar-admin[hidden],
 .director-dashboard-banner[hidden],
-#directorAccountBadge[hidden]{
-  display:none !important;
-}
+#directorAccountBadge[hidden]{display:none!important}
 
 .sidebar-admin{
   display:grid;
@@ -65,13 +55,8 @@ body.dashboard-signed-out .auth-gate{
   letter-spacing:.12em;
   text-transform:uppercase;
 }
-.sidebar-admin a{
-  color:#d8dde7;
-  font-weight:760;
-}
-.sidebar-admin a:hover{
-  color:#fff;
-}
+.sidebar-admin a{color:#d8dde7;font-weight:760}
+.sidebar-admin a:hover{color:#fff}
 
 .director-dashboard-banner{
   display:flex;
@@ -84,21 +69,9 @@ body.dashboard-signed-out .auth-gate{
   background:linear-gradient(135deg,#f7f9ff,#eef3ff);
   box-shadow:0 10px 30px rgba(49,94,251,.06);
 }
-.director-dashboard-banner h2{
-  margin:5px 0 6px;
-  font-size:24px;
-  letter-spacing:-.035em;
-}
-.director-dashboard-banner p{
-  margin:0;
-  max-width:760px;
-  color:#596273;
-  line-height:1.55;
-}
-.director-dashboard-banner .primary-button{
-  flex:0 0 auto;
-  background:#315efb;
-}
+.director-dashboard-banner h2{margin:5px 0 6px;font-size:24px;letter-spacing:-.035em}
+.director-dashboard-banner p{margin:0;max-width:760px;color:#596273;line-height:1.55}
+.director-dashboard-banner .primary-button{flex:0 0 auto;background:#315efb}
 
 .director-account-badge{
   display:inline-flex;
@@ -112,69 +85,41 @@ body.dashboard-signed-out .auth-gate{
   font-size:12px;
   font-weight:850;
 }
-.director-account-badge::before{
-  content:'✓';
-}
+.director-account-badge::before{content:'✓'}
 
 @media(max-width:760px){
   .mobile-nav{
     display:grid;
-    grid-template-columns:none;
-    grid-auto-flow:column;
-    grid-auto-columns:minmax(76px,1fr);
-    overflow-x:auto;
+    grid-template-columns:none!important;
+    grid-auto-flow:column!important;
+    grid-auto-columns:minmax(76px,1fr)!important;
+    overflow-x:auto!important;
     overscroll-behavior-x:contain;
     scroll-snap-type:x proximity;
     scrollbar-width:none;
     -webkit-overflow-scrolling:touch;
-    padding-left:max(6px,env(safe-area-inset-left));
-    padding-right:max(6px,env(safe-area-inset-right));
+    padding-left:max(6px,env(safe-area-inset-left))!important;
+    padding-right:max(6px,env(safe-area-inset-right))!important;
   }
   .mobile-nav::-webkit-scrollbar{display:none}
-  .mobile-nav button{
-    min-width:76px;
-    scroll-snap-align:center;
-    white-space:nowrap;
-  }
-  .dashboard-main{
-    padding-bottom:calc(92px + env(safe-area-inset-bottom));
-  }
-  .dash-header{
-    align-items:flex-start;
-    gap:14px;
-  }
+  .mobile-nav button{min-width:76px!important;scroll-snap-align:center;white-space:nowrap}
+  .dashboard-main{padding-bottom:calc(92px + env(safe-area-inset-bottom))!important}
+  .dash-header{align-items:flex-start;gap:14px}
   .dash-header-actions{
     width:100%;
     display:grid!important;
-    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
   }
   .dash-header-actions .primary-button,
-  .dash-header-actions .dash-signout{
-    width:100%;
-    min-width:0;
-  }
-  .director-dashboard-banner{
-    align-items:flex-start;
-    flex-direction:column;
-    padding:20px;
-  }
-  .director-dashboard-banner .primary-button{
-    width:100%;
-  }
+  .dash-header-actions .dash-signout{width:100%;min-width:0}
+  .director-dashboard-banner{align-items:flex-start;flex-direction:column;padding:20px}
+  .director-dashboard-banner .primary-button{width:100%}
 }
 
 @media(max-width:430px){
-  .dash-header-actions{
-    grid-template-columns:1fr;
-  }
-  .welcome-card{
-    gap:18px;
-  }
-  .welcome-card .secondary-button{
-    width:100%;
-  }
+  .dash-header-actions{grid-template-columns:1fr!important}
+  .welcome-card{gap:18px}
+  .welcome-card .secondary-button{width:100%}
 }
 
-@media(prefers-reduced-motion:reduce){
-  .mobile-nav{scroll-behavior:auto}
-}
+@media(prefers-reduced-motion:reduce){.mobile-nav{scroll-behavior:auto}}
