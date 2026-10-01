@@ -67,12 +67,16 @@
   async function uploadVideoPoster(file,listingId,userId){
     const poster=await posterFromVideo(file);const root=`${userId}/${listingId}/${crypto.randomUUID()}-poster`;const [thumb,card,detail]=await Promise.all([resizeImage(poster.blob,480,.78),resizeImage(poster.blob,900,.82),resizeImage(poster.blob,1600,.86)]);const thumbPath=`${root}-480.webp`,cardPath=`${root}-900.webp`,detailPath=`${root}-1600.webp`;await Promise.all([uploadProcessed(thumb.blob,thumbPath),uploadProcessed(card.blob,cardPath),uploadProcessed(detail.blob,detailPath)]);await api('/rest/v1/listing_images',{method:'POST',body:{listing_id:listingId,storage_path:detailPath,sort_order:0,width:detail.width,height:detail.height,media_type:'image',variants:{thumb:thumbPath,card:cardPath,detail:detailPath,generated_from_video:true}}})
   }
-  async function uploadFiles(files,listingId,userId){
+  function validateMedia(files){
     const chosen=[...files].filter(f=>f instanceof File&&f.size);if(!chosen.length)throw new Error('Add photos or a video.');
     const unsupported=chosen.find(f=>!IMAGE_TYPES.includes(f.type)&&!VIDEO_TYPES.includes(f.type));if(unsupported)throw new Error('Use JPG, PNG, WebP, MP4, or WebM.');
     const photos=chosen.filter(f=>IMAGE_TYPES.includes(f.type)),videos=chosen.filter(f=>VIDEO_TYPES.includes(f.type));if(photos.length>8)throw new Error('You can upload up to 8 photos.');if(videos.length>1)throw new Error('Upload only one video per listing.');
     for(let i=0;i<photos.length;i++){if(photos[i].size>5*1024*1024)throw new Error(`Photo ${i+1} must be 5 MB or smaller.`)}
     if(videos[0]?.size>50*1024*1024)throw new Error('Video must be 50 MB or smaller.');
+    return {chosen,photos,videos};
+  }
+  async function uploadFiles(files,listingId,userId){
+    const {photos,videos}=validateMedia(files);
     for(let i=0;i<photos.length;i++)await uploadPhoto(photos[i],listingId,userId,i);
     if(videos[0]){await uploadVideo(videos[0],listingId,userId);if(!photos.length)await uploadVideoPoster(videos[0],listingId,userId)}
   }
@@ -80,22 +84,24 @@
   async function submitListing(e){
     e.preventDefault();if(!validateCurrent())return;const s=session();if(!s?.user?.id){authGate.hidden=false;form.hidden=true;return}
     const fd=new FormData(form);const price=Number(fd.get('price'));const cur=validCurrency(fd.get('currency'));if(!Number.isFinite(price)||price<=0||!cur)return toast('Enter a valid price and choose a currency.');
+    try{validateMedia(fd.getAll('images'))}catch(err){return toast(err.message)}
     const category=String(fd.get('category')||''),identifier=category==='Phones'?String(fd.get('device_identifier')||'').trim():'';if(identifier&&!validImei(identifier))return toast('Enter a valid 15-digit IMEI, or leave the optional IMEI field blank.');
     const brand=String(fd.get('brand')||'').trim(),model=String(fd.get('model')||'').trim();const country=String(fd.get('country_code')||'').trim().toUpperCase();
-    const payload={seller_id:s.user.id,title:`${brand} ${model}`.trim(),category,brand,model,condition:String(fd.get('condition')),price_amount:Math.round(price*10000)/10000,price_currency:cur,storage:String(fd.get('storage')||'').trim()||null,color:String(fd.get('color')||'').trim()||null,city:String(fd.get('city')||'').trim()||null,country_code:/^[A-Z]{2}$/.test(country)?country:null,delivery_mode:String(fd.get('delivery_mode')||'pickup'),warranty_text:String(fd.get('warranty_text')||'').trim()||null,description:String(fd.get('description')||'').trim(),specs:{battery_health:String(fd.get('battery_health')||'').trim()||null,network_status:String(fd.get('network_status')||'').trim()||null,repair_history:String(fd.get('repair_history')||'').trim()||null,accessories:String(fd.get('accessories')||'').trim()||null},status:'pending'};
-    submit.disabled=true;submit.textContent='Submitting…';
+    const payload={seller_id:s.user.id,title:`${brand} ${model}`.trim(),category,brand,model,condition:String(fd.get('condition')),price_amount:Math.round(price*10000)/10000,price_currency:cur,storage:String(fd.get('storage')||'').trim()||null,color:String(fd.get('color')||'').trim()||null,city:String(fd.get('city')||'').trim()||null,country_code:/^[A-Z]{2}$/.test(country)?country:null,delivery_mode:String(fd.get('delivery_mode')||'pickup'),warranty_text:String(fd.get('warranty_text')||'').trim()||null,description:String(fd.get('description')||'').trim(),specs:{battery_health:String(fd.get('battery_health')||'').trim()||null,network_status:String(fd.get('network_status')||'').trim()||null,repair_history:String(fd.get('repair_history')||'').trim()||null,accessories:String(fd.get('accessories')||'').trim()||null},status:'draft'};
+    submit.disabled=true;submit.textContent='Submitting…';let row=null;
     try{
-      const created=await api('/rest/v1/listings',{method:'POST',body:payload});let row=Array.isArray(created)?created[0]:created;
+      const created=await api('/rest/v1/listings',{method:'POST',body:payload});row=Array.isArray(created)?created[0]:created;
       if(!row?.id){const find=await api(`/rest/v1/listings?select=id&seller_id=eq.${encodeURIComponent(s.user.id)}&title=eq.${encodeURIComponent(payload.title)}&order=created_at.desc&limit=1`);row=find?.[0]}
       if(!row?.id)throw new Error('Listing was created but could not be reopened.');
       await uploadFiles(fd.getAll('images'),row.id,s.user.id);
       const identityResult=identifier?await checkDeviceIdentity(identifier,row.id).catch(()=>({unavailable:true})):null;
+      await api(`/rest/v1/listings?id=eq.${encodeURIComponent(row.id)}&seller_id=eq.${encodeURIComponent(s.user.id)}`,{method:'PATCH',body:{status:'pending'},headers:{Prefer:'return=minimal'}});
       localStorage.removeItem(DRAFT_KEY);await api(`/rest/v1/listing_drafts?user_id=eq.${encodeURIComponent(s.user.id)}`,{method:'DELETE'}).catch(()=>{});form.reset();
       if(identityResult?.duplicate)toast('Listing submitted for review. The device identifier matched another listing and was flagged for moderator review.');
       else if(identityResult?.unavailable)toast('Listing submitted for review. The optional identifier check will need moderator follow-up.');
       else toast('Listing submitted for review.');
       setTimeout(()=>location.assign('/dashboard.html'),1200);
-    }catch(err){toast(err.message)}finally{submit.disabled=false;submit.textContent='Submit review'}
+    }catch(err){toast(row?.id?`${err.message} Draft saved.`:err.message)}finally{submit.disabled=false;submit.textContent='Submit review'}
   }
   next.onclick=()=>{if(!validateCurrent())return;draft();showStep(step+1)};back.onclick=()=>showStep(step-1);form.addEventListener('input',()=>{draft();scheduleServerDraft()});form.addEventListener('change',()=>{draft();scheduleServerDraft()});form.addEventListener('submit',submitListing);document.querySelector('select[name="category"]').addEventListener('change',syncPhoneSpecs);document.addEventListener('ddh:localization-ready',e=>{const label=[window.DDH_COUNTRIES?.name?.(e.detail.country)||e.detail.country,e.detail.currency].filter(Boolean).join(' · ')||'Region & currency';document.querySelector('#localeChip').textContent=label;window.DDH_COUNTRIES?.populate?.(document.querySelector('#countryCode'),document.querySelector('#countryCode')?.value||e.detail.country);currencyOptions()});currencyOptions();window.DDH_COUNTRIES?.populate?.(document.querySelector('#countryCode'),window.DDH_LOCALIZATION?.state?.country||'');restore();currencyOptions();syncPhoneSpecs();const s=session();if(!s?.user?.id){authGate.hidden=false;form.hidden=true}else{authGate.hidden=true;form.hidden=false;restoreServerDraft().then(()=>{window.DDH_COUNTRIES?.populate?.(document.querySelector('#countryCode'),document.querySelector('#countryCode')?.value||window.DDH_LOCALIZATION?.state?.country||'');currencyOptions();syncPhoneSpecs()})}showStep(0);
 })();
