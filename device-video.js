@@ -41,7 +41,7 @@
     const thumbs=document.querySelector('#galleryThumbs');
     if(!main)return;
     const src=publicMedia(video.storage_path);
-    main.innerHTML=`<video class="listing-video" controls playsinline preload="metadata" aria-label="Listing video ${index+1}"><source src="${esc(src)}" type="${esc(video.mime_type||'video/mp4')}">Video playback unavailable.</video>`;
+    main.innerHTML=`<video controls playsinline preload="metadata" aria-label="Listing video ${index+1}" style="display:block;width:100%;height:100%;max-height:690px;min-height:280px;object-fit:contain;background:#0c0f14"><source src="${esc(src)}" type="${esc(video.mime_type||'video/mp4')}">Video playback unavailable.</video>`;
     thumbs?.querySelectorAll('button').forEach(button=>button.classList.toggle('active',button.dataset.videoIndex===String(index)));
   }
 
@@ -59,7 +59,8 @@
       button.className='video-thumb';
       button.dataset.videoIndex=String(index);
       button.setAttribute('aria-label',`Play listing video ${index+1}`);
-      button.innerHTML='<span class="video-thumb-icon" aria-hidden="true">▶</span><span>Video</span>';
+      button.style.cssText='display:grid;place-items:center;gap:2px;background:#111214;color:#fff;font-size:11px;font-weight:800';
+      button.innerHTML='<span aria-hidden="true" style="font-size:20px;line-height:1">▶</span><span>Video</span>';
       button.addEventListener('click',()=>showVideo(video,index));
       thumbs.appendChild(button);
     });
