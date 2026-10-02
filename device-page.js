@@ -31,7 +31,7 @@
   function specRows(){
     const s=listing.specs||{};
     const rows=[
-      ['Category',listing.category],['Condition',listing.condition==='new'?'New':'Used'],['Brand',listing.brand],['Model',listing.model],
+      ['Category',listing.category],['Condition',listing.condition==='new'?'New':'Used'],['Used condition',s.cosmetic_condition],['Visible wear or faults',s.condition_notes],['Brand',listing.brand],['Model',listing.model],
       ['Storage',listing.storage],['Colour',listing.color],['Battery health',s.battery_health],['Network status',s.network_status],
       ['Repairs',s.repair_history],['Included',s.accessories],['Delivery',({pickup:'Local pickup only',domestic:'Ships within seller country',international:'International shipping',pickup_domestic:'Pickup + domestic shipping',all:'Pickup + domestic + international shipping'})[listing.delivery_mode]||'Delivery details available'],
       ['Warranty',listing.warranty_text],['Location',[listing.city,countryName(listing.country_code)].filter(Boolean).join(', ')]
