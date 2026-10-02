@@ -17,6 +17,8 @@
     const body=[
       row('Seller asking price',x=>`<strong>${esc(money(x.price_amount,x.price_currency))}</strong>`),
       row('Local estimate',x=>`<span class="price local-estimate" data-price-amount="${esc(x.price_amount)}" data-price-currency="${esc(x.price_currency)}">${esc(money(x.price_amount,x.price_currency))}</span>`),
+      row('Used condition',x=>esc(x.condition==='used'?(x.specs?.cosmetic_condition||'Not specified'):'')),
+      row('Visible wear or faults',x=>esc(x.condition==='used'?(x.specs?.condition_notes||'Not specified'):'')),
       row('Storage',x=>esc(x.storage||'')),
       row('Colour',x=>esc(x.color||'')),
       row('Battery health',x=>esc(x.specs?.battery_health||'')),
