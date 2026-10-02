@@ -10,7 +10,7 @@
   function nameFor(q){const parts=[q.q,q.brand&&q.brand!=='all'?q.brand:'',q.category&&q.category!=='all'?q.category:'',q.condition&&q.condition!=='all'?(q.condition==='new'?'New':'Used'):'',q.country&&q.country!=='all'?(window.DDH_COUNTRIES?.name?.(q.country)||q.country):''].filter(Boolean);return parts.join(' · ')||'Marketplace search'}
   async function api(path,{method='GET',body,prefer='return=minimal'}={}){const s=session();if(!s?.user?.id||!s?.access_token)throw new Error('Sign in to continue.');const r=await fetch(`${base}${path}`,{method,headers:{apikey:key,Authorization:`Bearer ${s.access_token}`,'Content-Type':'application/json',Prefer:prefer},body:body===undefined?undefined:JSON.stringify(body)});const data=await r.json().catch(()=>null);if(!r.ok)throw new Error(data?.message||data?.error||'Request failed.');return data}
   button?.addEventListener('click',async()=>{
-    const s=session();if(!s?.user?.id||!s?.access_token){location.href='/?signin=1';return}
+    const s=session();if(!s?.user?.id||!s?.access_token){location.href='/?signin=1&returnTo='+encodeURIComponent(location.pathname+location.search);return}
     const query=queryObject();
     try{await api('/rest/v1/saved_searches',{method:'POST',body:{user_id:s.user.id,name:nameFor(query),query}});notify('Search saved. We will keep it in your account.')}catch(err){notify(err.message)}
   });
@@ -35,7 +35,7 @@
   document.addEventListener('click',async event=>{
     const save=event.target.closest?.('[data-save-id]');if(!save)return;
     event.preventDefault();event.stopPropagation();
-    const s=session();if(!s?.user?.id||!s?.access_token){location.href='/?signin=1';return}
+    const s=session();if(!s?.user?.id||!s?.access_token){location.href='/?signin=1&returnTo='+encodeURIComponent(location.pathname+location.search);return}
     const listingId=save.dataset.saveId;
     try{
       await api('/rest/v1/favorites',{method:'POST',body:{user_id:s.user.id,listing_id:listingId}});
