@@ -78,6 +78,7 @@
     const path=images.get(item.id),seller=sellers.get(item.seller_id)||'Seller',original=money(item.price_amount,item.price_currency),place=[item.city,countryName(item.country_code)].filter(Boolean).join(', '),localCurrency=validCurrency(window.DDH_LOCALIZATION?.state?.currency);
     const estimate=localCurrency&&item.price_currency!==localCurrency?`<div class="converted-line">Local estimate: <span class="price local-estimate" data-price-amount="${esc(item.price_amount)}" data-price-currency="${esc(item.price_currency)}">${esc(original)}</span></div>`:'';
     const battery=item.specs?.battery_health?`<span class="pill">Battery ${esc(item.specs.battery_health)}</span>`:'';
+    const grade=item.condition==='used'&&item.specs?.cosmetic_condition?`<span class="pill">${esc(item.specs.cosmetic_condition)}</span>`:'';
     const href=listingHref(item);
     return `<article class="product-card-shell">
       <a class="product-card" aria-label="${esc(item.title)}, ${esc(item.condition==='new'?'New':'Used')}, ${esc(original)}" data-id="${esc(item.id)}" data-listing-card href="${href}">
@@ -86,7 +87,7 @@
           <div class="tag-row"><span>${esc(item.category)}</span><span class="pill">${esc(item.condition==='new'?'New':'Used')}</span></div>
           <h3>${esc(item.title)}</h3>
           <div class="subline">${esc(item.storage||'Details available')}${place?` · ${esc(place)}`:''}</div>
-          <div class="card-attribute-row">${battery}</div>
+          <div class="card-attribute-row">${grade}${battery}</div>
           <div class="seller-price-primary">${esc(original)}</div>${estimate}
           <div class="seller-line"><span>Listed by ${esc(seller)}</span></div>
         </div>
