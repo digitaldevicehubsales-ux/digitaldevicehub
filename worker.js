@@ -196,7 +196,16 @@ export default {
 
     const isLegacy=url.pathname==='/device'||url.pathname==='/device.html';
     const slugMatch=url.pathname.match(/^\/device\/([0-9a-f-]{36})(?:\/([^/?#]+))?\/?$/i);
-    if(!isLegacy&&!slugMatch)return env.ASSETS.fetch(request);
+    if(!isLegacy&&!slugMatch){
+      const asset=await env.ASSETS.fetch(request);
+      const acceptsHtml=(request.headers.get('accept')||'').includes('text/html');
+      if(asset.status!==404||!acceptsHtml)return asset;
+      const notFoundUrl=new URL('/404.html',url.origin);
+      const notFound=await env.ASSETS.fetch(new Request(notFoundUrl.toString(),{method:'GET',headers:request.headers}));
+      const headers=new Headers(notFound.headers);
+      headers.set('Cache-Control','no-store');
+      return new Response(notFound.body,{status:404,statusText:'Not Found',headers});
+    }
 
     const id=isLegacy?url.searchParams.get('id'):slugMatch?.[1];
     if(!id||!/^[0-9a-f-]{36}$/i.test(id)){
