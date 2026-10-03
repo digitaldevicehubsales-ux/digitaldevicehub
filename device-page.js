@@ -10,6 +10,7 @@
 
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const money=(a,c)=>{try{return new Intl.NumberFormat(undefined,{style:'currency',currency:c||'USD',maximumFractionDigits:4}).format(Number(a)||0)}catch{return `${c||'USD'} ${Number(a||0).toLocaleString()}`}};
+  function verificationLabel(tier){const key=String(tier||'account').toLowerCase();return ({account:'Email confirmed',phone:'Phone verified',identity:'ID verified',id:'ID verified',business:'Business verified'})[key]||'Email confirmed'}
   const publicImage=p=>p?`${base}/storage/v1/object/public/listing-images/${String(p).split('/').map(encodeURIComponent).join('/')}`:'';
   const session=()=>{try{return JSON.parse(localStorage.getItem(SESSION_KEY)||'null')}catch{return null}};
   function visitor(){let v='';try{v=localStorage.getItem(VISITOR_KEY)||''}catch{}if(!/^[0-9a-f-]{36}$/i.test(v)){v=crypto.randomUUID();try{localStorage.setItem(VISITOR_KEY,v)}catch{}}return v}
@@ -62,7 +63,7 @@
     if(!listing||!wrap)return;
     const rows=await get(`/rest/v1/listings?select=id,title,condition,storage,price_amount,price_currency&status=eq.published&category=eq.${encodeURIComponent(listing.category)}&id=neq.${encodeURIComponent(listing.id)}&order=created_at.desc&limit=4`).catch(()=>[]);
     if(!rows.length){document.querySelector('#relatedSection').hidden=true;return}
-    wrap.innerHTML=rows.map(x=>`<a class="related-card" href="/device.html?id=${encodeURIComponent(x.id)}"><span class="pill">${x.condition==='new'?'New':'Used'}</span><strong>${esc(x.title)}</strong><small>${esc(x.storage||'Details available')}</small><b>${esc(money(x.price_amount,x.price_currency))}</b></a>`).join('');
+    wrap.innerHTML=rows.map(x=>`<a class="related-card" href="/device/${encodeURIComponent(x.id)}"><span class="pill">${x.condition==='new'?'New':'Used'}</span><strong>${esc(x.title)}</strong><small>${esc(x.storage||'Details available')}</small><b>${esc(money(x.price_amount,x.price_currency))}</b></a>`).join('');
   }
 
   async function load(){
@@ -81,7 +82,7 @@
       document.querySelector('#deviceBreadcrumbs').innerHTML=`<a href="/">Home</a><span>›</span><a href="/marketplace?category=${encodeURIComponent(listing.category)}">${esc(listing.category)}</a><span>›</span><span>${esc(listing.brand||listing.title)}</span>`;document.querySelector('#deviceMeta').innerHTML=`<span class="eyebrow">${esc(listing.category)} · ${esc(listing.condition==='new'?'New':'Used')}</span><h1>${esc(listing.title)}</h1><div class="subline">${esc(listing.storage||'Details available')}${listing.city?` · ${esc(listing.city)}`:''}</div><div class="seller-price-primary device-price">${esc(sellerPrice)}</div><div class="converted-line">Local estimate: <span class="price local-estimate" data-price-amount="${esc(listing.price_amount)}" data-price-currency="${esc(listing.price_currency)}">${esc(sellerPrice)}</span></div>`;
       document.querySelector('#deviceDescription').textContent=listing.description||'The seller has not added a description yet.';
       document.querySelector('#deviceSpecs').innerHTML=specRows();
-      const joined=seller?.created_at?new Date(seller.created_at).toLocaleDateString(undefined,{year:'numeric',month:'short'}):'';const trust=[seller?.verification_tier&&seller.verification_tier!=='none'?seller.verification_tier.replaceAll('_',' ')+' verified':null,Number(seller?.sales_count)>0?`${seller.sales_count} completed sale${Number(seller.sales_count)===1?'':'s'}`:null,Number(seller?.rating_count)>0?`${Number(seller.rating_avg).toFixed(1)}★ from ${seller.rating_count} review${Number(seller.rating_count)===1?'':'s'}`:null].filter(Boolean).join(' · ');
+      const joined=seller?.created_at?new Date(seller.created_at).toLocaleDateString(undefined,{year:'numeric',month:'short'}):'';const trust=[verificationLabel(seller?.verification_tier),Number(seller?.sales_count)>0?`${seller.sales_count} completed sale${Number(seller.sales_count)===1?'':'s'}`:null,Number(seller?.rating_count)>0?`${Number(seller.rating_avg).toFixed(1)}★ from ${seller.rating_count} review${Number(seller.rating_count)===1?'':'s'}`:null].filter(Boolean).join(' · ');
       document.querySelector('#sellerPanel').innerHTML=`<div class="spec"><span>Listed by</span><strong><a href="/seller?id=${encodeURIComponent(listing.seller_id)}">${esc(seller?.display_name||'DigitalDeviceHub seller')} →</a></strong></div><div class="spec"><span>Seller trust</span><strong>${esc(trust||'Account authenticated')}</strong></div>${joined?`<div class="spec"><span>Member since</span><strong>${esc(joined)}</strong></div>`:''}<div class="spec"><span>Listed</span><strong>${esc(new Date(listing.created_at).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}))}</strong></div>`;
       window.DDH_LOCALIZATION?.refresh?.();
       recordView();
@@ -109,7 +110,7 @@
   async function favorite(){
     const s=session();
     if(!s?.user?.id)return modal('<p class="eyebrow">Account required</p><h2>Sign in to save devices.</h2><p>Your saved devices appear in your account dashboard.</p><a class="btn" href="/?signin=1">Go to sign in</a>');
-    try{await write('/rest/v1/favorites','POST',{user_id:s.user.id,listing_id:listing.id});toast('Saved to favorites.')}catch(err){if(/duplicate|unique/i.test(err.message))toast('Already in your favorites.');else toast(err.message)}
+    try{await write('/rest/v1/favorites','POST',{user_id:s.user.id,listing_id:listing.id});toast('Saved. Price-drop alerts are on.')}catch(err){if(/duplicate|unique/i.test(err.message))toast('Already in your favorites.');else toast(err.message)}
   }
 
   function message(){
