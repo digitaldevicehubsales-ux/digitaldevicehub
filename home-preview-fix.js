@@ -12,7 +12,7 @@
     const cond = condition?.value || 'all';
     if (!grid || !empty) return;
 
-    if(!listings.length && grid.dataset.ssr==='true' && grid.children.length){return}
+    if(!listings.length && grid.dataset.ssr==='true' && grid.children.length){if(section)section.hidden=false;return}
 
     const filtered = listings.filter(x =>
       (activeCategory === 'all' || x.category === activeCategory) &&
@@ -20,6 +20,7 @@
       (!q || `${x.name} ${x.category} ${x.storage || ''} ${x.seller || ''}`.toLowerCase().includes(q))
     );
 
+    if(section)section.hidden=filtered.length===0;
     grid.dataset.ssr='false';
     grid.innerHTML = filtered.map(x => `
       <article class="listing-card" tabindex="0" data-id="${escapeHtml(x.id)}" aria-label="${escapeHtml(x.name)}, ${escapeHtml(money(x.price,x.currency))}">
