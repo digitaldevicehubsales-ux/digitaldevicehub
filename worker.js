@@ -169,12 +169,116 @@ function canonicalPath(listing) {
   const slug=listing.slug||slugify(`${listing.title}-${listing.storage||''}-${listing.condition||''}-${listing.city||''}-${listing.country_code||''}`);
   return `/device/${encodeURIComponent(listing.id)}/${encodeURIComponent(slug)}`;
 }
+
+async function getPublicListings(limit=12) {
+  const headers={apikey:SUPABASE_KEY};
+  const listingRes=await fetch(`${SUPABASE_URL}/rest/v1/listings?select=id,slug,title,category,brand,model,condition,storage,city,country_code,price_amount,price_currency,seller_id,specs,created_at&status=eq.published&order=created_at.desc&limit=${Math.max(1,Math.min(Number(limit)||12,48))}`,{headers});
+  if(!listingRes.ok)return [];
+  const listings=await listingRes.json();
+  if(!listings.length)return [];
+
+  const ids=listings.map(x=>x.id).filter(Boolean);
+  const sellers=[...new Set(listings.map(x=>x.seller_id).filter(Boolean))];
+  const idList=ids.map(id=>`"${id}"`).join(',');
+  const sellerList=sellers.map(id=>`"${id}"`).join(',');
+  const [imageRes,profileRes]=await Promise.all([
+    ids.length?fetch(`${SUPABASE_URL}/rest/v1/listing_images?select=listing_id,storage_path,variants,sort_order&listing_id=in.(${encodeURIComponent(idList)})&order=sort_order.asc`,{headers}):Promise.resolve(null),
+    sellers.length?fetch(`${SUPABASE_URL}/rest/v1/public_profiles?select=id,display_name,verification_tier,rating_avg,rating_count,sales_count&in.(id,(${encodeURIComponent(sellerList)}))`,{headers}):Promise.resolve(null)
+  ]);
+  const images=imageRes?.ok?await imageRes.json():[];
+  const profiles=profileRes?.ok?await profileRes.json():[];
+  const firstImage=new Map();
+  for(const row of images||[]){
+    if(row?.listing_id&&!firstImage.has(row.listing_id)){
+      firstImage.set(row.listing_id,row?.variants?.card||row?.variants?.detail||row?.storage_path||'');
+    }
+  }
+  const profileMap=new Map((profiles||[]).map(p=>[p.id,p]));
+  return listings.map(item=>({...item,_image:firstImage.get(item.id)||'',_seller:profileMap.get(item.seller_id)||null}));
+}
+
+function renderHomeListingCard(item) {
+  const href=canonicalPath(item);
+  const seller=item._seller?.display_name||'Seller';
+  const grade=item.condition==='used'&&item.specs?.cosmetic_condition?` · ${esc(item.specs.cosmetic_condition)}`:'';
+  const image=item._image?imageUrl(item._image):'';
+  return `<article class="listing-card ssr-listing-card">
+    <a href="${esc(href)}" aria-label="${esc(item.title)}, ${esc(money(item.price_amount,item.price_currency))}">
+      <div class="listing-art">${image?`<img src="${esc(image)}" alt="${esc(item.title)}" loading="eager" fetchpriority="high" width="900" height="675">`:'<span aria-hidden="true">▯</span>'}</div>
+      <div class="listing-body">
+        <div class="listing-meta"><span>${esc(item.category)}</span><span>${esc(item.condition==='new'?'New':'Used')}${grade}</span></div>
+        <h3>${esc(item.title)}</h3>
+        <div class="listing-meta"><span>${esc(item.storage||'Details available')}</span><span>${esc([item.city,countryName(item.country_code)].filter(Boolean).join(', '))}</span></div>
+        <div class="price">${esc(money(item.price_amount,item.price_currency))}</div>
+        <div class="seller">${esc(seller)}${item._seller?.verification_tier&&item._seller.verification_tier!=='account'?` <span class="verified">✓ ${esc(item._seller.verification_tier)}</span>`:''}</div>
+      </div>
+    </a>
+  </article>`;
+}
+
+function renderMarketListingCard(item) {
+  const href=canonicalPath(item);
+  const seller=item._seller?.display_name||'Seller';
+  const image=item._image?imageUrl(item._image):'';
+  const grade=item.condition==='used'&&item.specs?.cosmetic_condition?`<span class="pill">${esc(item.specs.cosmetic_condition)}</span>`:'';
+  const rating=Number(item._seller?.rating_count)>0?`<span class="seller-rating">${Number(item._seller.rating_avg).toFixed(1)}★</span>`:'';
+  return `<article class="product-card-shell ssr-product-card">
+    <a class="product-card" href="${esc(href)}" aria-label="${esc(item.title)}, ${esc(money(item.price_amount,item.price_currency))}">
+      <div class="product-image">${image?`<img src="${esc(image)}" alt="${esc(item.title)}" loading="eager" width="900" height="675">`:'<span aria-hidden="true">▯</span>'}</div>
+      <div class="product-content">
+        <div class="tag-row"><span>${esc(item.category)}</span><span class="pill">${esc(item.condition==='new'?'New':'Used')}</span></div>
+        <h3>${esc(item.title)}</h3>
+        <div class="subline">${esc(item.storage||'Details available')}${item.city?` · ${esc(item.city)}`:''}</div>
+        <div class="card-attribute-row">${grade}</div>
+        <div class="seller-price-primary">${esc(money(item.price_amount,item.price_currency))}</div>
+        <div class="seller-line"><span>Listed by ${esc(seller)}</span>${rating}</div>
+      </div>
+    </a>
+  </article>`;
+}
+
+async function renderPublicPage(request,env,url,assetPath,kind) {
+  const assetUrl=new URL(assetPath,url.origin);
+  const shell=await env.ASSETS.fetch(new Request(assetUrl.toString(),{method:'GET',headers:request.headers}));
+  if(!shell.ok)return shell;
+  let html=await shell.text();
+  try{
+    const listings=await getPublicListings(kind==='home'?8:24);
+    if(kind==='home'){
+      html=html.replace('<div id="listingGrid" class="listing-grid home-listing-preview" aria-live="polite"></div>',
+        `<div id="listingGrid" class="listing-grid home-listing-preview" aria-live="polite">${listings.map(renderHomeListingCard).join('')}</div>`);
+      if(listings.length)html=html.replace('<p id="emptyState" class="empty-state" hidden>No matching devices.</p>','<p id="emptyState" class="empty-state" hidden>No matching devices.</p>');
+    }else{
+      html=html.replace('<div class="result-count" id="resultCount" role="status" aria-live="polite">Loading devices…</div>',
+        `<div class="result-count" id="resultCount" role="status" aria-live="polite">${listings.length} device${listings.length===1?'':'s'} available</div>`);
+      html=html.replace('<div class="product-grid" id="marketplaceGrid" style="margin-top:18px"></div>',
+        `<div class="product-grid" id="marketplaceGrid" style="margin-top:18px">${listings.map(renderMarketListingCard).join('')}</div>`);
+    }
+  }catch{}
+  const headers=new Headers(shell.headers);
+  headers.set('Content-Type','text/html; charset=UTF-8');
+  headers.set('Cache-Control','public, max-age=30, s-maxage=60, stale-while-revalidate=300');
+  return new Response(html,{status:200,headers});
+}
+
+const PUBLIC_ROUTES=new Map([
+  ['/marketplace','/marketplace.html'],
+  ['/sell','/sell.html'],
+  ['/trust','/trust.html'],
+  ['/help','/help.html'],
+  ['/about','/about.html'],
+  ['/contact','/contact.html'],
+  ['/privacy','/privacy.html'],
+  ['/terms','/terms.html'],
+  ['/compare','/compare.html'],
+  ['/seller','/seller.html']
+]);
 async function renderSitemap(url) {
   const headers={apikey:SUPABASE_KEY};
   const res=await fetch(`${SUPABASE_URL}/rest/v1/listings?select=id,slug,title,storage,condition,city,country_code,updated_at&status=eq.published&order=updated_at.desc&limit=1000`,{headers});
   const listings=res.ok?await res.json():[];
   const staticUrls=[
-    ['/', 'daily', '1.0'],['/marketplace.html','hourly','0.9'],['/phones','daily','0.85'],['/laptops','daily','0.85'],['/tablets','daily','0.8'],['/accessories','daily','0.75'],['/wearables','daily','0.75'],['/sell','weekly','0.7'],['/trust','monthly','0.6'],['/help','monthly','0.5'],['/about','monthly','0.5'],['/contact','monthly','0.4'],['/privacy','yearly','0.2'],['/terms','yearly','0.2']
+    ['/', 'daily', '1.0'],['/marketplace','hourly','0.9'],['/phones','daily','0.85'],['/laptops','daily','0.85'],['/tablets','daily','0.8'],['/accessories','daily','0.75'],['/wearables','daily','0.75'],['/sell','weekly','0.7'],['/trust','monthly','0.6'],['/help','monthly','0.5'],['/about','monthly','0.5'],['/contact','monthly','0.4'],['/privacy','yearly','0.2'],['/terms','yearly','0.2']
   ];
   const parts=['<?xml version="1.0" encoding="UTF-8"?>','<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'];
   for(const [path,changefreq,priority] of staticUrls)parts.push(`<url><loc>${xmlEsc(url.origin+path)}</loc><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>`);
@@ -193,6 +297,20 @@ export default {
     if(url.pathname==='/auth/logout')return handleLogout(request,url);
     if(url.pathname==='/api/supabase')return handleSupabaseProxy(request,url);
     if(url.pathname==='/sitemap.xml')return renderSitemap(url);
+
+    if(request.method==='GET'||request.method==='HEAD'){
+      if(url.pathname==='/')return renderPublicPage(request,env,url,'/index.html','home');
+      if(url.pathname==='/marketplace')return renderPublicPage(request,env,url,'/marketplace.html','marketplace');
+      if(url.pathname.endsWith('.html')){
+        const cleanPath=url.pathname==='/index.html'?'/':url.pathname.replace(/\.html$/,'');
+        if(PUBLIC_ROUTES.has(cleanPath)||cleanPath==='/')return Response.redirect(url.origin+cleanPath+url.search,301);
+      }
+      const mapped=PUBLIC_ROUTES.get(url.pathname);
+      if(mapped){
+        const assetUrl=new URL(mapped,url.origin);
+        return env.ASSETS.fetch(new Request(assetUrl.toString(),{method:request.method,headers:request.headers}));
+      }
+    }
 
     const isLegacy=url.pathname==='/device'||url.pathname==='/device.html';
     const slugMatch=url.pathname.match(/^\/device\/([0-9a-f-]{36})(?:\/([^/?#]+))?\/?$/i);
