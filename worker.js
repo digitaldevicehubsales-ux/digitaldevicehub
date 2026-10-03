@@ -172,7 +172,7 @@ function canonicalPath(listing) {
 
 async function getPublicListings(limit=12) {
   const headers={apikey:SUPABASE_KEY};
-  const listingRes=await fetch(`${SUPABASE_URL}/rest/v1/listings?select=id,slug,title,category,brand,model,condition,storage,city,country_code,price_amount,price_currency,seller_id,specs,created_at&status=eq.published&order=created_at.desc&limit=${Math.max(1,Math.min(Number(limit)||12,48))}`,{headers});
+  const listingRes=await fetch(`${SUPABASE_URL}/rest/v1/listings?select=id,slug,title,category,brand,model,condition,storage,city,country_code,price_amount,price_currency,seller_id,specs,identity_check_status,created_at&status=eq.published&order=created_at.desc&limit=${Math.max(1,Math.min(Number(limit)||12,48))}`,{headers});
   if(!listingRes.ok)return [];
   const listings=await listingRes.json();
   if(!listings.length)return [];
@@ -221,6 +221,7 @@ function renderMarketListingCard(item) {
   const seller=item._seller?.display_name||'Seller';
   const image=item._image?imageUrl(item._image):'';
   const grade=item.condition==='used'&&item.specs?.cosmetic_condition?`<span class="pill">${esc(item.specs.cosmetic_condition)}</span>`:'';
+  const imei=item.category==='Phones'&&item.identity_check_status==='format_valid'?'<span class="pill trust-pill">IMEI screened</span>':'';
   const rating=Number(item._seller?.rating_count)>0?`<span class="seller-rating">${Number(item._seller.rating_avg).toFixed(1)}★</span>`:'';
   return `<article class="product-card-shell ssr-product-card">
     <a class="product-card" href="${esc(href)}" aria-label="${esc(item.title)}, ${esc(money(item.price_amount,item.price_currency))}">
@@ -229,7 +230,7 @@ function renderMarketListingCard(item) {
         <div class="tag-row"><span>${esc(item.category)}</span><span class="pill">${esc(item.condition==='new'?'New':'Used')}</span></div>
         <h3>${esc(item.title)}</h3>
         <div class="subline">${esc(item.storage||'Details available')}${item.city?` · ${esc(item.city)}`:''}</div>
-        <div class="card-attribute-row">${grade}</div>
+        <div class="card-attribute-row">${grade}${imei}</div>
         <div class="seller-price-primary">${esc(money(item.price_amount,item.price_currency))}</div>
         <div class="seller-line"><span>Listed by ${esc(seller)}</span>${rating}</div>
       </div>
