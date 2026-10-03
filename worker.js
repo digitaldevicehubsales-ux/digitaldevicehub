@@ -183,7 +183,7 @@ async function getPublicListings(limit=12) {
   const sellerList=sellers.map(id=>`"${id}"`).join(',');
   const [imageRes,profileRes]=await Promise.all([
     ids.length?fetch(`${SUPABASE_URL}/rest/v1/listing_images?select=listing_id,storage_path,variants,sort_order&listing_id=in.(${encodeURIComponent(idList)})&order=sort_order.asc`,{headers}):Promise.resolve(null),
-    sellers.length?fetch(`${SUPABASE_URL}/rest/v1/public_profiles?select=id,display_name,verification_tier,rating_avg,rating_count,sales_count&in.(id,(${encodeURIComponent(sellerList)}))`,{headers}):Promise.resolve(null)
+    sellers.length?fetch(`${SUPABASE_URL}/rest/v1/public_profiles?select=id,display_name,verification_tier,rating_avg,rating_count,sales_count&id=in.(${encodeURIComponent(sellerList)})`,{headers}):Promise.resolve(null)
   ]);
   const images=imageRes?.ok?await imageRes.json():[];
   const profiles=profileRes?.ok?await profileRes.json():[];
