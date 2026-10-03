@@ -50,7 +50,7 @@
     const dock=document.createElement('nav');
     dock.className='mobile-action-dock';
     dock.setAttribute('aria-label','Quick actions');
-    dock.innerHTML=`<a href="/marketplace">${icons.browse}<span>Browse</span></a><a class="primary" href="/sell">${icons.sell}<span>Sell</span></a><a href="/dashboard.html">${icons.account}<span>Account</span></a>`;
+    dock.innerHTML=`<a href="/marketplace">${icons.browse}<span>Browse</span></a><a class="primary" href="/sell">${icons.sell}<span>Sell</span></a><a href="/dashboard">${icons.account}<span>Account</span></a>`;
     document.body.appendChild(dock);
   }
 
@@ -134,7 +134,7 @@
         </nav>
         <div class="global-actions">
           <span class="locale-chip" id="localeChip">Region & currency</span>
-          <a class="btn secondary small account-access" href="${signed?'/dashboard.html':'/?signin=1&returnTo='+encodeURIComponent(current)}">${signed?'Account':'Sign in'}</a>
+          <a class="btn secondary small account-access" href="${signed?'/dashboard':'/?signin=1&returnTo='+encodeURIComponent(current)}">${signed?'Account':'Sign in'}</a>
           <a class="btn small" href="/sell">Sell device</a>
         </div>`;
       markCurrentPage(header);
@@ -194,7 +194,7 @@
     const panel=document.createElement('div');panel.className='mobile-menu-panel';panel.hidden=true;
     const links=[];nav?.querySelectorAll('a').forEach(a=>links.push({href:a.getAttribute('href'),label:a.textContent.trim()}));
     if(!links.some(x=>/sell/i.test(x.label)))links.push({href:'/sell',label:'Sell device'});
-    if(!links.some(x=>/account/i.test(x.label)))links.push({href:'/dashboard.html',label:'Account'});
+    if(!links.some(x=>/account/i.test(x.label)))links.push({href:'/dashboard',label:'Account'});
     panel.innerHTML=links.filter((x,i,a)=>x.href&&a.findIndex(y=>y.href===x.href)===i).map(x=>`<a href="${x.href}">${iconFor(x.label)}<span>${x.label}</span></a>`).join('')+(isSignedIn()?`<button type="button" class="mobile-menu-signout" data-public-signout>${icons.logout}<span>Sign out</span></button>`:'');
     panel.querySelector('[data-public-signout]')?.addEventListener('click',publicSignOut);
     markCurrentPage(panel);header.append(toggle,panel);
