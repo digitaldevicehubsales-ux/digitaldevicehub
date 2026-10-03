@@ -279,7 +279,7 @@ async function renderPublicPage(request,env,url,assetPath,kind) {
       html=html.replace('<div class="product-grid" id="marketplaceGrid" style="margin-top:18px"></div>',
         `<div class="product-grid" id="marketplaceGrid" style="margin-top:18px" data-ssr="true">${listings.map(renderMarketListingCard).join('')}</div>`);
       if(!listings.length)html=html.replace('<div class="empty-box" id="emptyState" hidden>No matching devices.</div>',
-        '<div class="empty-box" id="emptyState"><strong>No devices listed yet.</strong><br><a class="btn blue" href="/sell">Sell yours</a></div>');
+        '<div class="empty-box" id="emptyState"><strong>No devices listed yet.</strong><p>Real inventory is being onboarded. Sellers can list one device or prepare shop stock for review.</p><div class="recovery-actions"><a class="btn blue" href="/sell">List a device</a><a class="btn secondary" href="/seller-onboarding">Onboard shop inventory</a></div></div>');
     }
   }catch{}
   const headers=new Headers(shell.headers);
@@ -300,6 +300,7 @@ const PUBLIC_ROUTES=new Map([
   ['/terms','/terms.html'],
   ['/compare','/compare.html'],
   ['/seller','/seller.html'],
+  ['/seller-onboarding','/seller-onboarding.html'],
   ['/phones','/phones.html'],
   ['/phones/iphone','/phones-iphone.html'],
   ['/guides/buying-used-iphone','/guide-buying-used-iphone.html'],
@@ -316,7 +317,7 @@ async function renderSitemap(url) {
   const res=await fetch(`${SUPABASE_URL}/rest/v1/listings?select=id,slug,title,storage,condition,city,country_code,updated_at&status=eq.published&order=updated_at.desc&limit=1000`,{headers});
   const listings=res.ok?await res.json():[];
   const staticUrls=[
-    ['/', 'daily', '1.0'],['/marketplace','hourly','0.9'],['/phones','daily','0.85'],['/phones/iphone','daily','0.85'],['/guides/buying-used-iphone','monthly','0.75'],['/laptops','daily','0.85'],['/tablets','daily','0.8'],['/accessories','daily','0.75'],['/wearables','daily','0.75'],['/sell','weekly','0.7'],['/trust','monthly','0.6'],['/help','monthly','0.5'],['/about','monthly','0.5'],['/regions','monthly','0.5'],['/contact','monthly','0.4'],['/privacy','yearly','0.2'],['/terms','yearly','0.2']
+    ['/', 'daily', '1.0'],['/marketplace','hourly','0.9'],['/phones','daily','0.85'],['/phones/iphone','daily','0.85'],['/guides/buying-used-iphone','monthly','0.75'],['/laptops','daily','0.85'],['/tablets','daily','0.8'],['/accessories','daily','0.75'],['/wearables','daily','0.75'],['/sell','weekly','0.7'],['/trust','monthly','0.6'],['/help','monthly','0.5'],['/about','monthly','0.5'],['/seller-onboarding','monthly','0.55'],['/regions','monthly','0.5'],['/contact','monthly','0.4'],['/privacy','yearly','0.2'],['/terms','yearly','0.2']
   ];
   const parts=['<?xml version="1.0" encoding="UTF-8"?>','<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'];
   for(const [path,changefreq,priority] of staticUrls)parts.push(`<url><loc>${xmlEsc(url.origin+path)}</loc><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>`);
