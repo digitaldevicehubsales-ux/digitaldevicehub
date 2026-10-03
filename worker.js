@@ -22,6 +22,7 @@ function imageUrl(path) {
   if (!path) return '';
   return `${SUPABASE_URL}/storage/v1/object/public/listing-images/${String(path).split('/').map(encodeURIComponent).join('/')}`;
 }
+function verificationLabel(tier){const key=String(tier||'account').toLowerCase();return ({account:'Email confirmed',phone:'Phone verified',id:'ID verified',identity:'ID verified',business:'Business verified'})[key]||'Email confirmed'}
 function countryName(code) {
   const value=String(code||'').toUpperCase();
   if(!value)return '';
@@ -208,17 +209,18 @@ async function getPublicListings(limit=12) {
 function renderHomeListingCard(item) {
   const href=canonicalPath(item);
   const seller=item._seller?.display_name||'Seller';
-  const grade=item.condition==='used'&&item.specs?.cosmetic_condition?` · ${esc(item.specs.cosmetic_condition)}`:'';
+  const conditionGrade=item.specs?.condition_grade||item.specs?.cosmetic_condition||(item.condition==='new'?'New (sealed)':'Used');
+  const grade=` · ${esc(conditionGrade)}`;
   const image=item._image?imageUrl(item._image):'';
   return `<article class="listing-card ssr-listing-card">
     <a href="${esc(href)}" aria-label="${esc(item.title)}, ${esc(money(item.price_amount,item.price_currency))}">
       <div class="listing-art">${image?`<img src="${esc(image)}" alt="${esc(item.title)}" loading="eager" fetchpriority="high" width="900" height="675">`:'<span aria-hidden="true">▯</span>'}</div>
       <div class="listing-body">
-        <div class="listing-meta"><span>${esc(item.category)}</span><span>${esc(item.condition==='new'?'New':'Used')}${grade}</span></div>
+        <div class="listing-meta"><span>${esc(item.category)}</span><span>${esc(conditionGrade)}</span></div>
         <h3>${esc(item.title)}</h3>
         <div class="listing-meta"><span>${esc(item.storage||'Details available')}</span><span>${esc([item.city,countryName(item.country_code)].filter(Boolean).join(', '))}</span></div>
         <div class="price">${esc(money(item.price_amount,item.price_currency))}</div>
-        <div class="seller">${esc(seller)}${item._seller?.verification_tier&&item._seller.verification_tier!=='account'?` <span class="verified">✓ ${esc(item._seller.verification_tier)}</span>`:''}</div>
+        <div class="seller">${esc(seller)} <span class="verified">✓ ${esc(verificationLabel(item._seller?.verification_tier))}</span></div>
       </div>
     </a>
   </article>`;
@@ -228,19 +230,24 @@ function renderMarketListingCard(item) {
   const href=canonicalPath(item);
   const seller=item._seller?.display_name||'Seller';
   const image=item._image?imageUrl(item._image):'';
-  const grade=item.condition==='used'&&item.specs?.cosmetic_condition?`<span class="pill">${esc(item.specs.cosmetic_condition)}</span>`:'';
+  const conditionGrade=item.specs?.condition_grade||item.specs?.cosmetic_condition||(item.condition==='new'?'New (sealed)':'Used');
+  const grade=`<span class="pill">${esc(conditionGrade)}</span>`;
+  const origin=item.specs?.usage_origin?`<span class="pill">${esc(item.specs.usage_origin)}</span>`:'';
+  const ram=item.specs?.ram?`<span class="pill">${esc(item.specs.ram)} RAM</span>`:'';
+  const swap=item.specs?.accepts_swap===true||item.specs?.accepts_swap==='true'?'<span class="pill trust-pill">Swap open</span>':'';
+  const verification=`<span class="seller-badge">✓ ${esc(verificationLabel(item._seller?.verification_tier))}</span>`;
   const imei=item.category==='Phones'&&item.identity_check_status==='format_valid'?'<span class="pill trust-pill">IMEI screened</span>':'';
   const rating=Number(item._seller?.rating_count)>0?`<span class="seller-rating">${Number(item._seller.rating_avg).toFixed(1)}★</span>`:'';
   return `<article class="product-card-shell ssr-product-card">
     <a class="product-card" href="${esc(href)}" aria-label="${esc(item.title)}, ${esc(money(item.price_amount,item.price_currency))}">
       <div class="product-image">${image?`<img src="${esc(image)}" alt="${esc(item.title)}" loading="eager" width="900" height="675">`:'<span aria-hidden="true">▯</span>'}</div>
       <div class="product-content">
-        <div class="tag-row"><span>${esc(item.category)}</span><span class="pill">${esc(item.condition==='new'?'New':'Used')}</span></div>
+        <div class="tag-row"><span>${esc(item.category)}</span><span class="pill">${esc(conditionGrade)}</span></div>
         <h3>${esc(item.title)}</h3>
         <div class="subline">${esc(item.storage||'Details available')}${item.city?` · ${esc(item.city)}`:''}</div>
-        <div class="card-attribute-row">${grade}${imei}</div>
+        <div class="card-attribute-row">${grade}${origin}${ram}${imei}${swap}</div>
         <div class="seller-price-primary">${esc(money(item.price_amount,item.price_currency))}</div>
-        <div class="seller-line"><span>Listed by ${esc(seller)}</span>${rating}</div>
+        <div class="seller-line"><span>Listed by ${esc(seller)}</span>${verification}${rating}</div>
       </div>
     </a>
   </article>`;
@@ -388,8 +395,9 @@ export default {
       const breadcrumbSchema={'@context':'https://schema.org','@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'Home',item:`${url.origin}/`},{'@type':'ListItem',position:2,name:listing.category,item:`${url.origin}/${String(listing.category).toLowerCase()}`},{'@type':'ListItem',position:3,name:listing.title,item:canonical}]};
 
       let html=await shell.text();
-      const coreMeta='<span class="eyebrow">'+esc(listing.category)+' · '+esc(condition)+'</span><h1>'+esc(listing.title)+'</h1><div class="subline">'+esc([listing.storage,location].filter(Boolean).join(' · '))+'</div><div class="device-price">'+esc(formattedPrice)+'</div>';
-      const detailRows=[['Condition',condition],['Storage',listing.storage],['Colour',listing.color],['Battery health',listing.specs?.battery_health],['Network status',listing.specs?.network_status],['Used condition',listing.specs?.cosmetic_condition],['Visible wear or faults',listing.specs?.condition_notes],['Repairs',listing.specs?.repair_history],['Included',listing.specs?.accessories],['Warranty',listing.warranty_text],['Location',location]].filter(([,v])=>v);
+      const conditionGrade=listing.specs?.condition_grade||listing.specs?.cosmetic_condition||(listing.condition==='new'?'New (sealed)':'Used');
+      const coreMeta='<span class="eyebrow">'+esc(listing.category)+' · '+esc(conditionGrade)+'</span><h1>'+esc(listing.title)+'</h1><div class="subline">'+esc([listing.storage,location].filter(Boolean).join(' · '))+'</div><div class="device-price">'+esc(formattedPrice)+'</div>';
+      const detailRows=[['Condition',conditionGrade],['Usage origin',listing.specs?.usage_origin],['Storage',listing.storage],['RAM',listing.specs?.ram],['Colour',listing.color],['Battery health',listing.specs?.battery_health],['Network status',listing.specs?.network_status],['Visible wear or faults',listing.specs?.condition_notes],['Swap / trade',listing.specs?.accepts_swap?'Open to swaps':null],['Swap preference',listing.specs?.swap_notes],['Repairs',listing.specs?.repair_history],['Included',listing.specs?.accessories],['Warranty',listing.warranty_text],['Location',location]].filter(([,v])=>v);
       html=html.replace('<div id="deviceMeta"><span class="eyebrow">Loading device</span><h1>Please wait…</h1></div>','<div id="deviceMeta">'+coreMeta+'</div>');
       html=html.replace('<p id="deviceDescription" style="color:#6e7480;line-height:1.75">Loading details…</p>','<p id="deviceDescription" style="color:#6e7480;line-height:1.75">'+esc(listing.description||description)+'</p>');
       html=html.replace('<div class="specs" id="deviceSpecs"></div>','<div class="specs" id="deviceSpecs">'+detailRows.map(([label,value])=>'<div class="spec"><span>'+esc(label)+'</span><strong>'+esc(value)+'</strong></div>').join('')+'</div>');
