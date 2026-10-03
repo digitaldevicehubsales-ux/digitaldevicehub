@@ -20,7 +20,7 @@
         <button class="nav-item active" data-view="overview">Overview</button>
         <button class="nav-item" data-view="listings">My Listings</button>
         <button class="nav-item" data-view="analytics">Analytics</button>
-        <button class="nav-item" data-view="messages">Messages</button><button class="nav-item" data-view="offers">Offers</button>
+        <button class="nav-item" data-view="messages">Messages</button><button class="nav-item" data-view="offers">Offers</button><button class="nav-item" data-view="purchases">Purchases</button>
         <button class="nav-item" data-view="favorites">Favorites</button>
         <button class="nav-item" data-view="profile">Profile & Settings</button>
       </nav>
@@ -66,13 +66,13 @@
 
       <section class="dash-view" data-panel="offers"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Marketplace negotiation</p><h2>Offers</h2><p>Review sent and received offers.</p></div></div><div id="offerList" class="offer-list"></div></article></section>
 
-      <section class="dash-view" data-panel="favorites"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Saved devices</p><h2>Favorites</h2></div><a class="secondary-button" href="/marketplace.html">Browse devices</a></div><div id="favoriteList" class="favorite-grid"></div></article></section>
+      <section class="dash-view" data-panel="purchases"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Completed deals</p><h2>Purchases & reviews</h2><p>Review sellers after completed orders.</p></div></div><div id="purchaseList" class="activity-list"></div></article></section><section class="dash-view" data-panel="favorites"><article class="panel"><div class="panel-heading"><div><p class="eyebrow">Saved devices</p><h2>Favorites</h2></div><a class="secondary-button" href="/marketplace.html">Browse devices</a></div><div id="favoriteList" class="favorite-grid"></div></article></section>
 
       <section class="dash-view" data-panel="profile"><div class="two-column profile-layout"><article class="panel"><p class="eyebrow">Public profile</p><h2>Seller identity</h2><form id="profileForm" class="form-grid"><label>Display name<input name="display_name" maxlength="80" /></label><label>City or locality<input name="city" maxlength="80" /></label><label>Country or region<select name="country_code" id="profileCountry"><option value="">Choose region</option></select></label><label>Account email<input id="profileEmail" disabled /></label><label>Local currency<input id="profileCurrency" disabled /></label><button class="primary-button" type="submit">Save profile</button></form></article><article class="panel"><p class="eyebrow">Account tools</p><h2>Useful shortcuts</h2><div class="settings-list"><a href="/sell.html">List new device <span>→</span></a><button data-go="analytics">Review performance <span>→</span></button><button data-go="messages">Open conversations <span>→</span></button><button data-go="offers">Review offers <span>→</span></button><a href="/privacy.html">Privacy information <span>→</span></a></div></article></div></section>
     </main>
   </div>
 
-  <nav class="mobile-nav" aria-label="Dashboard mobile navigation"><button class="active" data-view="overview">Home</button><button data-view="listings">Listings</button><button data-view="analytics">Analytics</button><button data-view="messages">Messages</button><button data-view="offers">Offers</button><button data-view="favorites">Favorites</button><button data-view="profile">Account</button></nav>
+  <nav class="mobile-nav" aria-label="Dashboard mobile navigation"><button class="active" data-view="overview">Home</button><button data-view="listings">Listings</button><button data-view="analytics">Analytics</button><button data-view="messages">Messages</button><button data-view="offers">Offers</button><button data-view="purchases">Purchases</button><button data-view="favorites">Favorites</button><button data-view="profile">Account</button></nav>
 
   <dialog id="dashboardDialog"><button class="dialog-close" aria-label="Close">×</button><div id="dashboardDialogContent"></div></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
