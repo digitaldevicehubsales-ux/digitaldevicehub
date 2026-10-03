@@ -21,14 +21,14 @@
   <header class="site-header">
     <a class="brand" href="/" aria-label="DigitalDeviceHub home"><span class="brand-mark" aria-hidden="true">D</span><span>DigitalDeviceHub</span></a>
     <nav class="desktop-nav" aria-label="Primary navigation">
-      <a href="/marketplace.html">Marketplace</a>
-      <a href="/trust.html">Trust</a>
-      <a href="/help.html">Help</a>
-      <a href="/about.html">About</a>
+      <a href="/marketplace">Marketplace</a>
+      <a href="/trust">Trust</a>
+      <a href="/help">Help</a>
+      <a href="/about">About</a>
     </nav>
     <div class="header-actions">
       <button class="ghost account-access" data-action="signin">Sign in</button>
-      <a class="button compact sell-cta" href="/sell.html">Sell device</a>
+      <a class="button compact sell-cta" href="/sell">Sell device</a>
     </div>
   </header>
 
@@ -37,22 +37,22 @@
       <div class="hero-copy">
         <span class="eyebrow">Device marketplace</span>
         <h1 id="home-title">Find the right device.</h1>
-        <form class="home-search" action="/marketplace.html" method="get">
+        <form class="home-search" action="/marketplace" method="get">
           <label class="sr-only" for="homeSearch">Search devices</label>
           <input id="homeSearch" name="q" type="search" placeholder="Search devices" autocomplete="off" />
           <button class="button" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="m16 16 4 4"></path></svg><span>Search</span></button>
         </form>
-        <div class="popular-searches" aria-label="Popular searches"><a href="/marketplace.html?q=iPhone">iPhone</a><a href="/marketplace.html?q=Galaxy">Galaxy</a><a href="/marketplace.html?q=MacBook">MacBook</a><a href="/marketplace.html?q=iPad">iPad</a></div>
+        <div class="popular-searches" aria-label="Popular searches"><a href="/marketplace?q=iPhone">iPhone</a><a href="/marketplace?q=Galaxy">Galaxy</a><a href="/marketplace?q=MacBook">MacBook</a><a href="/marketplace?q=iPad">iPad</a></div>
       </div>
       <nav class="home-task-panel" aria-label="Quick actions">
-        <a href="/marketplace.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="m16 16 4 4"></path></svg><span><b>Browse devices</b><small>Search all listings</small></span><span aria-hidden="true">→</span></a>
-        <a href="/sell.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg><span><b>Sell device</b><small>Create a listing</small></span><span aria-hidden="true">→</span></a>
+        <a href="/marketplace"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="m16 16 4 4"></path></svg><span><b>Browse devices</b><small>Search all listings</small></span><span aria-hidden="true">→</span></a>
+        <a href="/sell"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg><span><b>Sell device</b><small>Create a listing</small></span><span aria-hidden="true">→</span></a>
         <a href="/dashboard.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"></circle><path d="M5 20c.8-4 3.1-6 7-6s6.2 2 7 6"></path></svg><span><b>Your account</b><small>Manage marketplace activity</small></span><span aria-hidden="true">→</span></a>
       </nav>
     </section>
 
     <section class="categories shell" aria-labelledby="category-title">
-      <div class="section-heading"><div><span class="eyebrow">Categories</span><h2 id="category-title">Browse by device.</h2></div><a class="text-link" href="/marketplace.html">View all →</a></div>
+      <div class="section-heading"><div><span class="eyebrow">Categories</span><h2 id="category-title">Browse by device.</h2></div><a class="text-link" href="/marketplace">View all →</a></div>
       <div class="category-grid">
         <button class="category-card active" data-category="all"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"></rect><rect x="14" y="4" width="6" height="6" rx="1"></rect><rect x="4" y="14" width="6" height="6" rx="1"></rect><rect x="14" y="14" width="6" height="6" rx="1"></rect></svg><b>All devices</b></button>
         <button class="category-card" data-category="Phones"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2"></rect><path d="M10 5h4M11 18.5h2"></path></svg><b>Phones</b></button>
@@ -67,14 +67,14 @@
       <div class="section-heading marketplace-heading"><div><span class="eyebrow">Latest</span><h2>Recently listed.</h2></div><div class="search-wrap"><input id="searchInput" type="search" placeholder="Search listings" aria-label="Search listings" /><select id="conditionFilter" aria-label="Condition"><option value="all">All conditions</option><option>New</option><option>Used</option></select></div></div>
       <div id="listingGrid" class="listing-grid home-listing-preview" aria-live="polite"></div>
       <p id="emptyState" class="empty-state" hidden>No matching devices.</p>
-      <div class="section-end"><a class="button secondary" href="/marketplace.html">Browse marketplace</a></div>
+      <div class="section-end"><a class="button secondary" href="/marketplace">Browse marketplace</a></div>
     </section>
 
     <section id="trust" class="home-checklist" aria-labelledby="check-title">
       <div class="shell">
         <div class="checklist-head">
           <div><span class="eyebrow">Before you buy</span><h2 id="check-title">Check before buying.</h2></div>
-          <a class="text-link" href="/trust.html">Trust details →</a>
+          <a class="text-link" href="/trust">Trust details →</a>
         </div>
         <div class="checklist-grid">
           <div class="check-item"><span class="check-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="3" width="12" height="18" rx="2"></rect><path d="m9 12 2 2 4-4"></path></svg></span><b>Check condition</b></div>
@@ -88,7 +88,7 @@
     <section id="sell" class="sell shell">
       <div class="sell-card seller-cta-card compact-cta">
         <div><span class="eyebrow">Sell a device</span><h2>Create a clear listing.</h2></div>
-        <div class="cta-actions"><a class="button" href="/sell.html">Start listing</a><a class="button secondary" href="/dashboard.html">Manage listings</a></div>
+        <div class="cta-actions"><a class="button" href="/sell">Start listing</a><a class="button secondary" href="/dashboard.html">Manage listings</a></div>
         <form id="sellForm" hidden aria-hidden="true"></form>
       </div>
     </section>
@@ -96,7 +96,7 @@
 
   <dialog id="dialog"><button class="dialog-close" aria-label="Close">×</button><div id="dialogContent"></div></dialog>
 
-  <footer><div class="shell footer-inner"><div><b>DigitalDeviceHub</b><a href="/marketplace.html">Marketplace</a><a href="/trust.html">Trust</a><a href="/help.html">Help</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div><span>© 2026 DigitalDeviceHub</span></div></footer>
+  <footer><div class="shell footer-inner"><div><b>DigitalDeviceHub</b><a href="/marketplace">Marketplace</a><a href="/trust">Trust</a><a href="/help">Help</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a></div><span>© 2026 DigitalDeviceHub</span></div></footer>
 
   <script src="/config.js"></script>
   <script src="/app.js" defer></script>
