@@ -1,0 +1,2 @@
+title,category,brand,model,condition_grade,usage_origin,storage,ram,colour,battery_health,network_status,price,currency,country_code,city,delivery_mode,description,warranty,accepts_trade_or_swap,swap_preference
+Example device,Phones,Brand,Model,Good,Previously used in listing country,128 GB,8 GB,Black,90%,Unlocked,450,USD,US,City,pickup,"Describe the exact device, wear, repairs and included accessories.",,false,
