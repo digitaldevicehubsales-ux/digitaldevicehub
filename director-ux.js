@@ -17,6 +17,13 @@
     document.body.appendChild(script);
   }
 
+  if(!document.querySelector('script[data-director-user-controls]')){
+    const userControls=document.createElement('script');
+    userControls.src='/director-user-controls.js?v=20261003-1';
+    userControls.dataset.directorUserControls='1';
+    document.body.appendChild(userControls);
+  }
+
   // Replace the old seller-flow link with a native Director listing action.
   const createListingLink=document.querySelector('[data-panel="listings"] .panel-heading a[href="/sell.html"]');
   if(createListingLink){
