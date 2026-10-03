@@ -294,7 +294,10 @@ const PUBLIC_ROUTES=new Map([
   ['/laptops','/laptops.html'],
   ['/tablets','/tablets.html'],
   ['/accessories','/accessories.html'],
-  ['/wearables','/wearables.html']
+  ['/wearables','/wearables.html'],
+  ['/dashboard','/dashboard.html'],
+  ['/admin','/admin.html'],
+  ['/director','/director.html']
 ]);
 async function renderSitemap(url) {
   const headers={apikey:SUPABASE_KEY};
