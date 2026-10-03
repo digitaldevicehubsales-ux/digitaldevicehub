@@ -12,12 +12,15 @@
     const cond = condition?.value || 'all';
     if (!grid || !empty) return;
 
+    if(!listings.length && grid.dataset.ssr==='true' && grid.children.length){return}
+
     const filtered = listings.filter(x =>
       (activeCategory === 'all' || x.category === activeCategory) &&
       (cond === 'all' || x.condition === cond) &&
       (!q || `${x.name} ${x.category} ${x.storage || ''} ${x.seller || ''}`.toLowerCase().includes(q))
     );
 
+    grid.dataset.ssr='false';
     grid.innerHTML = filtered.map(x => `
       <article class="listing-card" tabindex="0" data-id="${escapeHtml(x.id)}" aria-label="${escapeHtml(x.name)}, ${escapeHtml(money(x.price,x.currency))}">
         <div class="listing-art">${x.image_url ? `<img src="${escapeHtml(x.image_url)}" alt="${escapeHtml(x.name)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;" />` : `<span aria-hidden="true">${escapeHtml(x.icon)}</span>`}</div>
