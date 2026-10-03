@@ -177,13 +177,13 @@
     updateModelOptions(params.get('model'));
     const country=params.get('country');if(country&&window.DDH_COUNTRIES?.codes?.includes(country))controls.country.value=country;
   }
-  function skeletons(){grid.innerHTML=Array.from({length:6},()=>'<div class="product-card skeleton-card"><div class="product-image skeleton"></div><div class="product-content"><div class="skeleton skeleton-line short"></div><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line medium"></div></div></div>').join('')}
+  function skeletons(){if(grid.dataset.ssr==='true'&&grid.children.length){grid.setAttribute('aria-busy','true');return}grid.innerHTML=Array.from({length:6},()=>'<div class="product-card skeleton-card"><div class="product-image skeleton"></div><div class="product-content"><div class="skeleton skeleton-line short"></div><div class="skeleton skeleton-line"></div><div class="skeleton skeleton-line medium"></div></div></div>').join('')}
   async function load(){
     skeletons();
     try{
       await window.DDH_LOCALIZATION?.ready;
       const data=await get('/rest/v1/listings?select=id,slug,title,category,brand,model,condition,storage,city,country_code,price_amount,price_currency,seller_id,created_at,specs&status=eq.published&order=created_at.desc&limit=200');
-      rows=data||[];
+      rows=data||[];grid.dataset.ssr='false';grid.removeAttribute('aria-busy');
       const ids=rows.map(x=>x.id),sellerIds=[...new Set(rows.map(x=>x.seller_id).filter(Boolean))];
       if(ids.length){
         const list=ids.map(x=>`"${x}"`).join(',');
@@ -197,7 +197,7 @@
       }
       updateCounts();render();
     }catch(err){
-      grid.innerHTML='';resultCount.textContent='Marketplace unavailable';empty.hidden=false;empty.innerHTML=`We could not load the marketplace. <button type="button" class="link-button" id="retryMarketplace">Try again</button>`;document.querySelector('#retryMarketplace')?.addEventListener('click',load);
+      grid.dataset.ssr='false';grid.removeAttribute('aria-busy');grid.innerHTML='';resultCount.textContent='Marketplace unavailable';empty.hidden=false;empty.innerHTML=`We could not load the marketplace. <button type="button" class="link-button" id="retryMarketplace">Try again</button>`;document.querySelector('#retryMarketplace')?.addEventListener('click',load);
     }
   }
   hydrateFromUrl();
