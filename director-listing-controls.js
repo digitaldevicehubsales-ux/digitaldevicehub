@@ -193,12 +193,18 @@
     if (typeof value === 'object') Object.values(value).forEach(item => collectVariantPaths(item, out));
   }
 
-  async function listingImagePaths(listingId) {
-    const rows = await request(`/rest/v1/listing_images?select=storage_path,variants&listing_id=eq.${encodeURIComponent(listingId)}`);
+  async function listingMediaPaths(listingId) {
+    const [images, videos] = await Promise.all([
+      request(`/rest/v1/listing_images?select=storage_path,variants&listing_id=eq.${encodeURIComponent(listingId)}`),
+      request(`/rest/v1/listing_videos?select=storage_path&listing_id=eq.${encodeURIComponent(listingId)}`).catch(() => [])
+    ]);
     const paths = new Set();
-    for (const row of rows || []) {
+    for (const row of images || []) {
       if (row?.storage_path) paths.add(row.storage_path);
       collectVariantPaths(row?.variants, paths);
+    }
+    for (const row of videos || []) {
+      if (row?.storage_path) paths.add(row.storage_path);
     }
     return [...paths];
   }
@@ -217,19 +223,23 @@
   }
 
   async function permanentlyDeleteListing(listingId, reason) {
-    const paths = await listingImagePaths(listingId);
-    await removeStorageObjects(paths);
-    return request('/rest/v1/rpc/director_delete_listing', {
+    const paths = await listingMediaPaths(listingId);
+    const deleted = await request('/rest/v1/rpc/director_delete_listing', {
       method: 'POST',
       body: {p_listing_id: listingId, p_reason: reason}
     });
+    // Delete storage only after the database operation succeeds. If storage
+    // cleanup fails, the listing remains deleted and the orphaned media can be
+    // retried safely; the inverse could leave a live listing without media.
+    await removeStorageObjects(paths);
+    return deleted;
   }
 
   function openDeleteDialog(listingId, title) {
     showDialog('Delete listing', 'Permanent listing deletion', `
       <form id="directorDeleteListingForm">
         <p><strong>${esc(title || 'This listing')}</strong> will be permanently removed from the marketplace.</p>
-        <p class="muted">Associated listing data is removed, listing images are deleted from storage, and historical orders keep their saved listing snapshot.</p>
+        <p class="muted">Associated listing data is removed, listing media is deleted from storage, and historical orders keep their saved listing snapshot.</p>
         <div class="form-grid">
           <label class="field full">Deletion reason<textarea name="reason" minlength="10" maxlength="2000" required placeholder="Required: explain why this listing is being permanently deleted"></textarea></label>
           <label class="field full">Type DELETE to confirm<input name="confirmation" autocomplete="off" required placeholder="DELETE"></label>
