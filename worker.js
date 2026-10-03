@@ -254,12 +254,15 @@ async function renderPublicPage(request,env,url,assetPath,kind) {
     if(kind==='home'){
       html=html.replace('<div id="listingGrid" class="listing-grid home-listing-preview" aria-live="polite"></div>',
         `<div id="listingGrid" class="listing-grid home-listing-preview" aria-live="polite" data-ssr="true">${listings.map(renderHomeListingCard).join('')}</div>`);
-      if(listings.length)html=html.replace('<p id="emptyState" class="empty-state" hidden>No matching devices.</p>','<p id="emptyState" class="empty-state" hidden>No matching devices.</p>');
+      if(!listings.length)html=html.replace('<p id="emptyState" class="empty-state" hidden>No matching devices.</p>',
+        '<div id="emptyState" class="empty-state"><strong>Be among the first sellers.</strong><br><a class="button secondary" href="/sell">List a device</a></div>');
     }else{
       html=html.replace('<div class="result-count" id="resultCount" role="status" aria-live="polite">Loading devices…</div>',
         `<div class="result-count" id="resultCount" role="status" aria-live="polite">${listings.length} device${listings.length===1?'':'s'} available</div>`);
       html=html.replace('<div class="product-grid" id="marketplaceGrid" style="margin-top:18px"></div>',
         `<div class="product-grid" id="marketplaceGrid" style="margin-top:18px" data-ssr="true">${listings.map(renderMarketListingCard).join('')}</div>`);
+      if(!listings.length)html=html.replace('<div class="empty-box" id="emptyState" hidden>No matching devices.</div>',
+        '<div class="empty-box" id="emptyState"><strong>No devices listed yet.</strong><br><a class="btn blue" href="/sell">Sell yours</a></div>');
     }
   }catch{}
   const headers=new Headers(shell.headers);
