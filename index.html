@@ -18,28 +18,23 @@
   <link rel="stylesheet" href="/site-v2.css">
   <link rel="stylesheet" href="/premium-ui.css">
   <title>DigitalDeviceHub — Device marketplace</title>
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://digitaldevicehub.com/#organization","name":"DigitalDeviceHub","url":"https://digitaldevicehub.com/","logo":"https://digitaldevicehub.com/social-card.png","email":"digitaldevicehubsales@gmail.com"},{"@type":"WebSite","@id":"https://digitaldevicehub.com/#website","url":"https://digitaldevicehub.com/","name":"DigitalDeviceHub","publisher":{"@id":"https://digitaldevicehub.com/#organization"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://digitaldevicehub.com/marketplace?q={search_term_string}"},"query-input":"required name=search_term_string"}}]}</script>
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="/" aria-label="DigitalDeviceHub home"><span class="brand-mark" aria-hidden="true">D</span><span>DigitalDeviceHub</span></a>
-    <nav class="desktop-nav" aria-label="Primary navigation">
-      <a href="/marketplace">Marketplace</a>
-      <a href="/trust">Trust</a>
-      <a href="/help">Help</a>
-      <a href="/about">About</a>
+  <header class="global-header">
+    <a class="global-brand" href="/" aria-label="DigitalDeviceHub home"><span class="global-brand-mark" aria-hidden="true">D</span><span>DigitalDeviceHub</span></a>
+    <nav class="global-nav" aria-label="Primary navigation">
+      <a href="/marketplace">Marketplace</a><a href="/trust">Trust</a><a href="/help">Help</a><a href="/about">About</a>
     </nav>
-    <div class="header-actions">
-      <button class="ghost account-access" data-action="signin">Sign in</button>
-      <a class="button compact sell-cta" href="/sell">Sell device</a>
-    </div>
+    <div class="global-actions"><span class="locale-chip" id="localeChip">Region &amp; currency</span><a class="btn secondary small account-access" href="/?signin=1">Sign in</a><a class="btn small" href="/sell">Sell device</a></div>
   </header>
 
   <main id="top">
     <section class="hero home-primary shell" aria-labelledby="home-title">
       <div class="hero-copy">
         <span class="eyebrow">Device marketplace</span>
-        <h1 id="home-title">Buy devices with clearer checks.</h1>
-        <p class="hero-proof">Condition. Seller. IMEI signals.</p>
+        <h1 id="home-title">Buy and sell devices with clearer checks.</h1>
+        <p class="hero-proof">Condition grades · Seller context · IMEI duplicate screening</p>
         <form class="home-search" action="/marketplace" method="get">
           <label class="sr-only" for="homeSearch">Search devices</label>
           <input id="homeSearch" name="q" type="search" placeholder="Search devices" autocomplete="off" />
@@ -99,7 +94,13 @@
 
   <dialog id="dialog"><button class="dialog-close" aria-label="Close">×</button><div id="dialogContent"></div></dialog>
 
-  <footer><div class="shell footer-inner"><div><b>DigitalDeviceHub</b><a href="/marketplace">Marketplace</a><a href="/trust">Trust</a><a href="/help">Help</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a></div><span>© 2026 DigitalDeviceHub</span></div></footer>
+  <footer class="footer-v2"><div class="container footer-grid">
+    <div><a class="global-brand" href="/" aria-label="DigitalDeviceHub home"><span class="global-brand-mark" aria-hidden="true">D</span><span>DigitalDeviceHub</span></a><p>Devices with clearer checks.</p></div>
+    <div><h4>Marketplace</h4><a href="/marketplace">Browse devices</a><a href="/sell">Sell device</a><a href="/compare">Compare</a></div>
+    <div><h4>Support</h4><a href="/trust">Trust &amp; Safety</a><a href="/help">Help Center</a><a href="/contact">Contact</a></div>
+    <div><h4>Company</h4><a href="/about">About</a><a href="/regions">Regions &amp; features</a></div>
+    <div><h4>Legal</h4><a href="/privacy">Privacy</a><a href="/terms">Terms</a></div>
+  </div></footer>
 
   <script src="/config.js"></script>
   <script src="/app.js" defer></script>
