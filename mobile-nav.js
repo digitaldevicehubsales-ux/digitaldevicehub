@@ -11,7 +11,8 @@
     trust:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 19 6v5c0 4.7-2.8 8-7 10-4.2-2-7-5.3-7-10V6l7-3Z"></path><path d="m9 12 2 2 4-4"></path></svg>',
     help:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9.7 9a2.5 2.5 0 0 1 4.8 1c0 1.7-1.3 2.2-2.2 2.8-.6.4-.8.8-.8 1.7M12 18h.01"></path></svg>',
     info:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7h.01"></path></svg>',
-    filter:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"></path></svg>'
+    filter:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"></path></svg>',
+    logout:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5"></path><path d="M14 8l4 4-4 4M9 12h9"></path></svg>'
   };
 
   function iconFor(label=''){
@@ -22,6 +23,7 @@
     if(x.includes('about'))return icons.info;
     if(x.includes('sell'))return icons.sell;
     if(x.includes('account'))return icons.account;
+    if(x.includes('sign out'))return icons.logout;
     return icons.browse;
   }
 
@@ -95,6 +97,22 @@
     });
   }
 
+  function storedSession(){
+    try{return JSON.parse(localStorage.getItem('ddh_supabase_session')||'null')}catch{return null}
+  }
+
+  function isSignedIn(){
+    return Boolean(storedSession()?.user?.id);
+  }
+
+  async function publicSignOut(){
+    try{
+      await fetch('/auth/logout',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:'{}'});
+    }catch{}
+    try{localStorage.removeItem('ddh_supabase_session')}catch{}
+    location.assign('/');
+  }
+
   function setup(){
     loadPremiumUi();
     const main=document.querySelector('main');
@@ -119,6 +137,15 @@
     const actions=header.querySelector('.global-actions, .header-actions');
     const account=actions?.querySelector('a[href*="dashboard"], .account-access');
     if(account)account.classList.add('mobile-account-visible');
+    if(isSignedIn()&&actions&&!actions.querySelector('[data-public-signout]')){
+      const signout=document.createElement('button');
+      signout.type='button';
+      signout.className='btn secondary small public-signout';
+      signout.dataset.publicSignout='1';
+      signout.innerHTML=`${icons.logout}<span>Sign out</span>`;
+      signout.addEventListener('click',publicSignOut);
+      actions.appendChild(signout);
+    }
 
     const toggle=document.createElement('button');
     toggle.type='button';toggle.className='mobile-menu-toggle';toggle.setAttribute('aria-label','Open menu');toggle.setAttribute('aria-expanded','false');toggle.innerHTML=icons.menu;
@@ -127,7 +154,8 @@
     const links=[];nav?.querySelectorAll('a').forEach(a=>links.push({href:a.getAttribute('href'),label:a.textContent.trim()}));
     if(!links.some(x=>/sell/i.test(x.label)))links.push({href:'/sell',label:'Sell device'});
     if(!links.some(x=>/account/i.test(x.label)))links.push({href:'/dashboard.html',label:'Account'});
-    panel.innerHTML=links.filter((x,i,a)=>x.href&&a.findIndex(y=>y.href===x.href)===i).map(x=>`<a href="${x.href}">${iconFor(x.label)}<span>${x.label}</span></a>`).join('');
+    panel.innerHTML=links.filter((x,i,a)=>x.href&&a.findIndex(y=>y.href===x.href)===i).map(x=>`<a href="${x.href}">${iconFor(x.label)}<span>${x.label}</span></a>`).join('')+(isSignedIn()?`<button type="button" class="mobile-menu-signout" data-public-signout>${icons.logout}<span>Sign out</span></button>`:'');
+    panel.querySelector('[data-public-signout]')?.addEventListener('click',publicSignOut);
     markCurrentPage(panel);header.append(toggle,panel);
 
     const close=()=>{toggle.setAttribute('aria-expanded','false');panel.hidden=true;toggle.setAttribute('aria-label','Open menu');toggle.innerHTML=icons.menu;document.body.classList.remove('mobile-menu-open')};
