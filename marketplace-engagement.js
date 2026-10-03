@@ -18,7 +18,7 @@
   function setCompare(ids){try{sessionStorage.setItem(COMPARE_KEY,JSON.stringify(ids))}catch{}updateCompareTray()}
   function updateCompareTray(){
     const ids=compareIds(),tray=document.querySelector('#compareTray'),textEl=document.querySelector('#compareTrayText'),link=document.querySelector('#compareNow');
-    if(!tray)return;tray.hidden=ids.length<2;textEl.textContent=`${ids.length} device${ids.length===1?'':'s'} selected`;link.href='/compare.html?ids='+encodeURIComponent(ids.join(','));
+    if(!tray)return;tray.hidden=ids.length<2;textEl.textContent=`${ids.length} device${ids.length===1?'':'s'} selected`;link.href='/compare?ids='+encodeURIComponent(ids.join(','));
     document.querySelectorAll('[data-compare-id]').forEach(b=>b.classList.toggle('selected',ids.includes(b.dataset.compareId)));
   }
   document.addEventListener('click',event=>{
