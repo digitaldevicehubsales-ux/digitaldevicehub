@@ -12,7 +12,7 @@
   function render(rows){
     if(rows.length<2){status.hidden=true;empty.hidden=false;table.innerHTML='';return}
     const ordered=ids.map(id=>rows.find(r=>r.id===id)).filter(Boolean);
-    const head=`<thead><tr><th>Compare</th>${ordered.map(x=>`<th><a href="/device.html?id=${encodeURIComponent(x.id)}">${esc(x.title)}</a><small>${esc(x.condition==='new'?'New':'Used')} · ${esc([x.city,country(x.country_code)].filter(Boolean).join(', '))}</small></th>`).join('')}</tr></thead>`;
+    const head=`<thead><tr><th>Compare</th>${ordered.map(x=>`<th><a href="/device/${encodeURIComponent(x.id)}">${esc(x.title)}</a><small>${esc(x.condition==='new'?'New':'Used')} · ${esc([x.city,country(x.country_code)].filter(Boolean).join(', '))}</small></th>`).join('')}</tr></thead>`;
     const row=(label,fn)=>`<tr><th scope="row">${esc(label)}</th>${ordered.map(x=>cell(fn(x))).join('')}</tr>`;
     const body=[
       row('Seller asking price',x=>`<strong>${esc(money(x.price_amount,x.price_currency))}</strong>`),
@@ -28,7 +28,7 @@
       row('Warranty',x=>esc(x.warranty_text||'')),
       row('Delivery',x=>esc(delivery(x.delivery_mode))),
       row('Location',x=>esc([x.city,country(x.country_code)].filter(Boolean).join(', '))),
-      row('Action',x=>`<a class="btn secondary small" href="/device.html?id=${encodeURIComponent(x.id)}">View device</a>`)
+      row('Action',x=>`<a class="btn secondary small" href="/device/${encodeURIComponent(x.id)}">View device</a>`)
     ].join('');
     table.innerHTML=`<table class="compare-table">${head}<tbody>${body}</tbody></table>`;
     status.textContent=`Comparing ${ordered.length} devices`;
