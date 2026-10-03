@@ -147,7 +147,7 @@
         <div><a class="global-brand" href="/" aria-label="DigitalDeviceHub home"><span class="global-brand-mark" aria-hidden="true">D</span><span>DigitalDeviceHub</span></a><p>Devices with clearer checks.</p></div>
         <div><h4>Marketplace</h4><a href="/marketplace">Browse devices</a><a href="/sell">Sell device</a><a href="/compare">Compare</a></div>
         <div><h4>Support</h4><a href="/trust">Trust & Safety</a><a href="/help">Help Center</a><a href="/contact">Contact</a></div>
-        <div><h4>Company</h4><a href="/about">About</a><a href="/seller">Seller profiles</a></div>
+        <div><h4>Company</h4><a href="/about">About</a><a href="/regions">Regions & features</a></div>
         <div><h4>Legal</h4><a href="/privacy">Privacy</a><a href="/terms">Terms</a></div>
       </div>`;
     }
