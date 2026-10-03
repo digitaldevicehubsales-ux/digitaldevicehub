@@ -21,6 +21,9 @@
   let favoriteListings = [];
   let offers = [];
   let offerListings = new Map();
+  let orders = [];
+  let reviews = [];
+  let orderListings = new Map();
 
   const esc = value => String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const titleCase = value => String(value || '').replace(/^./, c => c.toUpperCase());
@@ -82,7 +85,7 @@
   function showPanel(name){
     document.querySelectorAll('[data-panel]').forEach(el=>el.classList.toggle('active',el.dataset.panel===name));
     document.querySelectorAll('[data-view]').forEach(el=>el.classList.toggle('active',el.dataset.view===name));
-    document.querySelector('#pageTitle').textContent=({overview:'Overview',listings:'My Listings',analytics:'Analytics',messages:'Messages',favorites:'Favorites',offers:'Offers',profile:'Profile & Settings'})[name]||'Dashboard';
+    document.querySelector('#pageTitle').textContent=({overview:'Overview',listings:'My Listings',analytics:'Analytics',messages:'Messages',favorites:'Favorites',offers:'Offers',purchases:'Purchases & Reviews',profile:'Profile & Settings'})[name]||'Dashboard';
     window.scrollTo({top:0,behavior:'smooth'});
   }
 
@@ -172,6 +175,34 @@
     document.querySelector('#favoriteList').innerHTML=favoriteListings.map(x=>`<article class="favorite-card"><h3>${esc(x.title)}</h3><p>${esc(titleCase(x.condition))} · ${esc(x.storage||'Details available')}</p><p class="price" data-price-amount="${esc(x.price_amount)}" data-price-currency="${esc(x.price_currency)}">${esc(money(x.price_amount,x.price_currency))}</p><a href="/#marketplace">View marketplace →</a></article>`).join('')||'<div class="empty-box">Devices you save will appear here.</div>';
     window.DDH_LOCALIZATION?.refresh?.();
   }
+  function renderPurchases(){
+    const wrap=document.querySelector('#purchaseList');if(!wrap)return;
+    const mine=orders.filter(o=>o.buyer_id===session.user.id);
+    const reviewed=new Set(reviews.filter(r=>r.reviewer_id===session.user.id).map(r=>r.order_id));
+    wrap.innerHTML=mine.map(o=>{
+      const item=orderListings.get(o.listing_id);
+      const canReview=o.status==='completed'&&!reviewed.has(o.id);
+      const reviewState=reviewed.has(o.id)?'<span class="status-pill status-completed">Reviewed</span>':o.status==='completed'?'<span class="status-pill status-completed">Review available</span>':statusPill(o.status);
+      return `<article class="manager-card"><div class="manager-meta"><h3>${esc(item?.title||'Completed device order')}</h3><p>${esc(money(o.amount,o.currency))} · ${reviewState}</p><p>${new Date(o.created_at).toLocaleDateString()}</p></div><div class="manager-actions">${canReview?`<button class="mini-button primary" data-review-order="${esc(o.id)}">Review seller</button>`:''}${o.listing_id?`<a class="mini-button" href="/device/${encodeURIComponent(o.listing_id)}">View device</a>`:''}</div></article>`;
+    }).join('')||'<div class="empty-box">Completed purchases will appear here.</div>';
+  }
+
+  function openReview(orderId){
+    const order=orders.find(o=>o.id===orderId);if(!order||order.buyer_id!==session.user.id||order.status!=='completed')return;
+    const item=orderListings.get(order.listing_id);
+    dialogContent.innerHTML=`<div><p class="eyebrow">Completed deal</p><h2>Review seller</h2><p>${esc(item?.title||'Device order')}</p><form id="sellerReviewForm" class="edit-form"><label>Rating<select name="rating" required><option value="">Choose rating</option><option value="5">5 · Excellent</option><option value="4">4 · Good</option><option value="3">3 · Okay</option><option value="2">2 · Poor</option><option value="1">1 · Very poor</option></select></label><label class="full">Review<textarea name="body" rows="4" minlength="3" maxlength="1200" required placeholder="Describe the completed deal."></textarea></label><div class="full dialog-actions"><button class="primary-button" type="submit">Submit review</button><button class="secondary-button" type="button" data-cancel>Cancel</button></div></form></div>`;
+    dialog.showModal();
+    dialogContent.querySelector('[data-cancel]').onclick=()=>dialog.close();
+    dialogContent.querySelector('#sellerReviewForm').onsubmit=async e=>{
+      e.preventDefault();
+      const fd=new FormData(e.currentTarget),rating=Number(fd.get('rating')),body=String(fd.get('body')||'').trim();
+      if(!Number.isInteger(rating)||rating<1||rating>5||body.length<3)return notify('Add a rating and short review.');
+      try{
+        await apiFetch('/rest/v1/reviews',{method:'POST',body:{order_id:order.id,reviewer_id:session.user.id,seller_id:order.seller_id,rating,body},headers:{Prefer:'return=minimal'}});
+        dialog.close();notify('Seller review published.');await loadData();
+      }catch(err){notify(err.message)}
+    };
+  }
 
   function renderProfile(){
     const form=document.querySelector('#profileForm');form.elements.display_name.value=profile?.display_name||'';form.elements.city.value=profile?.city||'';window.DDH_COUNTRIES?.populate?.(form.elements.country_code,profile?.country_code||window.DDH_LOCALIZATION?.state?.country||'');
@@ -179,7 +210,7 @@
     document.querySelector('#profileCurrency').value=profile?.currency_code||window.DDH_LOCALIZATION?.state?.currency||'USD';
   }
 
-  function renderAll(){renderKpis();renderOverview();renderListings();renderAnalytics();renderMessages();renderOffers();renderFavorites();renderProfile()}
+  function renderAll(){renderKpis();renderOverview();renderListings();renderAnalytics();renderMessages();renderOffers();renderPurchases();renderFavorites();renderProfile()}
 
   function currencyOptions(selected){
     let codes=[];try{codes=Intl.supportedValuesOf?.('currency')||[]}catch{}
@@ -259,7 +290,7 @@
 
   async function loadData(){
     const uid=session.user.id;
-    const [profileRows,listingRows,statRows,trendRows,conversationRows,messageRows,favoriteRows,offerRows]=await Promise.all([
+    const [profileRows,listingRows,statRows,trendRows,conversationRows,messageRows,favoriteRows,offerRows,orderRows,reviewRows]=await Promise.all([
       apiFetch(`/rest/v1/profiles?select=id,display_name,city,country_code,currency_code&id=eq.${encodeURIComponent(uid)}&limit=1`).catch(()=>[]),
       apiFetch(`/rest/v1/listings?select=id,title,category,brand,model,condition,price_amount,price_currency,description,storage,color,city,country_code,delivery_mode,warranty_text,specs,status,created_at,updated_at,paused_at,sold_at&seller_id=eq.${encodeURIComponent(uid)}&order=created_at.desc`).catch(()=>[]),
       rpc('get_my_listing_stats').catch(()=>[]),
@@ -267,13 +298,17 @@
       apiFetch(`/rest/v1/conversations?select=id,listing_id,buyer_id,seller_id,created_at&or=(buyer_id.eq.${uid},seller_id.eq.${uid})&order=created_at.desc`).catch(()=>[]),
       apiFetch('/rest/v1/messages?select=id,conversation_id,sender_id,body,created_at&order=created_at.desc&limit=100').catch(()=>[]),
       apiFetch(`/rest/v1/favorites?select=listing_id,created_at&user_id=eq.${encodeURIComponent(uid)}&order=created_at.desc`).catch(()=>[]),
-      apiFetch(`/rest/v1/offers?select=id,listing_id,buyer_id,seller_id,amount,currency,note,status,created_at,updated_at&or=(buyer_id.eq.${uid},seller_id.eq.${uid})&order=created_at.desc`).catch(()=>[])
+      apiFetch(`/rest/v1/offers?select=id,listing_id,buyer_id,seller_id,amount,currency,note,status,created_at,updated_at&or=(buyer_id.eq.${uid},seller_id.eq.${uid})&order=created_at.desc`).catch(()=>[]),
+      apiFetch(`/rest/v1/orders?select=id,listing_id,buyer_id,seller_id,status,amount,currency,created_at,updated_at&or=(buyer_id.eq.${uid},seller_id.eq.${uid})&order=created_at.desc`).catch(()=>[]),
+      apiFetch(`/rest/v1/reviews?select=id,order_id,reviewer_id,seller_id,rating,body,created_at&reviewer_id=eq.${encodeURIComponent(uid)}&order=created_at.desc`).catch(()=>[])
     ]);
-    profile=profileRows?.[0]||null;listings=listingRows||[];stats=new Map((statRows||[]).map(s=>[s.listing_id,s]));trend=trendRows||[];conversations=conversationRows||[];messages=messageRows||[];favorites=favoriteRows||[];offers=offerRows||[];
+    profile=profileRows?.[0]||null;listings=listingRows||[];stats=new Map((statRows||[]).map(s=>[s.listing_id,s]));trend=trendRows||[];conversations=conversationRows||[];messages=messageRows||[];favorites=favoriteRows||[];offers=offerRows||[];orders=orderRows||[];reviews=reviewRows||[];
     const listingIds=listings.map(x=>x.id);images=new Map();if(listingIds.length){const inList=listingIds.map(id=>`"${id}"`).join(',');const rows=await apiFetch(`/rest/v1/listing_images?select=listing_id,storage_path,variants,sort_order&listing_id=in.(${encodeURIComponent(inList)})&order=sort_order.asc`).catch(()=>[]);for(const row of rows||[])if(!images.has(row.listing_id))images.set(row.listing_id,row.variants?.card||row.storage_path)}
     const favoriteIds=[...new Set(favorites.map(x=>x.listing_id))];favoriteListings=[];if(favoriteIds.length){const inList=favoriteIds.map(id=>`"${id}"`).join(',');favoriteListings=await apiFetch(`/rest/v1/listings?select=id,title,condition,storage,price_amount,price_currency&id=in.(${encodeURIComponent(inList)})`).catch(()=>[])}
     const offerIds=[...new Set(offers.map(o=>o.listing_id))];offerListings=new Map();
     if(offerIds.length){const inList=offerIds.map(id=>`"${id}"`).join(',');const offerItems=await apiFetch(`/rest/v1/listings?select=id,title&id=in.(${encodeURIComponent(inList)})`).catch(()=>[]);offerListings=new Map((offerItems||[]).map(x=>[x.id,x]))}
+    const orderIds=[...new Set(orders.map(o=>o.listing_id).filter(Boolean))];orderListings=new Map();
+    if(orderIds.length){const inList=orderIds.map(id=>`"${id}"`).join(',');const orderItems=await apiFetch(`/rest/v1/listings?select=id,title&id=in.(${encodeURIComponent(inList)})`).catch(()=>[]);orderListings=new Map((orderItems||[]).map(x=>[x.id,x]))}
     renderAll();
   }
 
@@ -308,7 +343,7 @@
   document.querySelectorAll('[data-go]').forEach(btn=>btn.addEventListener('click',()=>showPanel(btn.dataset.go)));
   document.querySelector('#myListings').addEventListener('click',e=>{const edit=e.target.closest('[data-edit]');if(edit)return openEdit(edit.dataset.edit);const status=e.target.closest('[data-status]');if(status)setStatus(status.dataset.id,status.dataset.status)});
   document.querySelector('#messageList').addEventListener('click',e=>{const row=e.target.closest('[data-conversation]');if(row)openConversation(row.dataset.conversation)});
-  document.querySelector('#offerList').addEventListener('click',e=>{const action=e.target.closest('[data-offer-action]');if(action)actOnOffer(action.dataset.offerId,action.dataset.offerAction)});
+  document.querySelector('#offerList').addEventListener('click',e=>{const action=e.target.closest('[data-offer-action]');if(action)actOnOffer(action.dataset.offerId,action.dataset.offerAction)});document.querySelector('#purchaseList')?.addEventListener('click',e=>{const review=e.target.closest('[data-review-order]');if(review)openReview(review.dataset.reviewOrder)});
   document.querySelector('#analyticsRange').addEventListener('change',async()=>{trend=await rpc('get_my_listing_trend',{p_days:Number(document.querySelector('#analyticsRange').value)}).catch(()=>[]);renderAnalytics()});
   document.querySelector('#profileForm').addEventListener('submit',saveProfile);
   document.querySelector('#signOutButton').addEventListener('click',signOut);
