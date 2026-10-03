@@ -86,17 +86,52 @@
     const toggle=document.querySelector('#filterToggle');
     if(!filters||!toggle)return;
     if(!toggle.querySelector('svg'))toggle.innerHTML=`${icons.filter}<span>Filters</span>`;
-    const sync=()=>document.body.classList.toggle('filters-open',filters.classList.contains('open'));
+
+    if(!filters.querySelector('.filter-sheet-head')){
+      const head=document.createElement('div');
+      head.className='filter-sheet-head';
+      head.innerHTML='<div><strong>Filter devices</strong><span>Refine your results</span></div><button type="button" class="filter-sheet-close" aria-label="Close filters">'+icons.close+'</button>';
+      filters.prepend(head);
+
+      const actions=document.createElement('div');
+      actions.className='filter-sheet-actions';
+      actions.innerHTML='<button type="button" class="btn secondary filter-sheet-reset">Clear</button><button type="button" class="btn filter-sheet-done">View results</button>';
+      filters.append(actions);
+
+      actions.querySelector('.filter-sheet-reset')?.addEventListener('click',()=>document.querySelector('#clearFilters')?.click());
+      const closeFromSheet=()=>{
+        filters.classList.remove('open');
+        document.body.classList.remove('filters-open');
+        toggle.setAttribute('aria-expanded','false');
+        toggle.focus();
+      };
+      head.querySelector('.filter-sheet-close')?.addEventListener('click',closeFromSheet);
+      actions.querySelector('.filter-sheet-done')?.addEventListener('click',closeFromSheet);
+    }
+
+    const sync=()=>{
+      const open=filters.classList.contains('open');
+      document.body.classList.toggle('filters-open',open);
+      if(open&&matchMedia('(max-width:1000px)').matches){
+        filters.setAttribute('role','dialog');
+        filters.setAttribute('aria-modal','true');
+        filters.setAttribute('aria-label','Marketplace filters');
+      }else{
+        filters.removeAttribute('role');
+        filters.removeAttribute('aria-modal');
+        filters.removeAttribute('aria-label');
+      }
+    };
     toggle.addEventListener('click',()=>setTimeout(sync,0));
     document.addEventListener('keydown',e=>{
       if(e.key==='Escape'&&filters.classList.contains('open')){
-        filters.classList.remove('open');document.body.classList.remove('filters-open');toggle.setAttribute('aria-expanded','false');toggle.focus();
+        filters.classList.remove('open');document.body.classList.remove('filters-open');toggle.setAttribute('aria-expanded','false');toggle.focus();sync();
       }
     });
     document.addEventListener('click',e=>{
       if(!filters.classList.contains('open'))return;
       if(filters.contains(e.target)||toggle.contains(e.target))return;
-      if(matchMedia('(max-width:1000px)').matches){filters.classList.remove('open');document.body.classList.remove('filters-open');toggle.setAttribute('aria-expanded','false')}
+      if(matchMedia('(max-width:1000px)').matches){filters.classList.remove('open');document.body.classList.remove('filters-open');toggle.setAttribute('aria-expanded','false');sync()}
     });
   }
 
