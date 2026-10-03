@@ -113,8 +113,49 @@
     location.assign('/');
   }
 
+  function isPublicPage(){
+    return !/^\/(dashboard|admin|director)(?:\.html|\/|$)/.test(location.pathname);
+  }
+
+  function standardizePublicShell(){
+    if(!isPublicPage())return;
+    const signed=isSignedIn();
+    const current=location.pathname+location.search;
+    const header=document.querySelector('.global-header, .site-header');
+    if(header){
+      header.className='global-header';
+      header.innerHTML=`
+        <a class="global-brand" href="/" aria-label="DigitalDeviceHub home"><span class="global-brand-mark" aria-hidden="true">D</span><span>DigitalDeviceHub</span></a>
+        <nav class="global-nav" aria-label="Primary navigation">
+          <a href="/marketplace">Marketplace</a>
+          <a href="/trust">Trust</a>
+          <a href="/help">Help</a>
+          <a href="/about">About</a>
+        </nav>
+        <div class="global-actions">
+          <span class="locale-chip" id="localeChip">Region & currency</span>
+          <a class="btn secondary small account-access" href="${signed?'/dashboard.html':'/?signin=1&returnTo='+encodeURIComponent(current)}">${signed?'Account':'Sign in'}</a>
+          <a class="btn small" href="/sell">Sell device</a>
+        </div>`;
+      markCurrentPage(header);
+    }
+
+    const footer=document.querySelector('footer');
+    if(footer){
+      footer.className='footer-v2';
+      footer.innerHTML=`<div class="container footer-grid">
+        <div><a class="global-brand" href="/" aria-label="DigitalDeviceHub home"><span class="global-brand-mark" aria-hidden="true">D</span><span>DigitalDeviceHub</span></a><p>Devices with clearer checks.</p></div>
+        <div><h4>Marketplace</h4><a href="/marketplace">Browse devices</a><a href="/sell">Sell device</a><a href="/compare">Compare</a></div>
+        <div><h4>Support</h4><a href="/trust">Trust & Safety</a><a href="/help">Help Center</a><a href="/contact">Contact</a></div>
+        <div><h4>Company</h4><a href="/about">About</a><a href="/seller">Seller profiles</a></div>
+        <div><h4>Legal</h4><a href="/privacy">Privacy</a><a href="/terms">Terms</a></div>
+      </div>`;
+    }
+  }
+
   function setup(){
     loadPremiumUi();
+    standardizePublicShell();
     const main=document.querySelector('main');
     if(main&&!main.id)main.id='main-content';
     if(main&&!document.querySelector('.skip-link')){
