@@ -166,8 +166,9 @@
   function renderChips(){
     const data=activeChipData();
     chips.hidden=!data.length;
-    chips.innerHTML=data.map(x=>`<button type="button" class="filter-chip" data-chip="${esc(x.key)}">${esc(x.label)} <span aria-hidden="true">×</span></button>`).join('');
+    chips.innerHTML=data.map(x=>`<button type="button" class="filter-chip" data-chip="${esc(x.key)}">${esc(x.label)} <span aria-hidden="true">×</span></button>`).join('')+(data.length>1?'<button type="button" class="filter-chip filter-chip-clear" data-clear-all>Clear all</button>':'');
     chips.querySelectorAll('[data-chip]').forEach((b,i)=>b.addEventListener('click',()=>{data[i].clear();visibleCount=PAGE_SIZE;render()}));
+    chips.querySelector('[data-clear-all]')?.addEventListener('click',clearFilters);
   }
   function render(){
     syncUrl();
@@ -184,7 +185,7 @@
     resultCount.textContent=displayCurrency
       ? `${filtered.length.toLocaleString()} device${filtered.length===1?'':'s'} · local estimates use ${displayCurrency} where conversion is available`
       : `${filtered.length.toLocaleString()} device${filtered.length===1?'':'s'} · seller asking currencies shown; choose Region & currency for local estimates`;
-    if(loadMore){loadMore.hidden=visibleCount>=filtered.length;loadMore.textContent=`Show more (${Math.min(PAGE_SIZE,filtered.length-visibleCount)} remaining)`}
+    if(loadMore){const remaining=Math.max(0,filtered.length-visibleCount);loadMore.hidden=remaining===0;loadMore.textContent=remaining?`Show more (${Math.min(PAGE_SIZE,remaining)} remaining)`:'Show more'}
     renderChips();
     window.DDH_LOCALIZATION?.refresh?.();
     document.querySelector('#relaxFilters')?.addEventListener('click',clearFilters);
