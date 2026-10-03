@@ -79,6 +79,7 @@
     const estimate=localCurrency&&item.price_currency!==localCurrency?`<div class="converted-line">Local estimate: <span class="price local-estimate" data-price-amount="${esc(item.price_amount)}" data-price-currency="${esc(item.price_currency)}">${esc(original)}</span></div>`:'';
     const battery=item.specs?.battery_health?`<span class="pill">Battery ${esc(item.specs.battery_health)}</span>`:'';
     const grade=item.condition==='used'&&item.specs?.cosmetic_condition?`<span class="pill">${esc(item.specs.cosmetic_condition)}</span>`:'';
+    const imei=item.category==='Phones'&&item.identity_check_status==='format_valid'?'<span class="pill trust-pill">IMEI screened</span>':'';
     const href=listingHref(item);
     return `<article class="product-card-shell">
       <a class="product-card" aria-label="${esc(item.title)}, ${esc(item.condition==='new'?'New':'Used')}, ${esc(original)}" data-id="${esc(item.id)}" data-listing-card href="${href}">
@@ -87,7 +88,7 @@
           <div class="tag-row"><span>${esc(item.category)}</span><span class="pill">${esc(item.condition==='new'?'New':'Used')}</span></div>
           <h3>${esc(item.title)}</h3>
           <div class="subline">${esc(item.storage||'Details available')}${place?` · ${esc(place)}`:''}</div>
-          <div class="card-attribute-row">${grade}${battery}</div>
+          <div class="card-attribute-row">${grade}${battery}${imei}</div>
           <div class="seller-price-primary">${esc(original)}</div>${estimate}
           <div class="seller-line"><span>Listed by ${esc(seller)}</span>${sellerData.verification_tier&&sellerData.verification_tier!=="account"?`<span class="seller-badge">✓ ${esc(sellerData.verification_tier)}</span>`:""}${Number(sellerData.rating_count)>0?`<span class="seller-rating">${Number(sellerData.rating_avg).toFixed(1)}★</span>`:""}</div>
         </div>
@@ -182,7 +183,7 @@
     skeletons();
     try{
       await window.DDH_LOCALIZATION?.ready;
-      const data=await get('/rest/v1/listings?select=id,slug,title,category,brand,model,condition,storage,city,country_code,price_amount,price_currency,seller_id,created_at,specs&status=eq.published&order=created_at.desc&limit=200');
+      const data=await get('/rest/v1/listings?select=id,slug,title,category,brand,model,condition,storage,city,country_code,price_amount,price_currency,seller_id,created_at,specs,identity_check_status&status=eq.published&order=created_at.desc&limit=200');
       rows=data||[];grid.dataset.ssr='false';grid.removeAttribute('aria-busy');
       const ids=rows.map(x=>x.id),sellerIds=[...new Set(rows.map(x=>x.seller_id).filter(Boolean))];
       if(ids.length){
