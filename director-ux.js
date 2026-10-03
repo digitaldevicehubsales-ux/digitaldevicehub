@@ -12,7 +12,7 @@
   // workers/CDN caches cannot leave Director actions on an older implementation.
   if(!document.querySelector('script[data-director-listing-controls]')){
     const script=document.createElement('script');
-    script.src='/director-listing-controls.js?v=20260925-2';
+    script.src='/director-listing-controls.js?v=20261003-1';
     script.dataset.directorListingControls='1';
     document.body.appendChild(script);
   }
