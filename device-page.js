@@ -32,9 +32,9 @@
   function specRows(){
     const s=listing.specs||{};
     const rows=[
-      ['Category',listing.category],['Condition',listing.condition==='new'?'New':'Used'],['Used condition',s.cosmetic_condition],['Visible wear or faults',s.condition_notes],['Brand',listing.brand],['Model',listing.model],
-      ['Storage',listing.storage],['Colour',listing.color],['Battery health',s.battery_health],['Network status',s.network_status],
-      ['IMEI duplicate screen',listing.category==='Phones'&&listing.identity_check_status==='format_valid'?'Passed':null],['Repairs',s.repair_history],['Included',s.accessories],['Delivery',({pickup:'Local pickup only',domestic:'Ships within seller country',international:'International shipping',pickup_domestic:'Pickup + domestic shipping',all:'Pickup + domestic + international shipping'})[listing.delivery_mode]||'Delivery details available'],
+      ['Category',listing.category],['Condition',s.condition_grade||s.cosmetic_condition||(listing.condition==='new'?'New (sealed)':'Used')],['Usage origin',s.usage_origin],['Visible wear or faults',s.condition_notes],['Brand',listing.brand],['Model',listing.model],
+      ['Storage',listing.storage],['RAM',s.ram],['Colour',listing.color],['Battery health',s.battery_health],['Network status',s.network_status],
+      ['IMEI duplicate screen',listing.category==='Phones'&&listing.identity_check_status==='format_valid'?'Passed':null],['Swap / trade',s.accepts_swap?'Open to swaps':null],['Swap preference',s.swap_notes],['Repairs',s.repair_history],['Included',s.accessories],['Delivery',({pickup:'Local pickup only',domestic:'Ships within seller country',international:'International shipping',pickup_domestic:'Pickup + domestic shipping',all:'Pickup + domestic + international shipping'})[listing.delivery_mode]||'Delivery details available'],
       ['Warranty',listing.warranty_text],['Location',[listing.city,countryName(listing.country_code)].filter(Boolean).join(', ')]
     ].filter(x=>x[1]);
     return rows.map(([a,b])=>`<div class="spec"><span>${esc(a)}</span><strong>${esc(String(b))}</strong></div>`).join('');
@@ -147,7 +147,7 @@
   document.querySelector('#messageSeller').onclick=message;
   document.querySelector('#saveDevice').onclick=favorite;
   document.querySelector('#reportDevice').onclick=reportListing;
-  document.querySelector('#shareDevice').onclick=async()=>{try{if(navigator.share)await navigator.share({title:listing?.title||document.title,url:location.href});else await navigator.clipboard.writeText(location.href);toast('Listing link ready to share.')}catch{}};
+  document.querySelector('#shareDevice').onclick=async()=>{try{if(navigator.share)await navigator.share({title:listing?.title||document.title,text:listing?`${listing.title} · ${money(listing.price_amount,listing.price_currency)}`:'DigitalDeviceHub listing',url:location.href});else await navigator.clipboard.writeText(location.href);toast('Listing link ready to share.')}catch{}};const wa=document.querySelector('#shareWhatsApp');if(wa)wa.href='https://wa.me/?text='+encodeURIComponent((listing?`${listing.title} · ${money(listing.price_amount,listing.price_currency)}\n`:'')+location.href);
   document.querySelector('#dialogClose').onclick=()=>document.querySelector('#deviceDialog').close();
   document.addEventListener('ddh:localization-ready',e=>document.querySelector('#localeChip').textContent=`${e.detail.country} · ${e.detail.currency}`);
   load();
