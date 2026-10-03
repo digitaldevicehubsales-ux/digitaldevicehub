@@ -172,13 +172,13 @@ async function loadListings(){
     return;
   }
   try{
-    const rows = await apiFetch('/rest/v1/listings?select=id,title,category,condition,storage,price_amount,price_currency,seller_id&status=eq.published&order=created_at.desc&limit=40');
+    const rows = await apiFetch('/rest/v1/listings?select=id,title,category,condition,storage,price_amount,price_currency,seller_id,specs&status=eq.published&order=created_at.desc&limit=40');
     const sellerIds = [...new Set((rows || []).map(r=>r.seller_id).filter(Boolean))];
     let sellers = new Map();
     if(sellerIds.length){
       const inList = sellerIds.map(id=>`\"${id}\"`).join(',');
-      const profiles = await apiFetch(`/rest/v1/public_profiles?select=id,display_name&id=in.(${encodeURIComponent(inList)})`).catch(()=>[]);
-      sellers = new Map((profiles || []).map(p=>[p.id,p.display_name]));
+      const profiles = await apiFetch(`/rest/v1/public_profiles?select=id,display_name,verification_tier&id=in.(${encodeURIComponent(inList)})`).catch(()=>[]);
+      sellers = new Map((profiles || []).map(p=>[p.id,p]));
     }
 
     const listingIds = [...new Set((rows || []).map(r=>r.id).filter(Boolean))];
@@ -197,13 +197,13 @@ async function loadListings(){
       id:r.id,
       category:r.category,
       name:r.title,
-      condition:titleCase(r.condition),
+      condition:r.specs?.condition_grade||r.specs?.cosmetic_condition||(r.condition==='new'?'New (sealed)':'Used'),
       storage:r.storage || '',
       price:Number(r.price_amount),
       currency:validCurrency(r.price_currency),
-      seller:sellers.get(r.seller_id) || 'Seller',
+      seller:sellers.get(r.seller_id)?.display_name || 'Seller',
       seller_id:r.seller_id,
-      verified:false,
+      verified:Boolean(sellers.get(r.seller_id)?.verification_tier&&sellers.get(r.seller_id)?.verification_tier!=='account'),
       icon:iconFor(r.category),
       image_url:firstImages.get(r.id) || '',
       source:'supabase'
