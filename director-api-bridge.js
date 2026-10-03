@@ -16,8 +16,11 @@
     try { target = new URL(rawUrl); } catch { return nativeFetch(input, init); }
     if (!/^\/(rest|storage|functions)\/v1\//.test(target.pathname)) return nativeFetch(input, init);
 
-    const cookieReady = await Promise.resolve(window.DDH_SESSION_COOKIE_READY).catch(() => false);
-    if (!cookieReady) return nativeFetch(input, init);
+    // Wait for a legacy token-to-cookie sync when one is possible. A false
+    // result can also mean the browser session is already represented only by
+    // HttpOnly cookies, so protected Director requests must still use the
+    // same-origin proxy instead of falling back to anonymous Supabase calls.
+    await Promise.resolve(window.DDH_SESSION_COOKIE_READY).catch(() => false);
 
     const method = String(init.method || (input instanceof Request ? input.method : 'GET')).toUpperCase();
     const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined));
