@@ -183,3 +183,18 @@ dialog{border-radius:18px!important;border:1px solid rgba(17,18,20,.12)!importan
 @media(max-width:420px){
   .verification-levels{grid-template-columns:1fr}
 }
+
+.listing-submit-note{display:grid;gap:4px;margin:14px 0;padding:13px 14px;border:1px solid #dfe4ea;border-radius:12px;background:#f8fafc;font-size:12px;color:#5e6672}
+.listing-submit-note strong{color:#171b22}
+.listing-preview-dialog{width:min(680px,calc(100% - 28px));border:0;border-radius:20px;padding:0;box-shadow:0 30px 90px rgba(0,0,0,.3)}
+.listing-preview-dialog::backdrop{background:rgba(10,12,16,.56)}
+.listing-preview-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:20px 20px 0}
+.listing-preview-head h2{margin:5px 0 0}
+#listingPreviewContent{padding:20px}
+.seller-preview-card{overflow:hidden;border:1px solid #e1e5ea;border-radius:16px;background:#fff}
+.seller-preview-card>img,.seller-preview-placeholder{width:100%;aspect-ratio:4/3;object-fit:cover;background:#f2f4f7}
+.seller-preview-placeholder{display:grid;place-items:center;color:#727984;font-weight:700}
+.seller-preview-body{padding:18px}
+.seller-preview-body h3{margin:10px 0 6px;font-size:24px}
+.seller-preview-body p{color:#616975;line-height:1.55}
+.field-label{display:block;font-size:12px;font-weight:780;margin-bottom:7px}
