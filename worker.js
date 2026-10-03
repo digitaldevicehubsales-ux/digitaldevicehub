@@ -301,7 +301,7 @@ const PUBLIC_ROUTES=new Map([
   ['/seller','/seller.html'],
   ['/phones','/phones.html'],
   ['/phones/iphone','/phones-iphone.html'],
-  ['/guides/used-iphone-nigeria','/guide-used-iphone-nigeria.html'],
+  ['/guides/buying-used-iphone','/guide-buying-used-iphone.html'],
   ['/laptops','/laptops.html'],
   ['/tablets','/tablets.html'],
   ['/accessories','/accessories.html'],
@@ -315,7 +315,7 @@ async function renderSitemap(url) {
   const res=await fetch(`${SUPABASE_URL}/rest/v1/listings?select=id,slug,title,storage,condition,city,country_code,updated_at&status=eq.published&order=updated_at.desc&limit=1000`,{headers});
   const listings=res.ok?await res.json():[];
   const staticUrls=[
-    ['/', 'daily', '1.0'],['/marketplace','hourly','0.9'],['/phones','daily','0.85'],['/phones/iphone','daily','0.85'],['/guides/used-iphone-nigeria','monthly','0.75'],['/laptops','daily','0.85'],['/tablets','daily','0.8'],['/accessories','daily','0.75'],['/wearables','daily','0.75'],['/sell','weekly','0.7'],['/trust','monthly','0.6'],['/help','monthly','0.5'],['/about','monthly','0.5'],['/contact','monthly','0.4'],['/privacy','yearly','0.2'],['/terms','yearly','0.2']
+    ['/', 'daily', '1.0'],['/marketplace','hourly','0.9'],['/phones','daily','0.85'],['/phones/iphone','daily','0.85'],['/guides/buying-used-iphone','monthly','0.75'],['/laptops','daily','0.85'],['/tablets','daily','0.8'],['/accessories','daily','0.75'],['/wearables','daily','0.75'],['/sell','weekly','0.7'],['/trust','monthly','0.6'],['/help','monthly','0.5'],['/about','monthly','0.5'],['/contact','monthly','0.4'],['/privacy','yearly','0.2'],['/terms','yearly','0.2']
   ];
   const parts=['<?xml version="1.0" encoding="UTF-8"?>','<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'];
   for(const [path,changefreq,priority] of staticUrls)parts.push(`<url><loc>${xmlEsc(url.origin+path)}</loc><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>`);
