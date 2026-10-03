@@ -39,7 +39,7 @@
   function ensureScript(src,key){
     return new Promise(resolve=>{
       const existing=document.querySelector(`script[data-ddh-${key}],script[src="${src}"]`);
-      if(existing){if(existing.dataset.loaded==='1'||existing.readyState==='complete')resolve();else existing.addEventListener('load',resolve,{once:true});return}
+      if(existing){resolve();return}
       const script=document.createElement('script');
       script.src=src;script.defer=true;script.dataset[`ddh${key[0].toUpperCase()+key.slice(1)}`]='1';
       script.addEventListener('load',()=>{script.dataset.loaded='1';resolve()},{once:true});
@@ -49,10 +49,11 @@
   }
   async function loadLocalePicker(){
     if(!document.querySelector('.locale-chip'))return;
-    await ensureScript('/countries.js','countries');
-    await ensureScript('/localization.js','localization');
-    await ensureScript('/locale-picker.js','localePicker');
+    if(!window.DDH_COUNTRIES)await ensureScript('/countries.js','countries');
+    if(!window.DDH_LOCALIZATION)await ensureScript('/localization.js','localization');
+    if(!window.DDH_LOCALE_PICKER_INIT)await ensureScript('/locale-picker.js','localePicker');
     await ensureScript('/locale-ui.js','localeUi');
+    window.DDH_LOCALE_PICKER_INIT?.();
   }
 
   function setupMobileDock(){
@@ -143,7 +144,7 @@
           <a href="/about">About</a>
         </nav>
         <div class="global-actions">
-          <span class="locale-chip" id="localeChip">Region & currency</span>
+          <button class="locale-chip" id="localeChip" type="button">Region & currency</button>
           <a class="btn secondary small account-access" href="${signed?'/dashboard':'/?signin=1&returnTo='+encodeURIComponent(current)}">${signed?'Account':'Sign in'}</a>
           <a class="btn small" href="/sell">Sell device</a>
         </div>`;
