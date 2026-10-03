@@ -35,6 +35,7 @@
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const countryName=code=>window.DDH_COUNTRIES?.name?.(code)||code||'';
   const validCurrency=value=>/^[A-Z]{3}$/.test(String(value||'').toUpperCase())?String(value).toUpperCase():'';
+  function verificationLabel(tier){const key=String(tier||'account').toLowerCase();return ({account:'Email confirmed',phone:'Phone verified',identity:'ID verified',id:'ID verified',business:'Business verified'})[key]||'Email confirmed'}
   const money=(amount,currency)=>{
     const value=Number(amount)||0,code=validCurrency(currency);
     if(!code)return value.toLocaleString();
@@ -133,7 +134,7 @@
           <div class="subline">${esc(item.storage||'Details available')}${place?` · ${esc(place)}`:''}</div>
           <div class="card-attribute-row">${grade}${origin}${ram}${battery}${imei}${swap}</div>
           <div class="seller-price-primary">${esc(original)}</div>${estimate}
-          <div class="seller-line"><span>Listed by ${esc(seller)}</span>${sellerData.verification_tier&&sellerData.verification_tier!=="account"?`<span class="seller-badge">✓ ${esc(sellerData.verification_tier)}</span>`:""}${Number(sellerData.rating_count)>0?`<span class="seller-rating">${Number(sellerData.rating_avg).toFixed(1)}★</span>`:""}</div>
+          <div class="seller-line"><span>Listed by ${esc(seller)}</span>${`<span class="seller-badge">✓ ${esc(verificationLabel(sellerData.verification_tier))}</span>`}${Number(sellerData.rating_count)>0?`<span class="seller-rating">${Number(sellerData.rating_avg).toFixed(1)}★</span>`:""}</div>
         </div>
       </a>
       <button class="card-save" type="button" data-save-id="${esc(item.id)}" aria-label="Save ${esc(item.title)}" title="Save device">♡</button>
