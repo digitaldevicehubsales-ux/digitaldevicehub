@@ -48,7 +48,7 @@
     const dock=document.createElement('nav');
     dock.className='mobile-action-dock';
     dock.setAttribute('aria-label','Quick actions');
-    dock.innerHTML=`<a href="/marketplace.html">${icons.browse}<span>Browse</span></a><a class="primary" href="/sell.html">${icons.sell}<span>Sell</span></a><a href="/dashboard.html">${icons.account}<span>Account</span></a>`;
+    dock.innerHTML=`<a href="/marketplace">${icons.browse}<span>Browse</span></a><a class="primary" href="/sell">${icons.sell}<span>Sell</span></a><a href="/dashboard.html">${icons.account}<span>Account</span></a>`;
     document.body.appendChild(dock);
   }
 
@@ -103,8 +103,8 @@
       const skip=document.createElement('a');skip.className='skip-link';skip.href='#'+main.id;skip.textContent='Skip to content';document.body.prepend(skip);
     }
     const footer=document.querySelector('footer');
-    if(footer&&!footer.querySelector('a[href="/about.html"]')){
-      const box=document.createElement('div');box.className='footer-company-links';box.innerHTML='<a href="/about.html">About</a><a href="/contact.html">Contact</a>';footer.querySelector('.container,.shell,.footer-inner')?.append(box);
+    if(footer&&!footer.querySelector('a[href="/about"]')){
+      const box=document.createElement('div');box.className='footer-company-links';box.innerHTML='<a href="/about">About</a><a href="/contact">Contact</a>';footer.querySelector('.container,.shell,.footer-inner')?.append(box);
     }
     loadLocalePicker();
     setupNetworkState();
@@ -125,7 +125,7 @@
 
     const panel=document.createElement('div');panel.className='mobile-menu-panel';panel.hidden=true;
     const links=[];nav?.querySelectorAll('a').forEach(a=>links.push({href:a.getAttribute('href'),label:a.textContent.trim()}));
-    if(!links.some(x=>/sell/i.test(x.label)))links.push({href:'/sell.html',label:'Sell device'});
+    if(!links.some(x=>/sell/i.test(x.label)))links.push({href:'/sell',label:'Sell device'});
     if(!links.some(x=>/account/i.test(x.label)))links.push({href:'/dashboard.html',label:'Account'});
     panel.innerHTML=links.filter((x,i,a)=>x.href&&a.findIndex(y=>y.href===x.href)===i).map(x=>`<a href="${x.href}">${iconFor(x.label)}<span>${x.label}</span></a>`).join('');
     markCurrentPage(panel);header.append(toggle,panel);
