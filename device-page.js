@@ -33,7 +33,7 @@
     const rows=[
       ['Category',listing.category],['Condition',listing.condition==='new'?'New':'Used'],['Used condition',s.cosmetic_condition],['Visible wear or faults',s.condition_notes],['Brand',listing.brand],['Model',listing.model],
       ['Storage',listing.storage],['Colour',listing.color],['Battery health',s.battery_health],['Network status',s.network_status],
-      ['Repairs',s.repair_history],['Included',s.accessories],['Delivery',({pickup:'Local pickup only',domestic:'Ships within seller country',international:'International shipping',pickup_domestic:'Pickup + domestic shipping',all:'Pickup + domestic + international shipping'})[listing.delivery_mode]||'Delivery details available'],
+      ['IMEI duplicate screen',listing.category==='Phones'&&listing.identity_check_status==='format_valid'?'Passed':null],['Repairs',s.repair_history],['Included',s.accessories],['Delivery',({pickup:'Local pickup only',domestic:'Ships within seller country',international:'International shipping',pickup_domestic:'Pickup + domestic shipping',all:'Pickup + domestic + international shipping'})[listing.delivery_mode]||'Delivery details available'],
       ['Warranty',listing.warranty_text],['Location',[listing.city,countryName(listing.country_code)].filter(Boolean).join(', ')]
     ].filter(x=>x[1]);
     return rows.map(([a,b])=>`<div class="spec"><span>${esc(a)}</span><strong>${esc(String(b))}</strong></div>`).join('');
@@ -69,7 +69,7 @@
     if(!id||!/^[0-9a-f-]{36}$/i.test(id)){document.querySelector('#deviceMeta').innerHTML='<h1>Device not found.</h1>';return}
     try{
       await window.DDH_LOCALIZATION?.ready;
-      const rows=await get(`/rest/v1/listings?select=id,seller_id,title,category,brand,model,condition,price_amount,price_currency,description,storage,color,city,country_code,delivery_mode,warranty_text,specs,created_at&status=eq.published&id=eq.${encodeURIComponent(id)}&limit=1`);
+      const rows=await get(`/rest/v1/listings?select=id,seller_id,title,category,brand,model,condition,price_amount,price_currency,description,storage,color,city,country_code,delivery_mode,warranty_text,specs,identity_check_status,created_at&status=eq.published&id=eq.${encodeURIComponent(id)}&limit=1`);
       listing=rows?.[0]; if(!listing)throw new Error('This listing is no longer available.');
       images=await get(`/rest/v1/listing_images?select=storage_path,variants,sort_order&listing_id=eq.${encodeURIComponent(id)}&order=sort_order.asc`).catch(()=>[]);
       const profiles=await get(`/rest/v1/public_profiles?select=id,display_name,created_at,verification_tier,rating_avg,rating_count,sales_count,response_rate,response_time_mins&id=eq.${encodeURIComponent(listing.seller_id)}&limit=1`).catch(()=>[]);
