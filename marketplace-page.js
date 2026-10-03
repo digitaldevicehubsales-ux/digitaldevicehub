@@ -178,7 +178,7 @@
     const page=filtered.slice(0,visibleCount);
     grid.innerHTML=page.map(card).join('');
     empty.hidden=filtered.length>0;
-    if(!filtered.length)empty.innerHTML='No devices match those filters yet. <button type="button" class="link-button" id="relaxFilters">Clear filters</button> or save this search to come back later.';
+    if(!filtered.length){empty.innerHTML=rows.length?'No devices match those filters yet. <button type="button" class="link-button" id="relaxFilters">Clear filters</button> or save this search to come back later.':'<strong>No devices listed yet.</strong><p>Real inventory is being onboarded. Sellers can list one device or prepare shop stock for review.</p><div class="recovery-actions"><a class="btn blue" href="/sell">List a device</a><a class="btn secondary" href="/seller-onboarding">Onboard shop inventory</a></div>'}
     const displayCurrency=validCurrency(window.DDH_LOCALIZATION?.state?.currency);
     const priceHint=document.querySelector('#priceCurrencyHint');if(priceHint)priceHint.textContent=displayCurrency?`(${displayCurrency})`:'(seller currency)';
     resultCount.textContent=displayCurrency
