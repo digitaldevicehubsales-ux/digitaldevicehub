@@ -73,9 +73,9 @@
       &&(!locq||`${item.city||''} ${item.country_code||''} ${countryName(item.country_code)}`.toLowerCase().includes(locq))
       &&(!min||amount>=min)&&(!max||amount<=max);
   }
-  function listingHref(item){return `/device.html?id=${encodeURIComponent(item.id)}`}
+  function listingHref(item){const slug=String(item.slug||item.title||'device').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');return `/device/${encodeURIComponent(item.id)}/${encodeURIComponent(slug||'device')}`}
   function card(item){
-    const path=images.get(item.id),seller=sellers.get(item.seller_id)||'Seller',original=money(item.price_amount,item.price_currency),place=[item.city,countryName(item.country_code)].filter(Boolean).join(', '),localCurrency=validCurrency(window.DDH_LOCALIZATION?.state?.currency);
+    const path=images.get(item.id),sellerData=sellers.get(item.seller_id)||{},seller=sellerData.display_name||'Seller',original=money(item.price_amount,item.price_currency),place=[item.city,countryName(item.country_code)].filter(Boolean).join(', '),localCurrency=validCurrency(window.DDH_LOCALIZATION?.state?.currency);
     const estimate=localCurrency&&item.price_currency!==localCurrency?`<div class="converted-line">Local estimate: <span class="price local-estimate" data-price-amount="${esc(item.price_amount)}" data-price-currency="${esc(item.price_currency)}">${esc(original)}</span></div>`:'';
     const battery=item.specs?.battery_health?`<span class="pill">Battery ${esc(item.specs.battery_health)}</span>`:'';
     const grade=item.condition==='used'&&item.specs?.cosmetic_condition?`<span class="pill">${esc(item.specs.cosmetic_condition)}</span>`:'';
@@ -89,7 +89,7 @@
           <div class="subline">${esc(item.storage||'Details available')}${place?` · ${esc(place)}`:''}</div>
           <div class="card-attribute-row">${grade}${battery}</div>
           <div class="seller-price-primary">${esc(original)}</div>${estimate}
-          <div class="seller-line"><span>Listed by ${esc(seller)}</span></div>
+          <div class="seller-line"><span>Listed by ${esc(seller)}</span>${sellerData.verification_tier&&sellerData.verification_tier!=="account"?`<span class="seller-badge">✓ ${esc(sellerData.verification_tier)}</span>`:""}${Number(sellerData.rating_count)>0?`<span class="seller-rating">${Number(sellerData.rating_avg).toFixed(1)}★</span>`:""}</div>
         </div>
       </a>
       <button class="card-save" type="button" data-save-id="${esc(item.id)}" aria-label="Save ${esc(item.title)}" title="Save device">♡</button>
@@ -121,7 +121,7 @@
     let filtered=rows.filter(matches);
     if(controls.sort.value==='price-asc')filtered.sort((a,b)=>localAmount(a)-localAmount(b));
     else if(controls.sort.value==='price-desc')filtered.sort((a,b)=>localAmount(b)-localAmount(a));
-    else filtered.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+    else{const localCountry=String(window.DDH_LOCALIZATION?.state?.country||'').toUpperCase();filtered.sort((a,b)=>{const ar=localCountry&&a.country_code===localCountry?0:1,br=localCountry&&b.country_code===localCountry?0:1;return ar-br||new Date(b.created_at)-new Date(a.created_at)})}
     const page=filtered.slice(0,visibleCount);
     grid.innerHTML=page.map(card).join('');
     empty.hidden=filtered.length>0;
@@ -192,8 +192,8 @@
       }
       if(sellerIds.length){
         const list=sellerIds.map(x=>`"${x}"`).join(',');
-        const profiles=await get(`/rest/v1/public_profiles?select=id,display_name&id=in.(${encodeURIComponent(list)})`).catch(()=>[]);
-        sellers=new Map(profiles.map(x=>[x.id,x.display_name||'Seller']));
+        const profiles=await get(`/rest/v1/public_profiles?select=id,display_name,verification_tier,rating_avg,rating_count,sales_count&id=in.(${encodeURIComponent(list)})`).catch(()=>[]);
+        sellers=new Map(profiles.map(x=>[x.id,x]));
       }
       updateCounts();render();
     }catch(err){
