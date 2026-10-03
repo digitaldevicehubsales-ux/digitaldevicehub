@@ -24,6 +24,13 @@
     document.body.appendChild(userControls);
   }
 
+  if(!document.querySelector('script[data-director-audit-controls]')){
+    const auditControls=document.createElement('script');
+    auditControls.src='/director-audit-controls.js?v=20261003-1';
+    auditControls.dataset.directorAuditControls='1';
+    document.body.appendChild(auditControls);
+  }
+
   // Replace the old seller-flow link with a native Director listing action.
   const createListingLink=document.querySelector('[data-panel="listings"] .panel-heading a[href="/sell.html"]');
   if(createListingLink){
