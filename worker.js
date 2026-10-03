@@ -262,8 +262,10 @@ async function renderPublicPage(request,env,url,assetPath,kind) {
     if(kind==='home'){
       html=html.replace('<div id="listingGrid" class="listing-grid home-listing-preview" aria-live="polite"></div>',
         `<div id="listingGrid" class="listing-grid home-listing-preview" aria-live="polite" data-ssr="true">${listings.map(renderHomeListingCard).join('')}</div>`);
-      if(!listings.length)html=html.replace('<p id="emptyState" class="empty-state" hidden>No matching devices.</p>',
-        '<div id="emptyState" class="empty-state"><strong>Be among the first sellers.</strong><br><a class="button secondary" href="/sell">List a device</a></div>');
+      if(!listings.length){
+        html=html.replace('<section id="marketplace" class="marketplace shell">','<section id="marketplace" class="marketplace shell" hidden>');
+        html=html.replace('<p id="emptyState" class="empty-state" hidden>No matching devices.</p>','<p id="emptyState" class="empty-state" hidden>No matching devices.</p>');
+      }
     }else{
       html=html.replace('<div class="result-count" id="resultCount" role="status" aria-live="polite">Loading devices…</div>',
         `<div class="result-count" id="resultCount" role="status" aria-live="polite">${listings.length} device${listings.length===1?'':'s'} available</div>`);
