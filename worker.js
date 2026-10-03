@@ -160,7 +160,7 @@ async function handleSupabaseProxy(request,url){
 
 async function getListing(id) {
   const headers={apikey:SUPABASE_KEY};
-  const res=await fetch(`${SUPABASE_URL}/rest/v1/listings?select=id,title,slug,category,brand,model,condition,storage,city,country_code,price_amount,price_currency,description,specs,updated_at&status=eq.published&id=eq.${encodeURIComponent(id)}&limit=1`,{headers});
+  const res=await fetch(`${SUPABASE_URL}/rest/v1/listings?select=id,seller_id,title,slug,category,brand,model,condition,storage,color,city,country_code,price_amount,price_currency,description,delivery_mode,warranty_text,specs,created_at,updated_at&status=eq.published&id=eq.${encodeURIComponent(id)}&limit=1`,{headers});
   if(!res.ok)return null;
   const rows=await res.json();
   return rows?.[0]||null;
@@ -244,6 +244,12 @@ async function renderPublicPage(request,env,url,assetPath,kind) {
   let html=await shell.text();
   try{
     const listings=await getPublicListings(kind==='home'?8:24);
+    const shareImage=listings[0]?._image?imageUrl(listings[0]._image):'';
+    if(shareImage){
+      if(/<meta property="og:image" content="[^"]*">/i.test(html))html=html.replace(/<meta property="og:image" content="[^"]*">/i,`<meta property="og:image" content="${esc(shareImage)}">`);
+      else html=html.replace('</head>',`<meta property="og:image" content="${esc(shareImage)}"><meta name="twitter:image" content="${esc(shareImage)}"></head>`);
+      if(/<meta name="twitter:image" content="[^"]*">/i.test(html))html=html.replace(/<meta name="twitter:image" content="[^"]*">/i,`<meta name="twitter:image" content="${esc(shareImage)}">`);
+    }
     if(kind==='home'){
       html=html.replace('<div id="listingGrid" class="listing-grid home-listing-preview" aria-live="polite"></div>',
         `<div id="listingGrid" class="listing-grid home-listing-preview" aria-live="polite">${listings.map(renderHomeListingCard).join('')}</div>`);
@@ -271,7 +277,12 @@ const PUBLIC_ROUTES=new Map([
   ['/privacy','/privacy.html'],
   ['/terms','/terms.html'],
   ['/compare','/compare.html'],
-  ['/seller','/seller.html']
+  ['/seller','/seller.html'],
+  ['/phones','/phones.html'],
+  ['/laptops','/laptops.html'],
+  ['/tablets','/tablets.html'],
+  ['/accessories','/accessories.html'],
+  ['/wearables','/wearables.html']
 ]);
 async function renderSitemap(url) {
   const headers={apikey:SUPABASE_KEY};
