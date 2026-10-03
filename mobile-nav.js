@@ -36,13 +36,23 @@
     document.head.appendChild(link);
   }
 
-  function loadLocalePicker(){
-    if(!document.querySelector('.locale-chip')||document.querySelector('script[data-locale-picker]'))return;
-    const script=document.createElement('script');
-    script.src='/locale-picker.js';
-    script.defer=true;
-    script.dataset.localePicker='true';
-    document.head.appendChild(script);
+  function ensureScript(src,key){
+    return new Promise(resolve=>{
+      const existing=document.querySelector(`script[data-ddh-${key}],script[src="${src}"]`);
+      if(existing){if(existing.dataset.loaded==='1'||existing.readyState==='complete')resolve();else existing.addEventListener('load',resolve,{once:true});return}
+      const script=document.createElement('script');
+      script.src=src;script.defer=true;script.dataset[`ddh${key[0].toUpperCase()+key.slice(1)}`]='1';
+      script.addEventListener('load',()=>{script.dataset.loaded='1';resolve()},{once:true});
+      script.addEventListener('error',resolve,{once:true});
+      document.head.appendChild(script);
+    });
+  }
+  async function loadLocalePicker(){
+    if(!document.querySelector('.locale-chip'))return;
+    await ensureScript('/countries.js','countries');
+    await ensureScript('/localization.js','localization');
+    await ensureScript('/locale-picker.js','localePicker');
+    await ensureScript('/locale-ui.js','localeUi');
   }
 
   function setupMobileDock(){
