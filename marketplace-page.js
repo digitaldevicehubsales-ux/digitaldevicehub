@@ -128,7 +128,7 @@
       <a class="product-card" aria-label="${esc(item.title)}, ${esc(item.condition==='new'?'New':'Used')}, ${esc(original)}" data-id="${esc(item.id)}" data-listing-card href="${href}">
         <div class="product-image">${path?`<img src="${esc(publicImage(path))}" alt="${esc(item.title)}" loading="lazy" width="900" height="675">`:'<span aria-hidden="true">▯</span>'}</div>
         <div class="product-content">
-          <div class="tag-row"><span>${esc(item.category)}</span><span class="pill">${esc(conditionGrade||item.condition==='new'?'New':'Used')}</span></div>
+          <div class="tag-row"><span>${esc(item.category)}</span><span class="pill">${esc(conditionGrade||(item.condition==='new'?'New':'Used'))}</span></div>
           <h3>${esc(item.title)}</h3>
           <div class="subline">${esc(item.storage||'Details available')}${place?` · ${esc(place)}`:''}</div>
           <div class="card-attribute-row">${grade}${origin}${ram}${battery}${imei}${swap}</div>
