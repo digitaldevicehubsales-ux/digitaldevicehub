@@ -234,7 +234,7 @@ function renderMarketListingCard(item) {
   const grade=`<span class="pill">${esc(conditionGrade)}</span>`;
   const origin=item.specs?.usage_origin?`<span class="pill">${esc(item.specs.usage_origin)}</span>`:'';
   const ram=item.specs?.ram?`<span class="pill">${esc(item.specs.ram)} RAM</span>`:'';
-  const swap=item.specs?.accepts_swap===true||item.specs?.accepts_swap==='true'?'<span class="pill trust-pill">Swap open</span>':'';
+  const swap=item.specs?.accepts_swap===true||item.specs?.accepts_swap==='true'?'<span class="pill trust-pill">Trade / swap</span>':'';
   const verification=`<span class="seller-badge">✓ ${esc(verificationLabel(item._seller?.verification_tier))}</span>`;
   const imei=item.category==='Phones'&&item.identity_check_status==='format_valid'?'<span class="pill trust-pill">IMEI screened</span>':'';
   const rating=Number(item._seller?.rating_count)>0?`<span class="seller-rating">${Number(item._seller.rating_avg).toFixed(1)}★</span>`:'';
