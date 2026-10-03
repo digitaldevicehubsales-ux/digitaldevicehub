@@ -2,8 +2,6 @@
   'use strict';
   const LOCALIZATION_KEY='ddh_localization_v2';
   const FX_KEY='ddh_fx_target_v2';
-  const chips=[...document.querySelectorAll('.locale-chip')];
-  if(!chips.length)return;
 
   const currencyName=code=>{try{return new Intl.DisplayNames([navigator.language||'en'],{type:'currency'}).of(code)||code}catch{return code}};
   const currencies=()=>{try{return Intl.supportedValuesOf('currency')}catch{return ['USD','EUR','GBP','CAD','AUD','JPY','CNY','INR','AED','BRL','MXN','ZAR','GHS','KES','NGN']}};
@@ -42,9 +40,18 @@
     dialog.showModal();
   }
 
-  chips.forEach(chip=>{
-    chip.setAttribute('role','button');chip.setAttribute('tabindex','0');chip.setAttribute('aria-label','Change country and display currency');chip.title='Change country and display currency';chip.style.cursor='pointer';
-    chip.addEventListener('click',open);
-    chip.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}});
-  });
+  function bind(){
+    document.querySelectorAll('.locale-chip').forEach(chip=>{
+      if(chip.dataset.localeBound==='1')return;
+      chip.dataset.localeBound='1';
+      if(chip.tagName!=='BUTTON'){chip.setAttribute('role','button');chip.setAttribute('tabindex','0')}
+      chip.setAttribute('aria-label','Change country and display currency');
+      chip.title='Change country and display currency';
+      chip.style.cursor='pointer';
+      chip.addEventListener('click',open);
+      chip.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}});
+    });
+  }
+  window.DDH_LOCALE_PICKER_INIT=bind;
+  bind();
 })();
