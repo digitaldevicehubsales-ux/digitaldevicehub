@@ -19,13 +19,15 @@ function renderListings(rows){
   queue.innerHTML=rows.map(x=>{
     const media=mediaCounts.get(x.id)||{images:0,videos:0};
     const seller=sellerProfiles.get(x.seller_id)||{};
-    const grade=x.condition==='used'?(x.specs?.cosmetic_condition||'Missing grade'):'New';
+    const grade=x.specs?.condition_grade||x.specs?.cosmetic_condition||(x.condition==='new'?'New (sealed)':'Missing grade');
+    const origin=x.specs?.usage_origin||'';
     const checks=[
       [media.images+media.videos>0,(media.images+' photo'+(media.images===1?'':'s')+(media.videos?' · '+media.videos+' video':''))],
       [String(x.description||'').trim().length>=20,'Description'],
       [Boolean(x.city&&x.country_code),'Location'],
       [Boolean(x.delivery_mode),'Delivery'],
-      [x.condition!=='used'||Boolean(x.specs?.cosmetic_condition),'Condition grade']
+      [Boolean(grade&&grade!=='Missing grade'),'Condition grade'],
+      [x.category!=='Phones'||x.condition!=='used'||Boolean(origin),'Usage origin']
     ];
     const quality=checks.map(([ok,label])=>'<span class="admin-quality '+(ok?'ok':'warn')+'">'+(ok?'✓ ':'! ')+esc(label)+'</span>').join('');
     const sellerTrust=[seller.verification_tier&&seller.verification_tier!=='account'?seller.verification_tier.replaceAll('_',' ')+' verified':null,Number(seller.rating_count)>0?Number(seller.rating_avg).toFixed(1)+'★ / '+seller.rating_count+' reviews':null,Number(seller.sales_count)>0?seller.sales_count+' completed sales':null].filter(Boolean).join(' · ')||'Account authenticated';
