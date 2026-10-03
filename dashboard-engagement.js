@@ -29,7 +29,17 @@
     document.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>{const name=btn.dataset.view;document.querySelectorAll('[data-panel]').forEach(el=>el.classList.toggle('active',el.dataset.panel===name));document.querySelectorAll('[data-view]').forEach(el=>el.classList.toggle('active',el.dataset.view===name));const title={saved:'Saved & Recent',notifications:'Notifications'}[name];if(title)document.querySelector('#pageTitle').textContent=title;window.scrollTo({top:0,behavior:'smooth'})}));
   }
 
-  function searchUrl(q){const p=new URLSearchParams();if(q.q)p.set('q',q.q);if(q.category&&q.category!=='all')p.set('category',q.category);if(q.brand&&q.brand!=='all')p.set('brand',q.brand);if(q.condition&&q.condition!=='all')p.set('condition',q.condition);if(q.location)p.set('location',q.location);if(q.min_price)p.set('min',q.min_price);if(q.max_price)p.set('max',q.max_price);return `/marketplace?${p.toString()}`}
+  function searchUrl(q){
+    const p=new URLSearchParams();
+    for(const key of ['q','category','brand','model','condition','origin','storage','ram','battery_min','network','delivery','country','location','sort']){
+      const value=q?.[key];if(value&&value!=='all')p.set(key,value);
+    }
+    if(q?.verified==='1')p.set('verified','1');
+    if(q?.swap==='1')p.set('swap','1');
+    if(q?.min_price)p.set('min_price',q.min_price);
+    if(q?.max_price)p.set('max_price',q.max_price);
+    return '/marketplace'+(p.toString()?'?'+p.toString():'');
+  }
 
   async function loadSaved(){const el=document.querySelector('#savedSearchList');if(!el)return;try{const rows=await api('/rest/v1/saved_searches?select=id,name,query,created_at&order=created_at.desc&limit=20');el.innerHTML=(rows||[]).map(x=>`<div class="activity-item engagement-row"><div><strong>${esc(x.name)}</strong><span>${new Date(x.created_at).toLocaleDateString()}</span></div><div class="engagement-actions"><a class="mini-button primary" href="${esc(searchUrl(x.query||{}))}">Open</a><button class="mini-button" data-delete-search="${esc(x.id)}">Delete</button></div></div>`).join('')||'<div class="empty-box">No saved searches yet. Use “Save search” in the marketplace.</div>';el.querySelectorAll('[data-delete-search]').forEach(btn=>btn.onclick=async()=>{await api(`/rest/v1/saved_searches?id=eq.${encodeURIComponent(btn.dataset.deleteSearch)}`,{method:'DELETE'});loadSaved()})}catch(err){el.innerHTML=`<div class="empty-box">${esc(err.message)}</div>`}}
 
