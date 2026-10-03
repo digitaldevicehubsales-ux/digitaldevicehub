@@ -58,7 +58,27 @@
   function validateCurrent(){const fields=[...steps[step].querySelectorAll('[required]')];for(const field of fields){if(!field.reportValidity())return false}if(steps[step].querySelector('#listingMedia')){try{validateMedia(new FormData(form).getAll('images'))}catch(err){toast(err.message);return false}}return true}
   function draft(){const data={};for(const [k,v] of new FormData(form).entries()){if(!(v instanceof File)&&k!=='device_identifier')data[k]=v}try{localStorage.setItem(DRAFT_KEY,JSON.stringify(data))}catch{}}
   function restore(){try{const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||'null');if(!d)return;for(const [k,v] of Object.entries(d)){const el=form.elements[k];if(el&&typeof v==='string')el.value=v}}catch{}}
-  function review(){const d=Object.fromEntries([...new FormData(form).entries()].filter(([k,v])=>!(v instanceof File)&&k!=='device_identifier'));const cur=validCurrency(d.currency);const amount=Number(d.price||0);let asking=cur?`${cur} ${Number.isFinite(amount)?amount.toLocaleString():''}`:'Choose a currency';try{if(cur)asking=new Intl.NumberFormat(undefined,{style:'currency',currency:cur,maximumFractionDigits:4}).format(amount)}catch{}document.querySelector('#reviewBox').innerHTML=`<strong>${d.brand||''} ${d.model||''}</strong><p class="review-muted">${d.condition==='new'?'New':'Used'} · ${d.storage||'Storage not specified'} · ${d.city||'Location not specified'}</p><div class="price-confirmation"><span>You are asking</span><strong>${asking}</strong><small>Confirm the currency before submitting. Buyers may see a local-currency estimate, but this remains your official asking price.</small></div>`}
+  function review(){
+    const fd=new FormData(form);
+    const d=Object.fromEntries([...fd.entries()].filter(([k,v])=>!(v instanceof File)&&k!=='device_identifier'));
+    const cur=validCurrency(d.currency);
+    const amount=Number(d.price||0);
+    let asking=cur?(cur+' '+(Number.isFinite(amount)?amount.toLocaleString():'')):'Choose a currency';
+    try{if(cur)asking=new Intl.NumberFormat(undefined,{style:'currency',currency:cur,maximumFractionDigits:4}).format(amount)}catch{}
+    document.querySelector('#reviewBox').innerHTML='<strong>'+String(d.brand||'')+' '+String(d.model||'')+'</strong><p class="review-muted">'+(d.condition==='new'?'New':'Used')+' · '+String(d.storage||'Storage not specified')+' · '+String(d.city||'Location not specified')+'</p><div class="price-confirmation"><span>You are asking</span><strong>'+asking+'</strong><small>Confirm the currency before submitting. Buyers may see a local-currency estimate, but this remains your official asking price.</small></div>';
+    const media=fd.getAll('images').filter(x=>x instanceof File&&x.size);
+    const checks=[
+      ['Device identified',Boolean(d.brand&&d.model)],
+      ['Condition explained',d.condition==='new'||Boolean(d.cosmetic_condition)],
+      ['Media added',media.length>0],
+      ['Description clear',String(d.description||'').trim().length>=20],
+      ['Price confirmed',Number.isFinite(amount)&&amount>0&&Boolean(cur)],
+      ['Location set',Boolean(d.city&&d.country_code)],
+      ['Delivery selected',Boolean(d.delivery_mode)]
+    ];
+    const wrap=document.querySelector('#qualityChecklist');
+    if(wrap)wrap.innerHTML='<span class="eyebrow">Listing quality</span><h3>Ready for review?</h3><div class="quality-list">'+checks.map(([label,ok])=>'<div class="'+(ok?'ready':'needs-work')+'"><span aria-hidden="true">'+(ok?'✓':'!')+'</span><strong>'+label+'</strong></div>').join('')+'</div>';
+  }
   async function api(path,{method='GET',body,raw=false,contentType,headers:extraHeaders={}}={}){const s=session();if(!s?.access_token)throw new Error('Please sign in first.');const headers={apikey:key,Authorization:`Bearer ${s.access_token}`,...extraHeaders};if(body!==undefined&&!raw)headers['Content-Type']='application/json';if(contentType)headers['Content-Type']=contentType;const r=await fetch(`${base}${path}`,{method,headers,body:body===undefined?undefined:(raw?body:JSON.stringify(body))});const text=await r.text();let data=null;try{data=text?JSON.parse(text):null}catch{}if(!r.ok)throw new Error(data?.message||data?.error||`Request failed (${r.status})`);return data}
   async function publicGet(path){const r=await fetch(`${base}${path}`,{headers:{apikey:key}});if(!r.ok)throw new Error('Price guidance unavailable.');return r.json()}
   let priceGuideTimer;
