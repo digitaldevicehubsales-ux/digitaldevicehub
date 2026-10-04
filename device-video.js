@@ -6,7 +6,7 @@
   const id=new URLSearchParams(location.search).get('id');
   if(!base||!key||!id||!/^[0-9a-f-]{36}$/i.test(id))return;
 
-  const publicMedia=path=>path?`${base}/storage/v1/object/public/listing-images/${String(path).split('/').map(encodeURIComponent).join('/')}`:'';
+  const publicMedia=path=>path?`${base}/storage/v1/object/public/listing-videos/${String(path).split('/').map(encodeURIComponent).join('/')}`:'';
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
   async function getVideos(){
