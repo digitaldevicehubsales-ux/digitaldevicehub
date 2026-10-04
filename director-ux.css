@@ -8,3 +8,15 @@
 .data-table td:first-child,.data-table th:first-child{white-space:nowrap}
 @media(max-width:700px){.audit-clear-toolbar{align-items:stretch}.audit-clear-actions{margin-left:0;width:100%;display:grid;grid-template-columns:1fr 1fr}.audit-clear-actions .btn{width:100%}}
 @media(max-width:420px){.audit-clear-actions{grid-template-columns:1fr}}
+
+.director-sidebar-bottom a{
+  color:#aeb7c4!important;
+  text-decoration:none!important;
+  font-weight:700;
+  font-size:12px;
+}
+.director-sidebar-bottom a:hover{color:#fff!important}
+.director-sidebar-bottom{gap:9px!important}
+@media(max-width:1100px){
+  .director-sidebar-bottom{flex-wrap:wrap;gap:8px 16px!important}
+}
