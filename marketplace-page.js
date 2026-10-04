@@ -156,7 +156,7 @@
     if(controls.network?.value!=='all')add('network',controls.network.value,()=>controls.network.value='all');
     if(controls.delivery?.value!=='all')add('delivery','Delivery: '+controls.delivery.options[controls.delivery.selectedIndex].text,()=>controls.delivery.value='all');
     if(controls.verified?.checked)add('verified','Verified sellers',()=>controls.verified.checked=false);
-    if(controls.swap?.checked)add('swap','Swaps accepted',()=>controls.swap.checked=false);
+    if(controls.swap?.checked)add('swap','Trade / swap',()=>controls.swap.checked=false);
     if(controls.country.value!=='all')add('country',countryName(controls.country.value),()=>controls.country.value='all');
     if(controls.location.value.trim())add('location',controls.location.value.trim(),()=>controls.location.value='');
     if(controls.min.value)add('min',`Min ${controls.min.value}`,()=>controls.min.value='');
@@ -172,6 +172,7 @@
   }
   function render(){
     syncUrl();
+    const layout=document.querySelector('.market-layout');if(layout)layout.classList.toggle('market-empty',rows.length===0);
     let filtered=rows.filter(matches);
     if(controls.sort.value==='price-asc')filtered.sort((a,b)=>localAmount(a)-localAmount(b));
     else if(controls.sort.value==='price-desc')filtered.sort((a,b)=>localAmount(b)-localAmount(a));
@@ -254,7 +255,7 @@
       }
       updateCounts();render();
     }catch(err){
-      grid.dataset.ssr='false';grid.removeAttribute('aria-busy');grid.innerHTML='';resultCount.textContent='Marketplace unavailable';empty.hidden=false;empty.innerHTML=`We could not load the marketplace. <button type="button" class="link-button" id="retryMarketplace">Try again</button>`;document.querySelector('#retryMarketplace')?.addEventListener('click',load);
+      document.querySelector('.market-layout')?.classList.add('market-empty');grid.dataset.ssr='false';grid.removeAttribute('aria-busy');grid.innerHTML='';resultCount.textContent='Marketplace temporarily unavailable';empty.hidden=false;empty.innerHTML=`<strong>We could not load listings.</strong><p>Please try again. Your filters and account are unaffected.</p><div class="recovery-actions"><button type="button" class="btn secondary" id="retryMarketplace">Try again</button><a class="btn" href="/sell">List a device</a></div>`;document.querySelector('#retryMarketplace')?.addEventListener('click',load);
     }
   }
   hydrateFromUrl();
