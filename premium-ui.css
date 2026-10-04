@@ -1525,3 +1525,103 @@ html.mega-open body:after{
 @media(prefers-reduced-motion:reduce){
   .retail-feature-copy,.retail-feature-visual,.retail-story{opacity:1!important;transform:none!important;filter:none!important;transition:none!important}
 }
+
+
+/* Uploaded homepage hero photography */
+.home-primary{
+  grid-template-columns:minmax(0,.86fr) minmax(520px,1.14fr)!important;
+  grid-template-rows:auto auto;
+  align-items:center!important;
+  gap:30px 52px!important;
+  min-height:680px!important;
+}
+.hero-copy{
+  position:relative;
+  z-index:2;
+  max-width:640px!important;
+}
+.hero-copy h1{
+  max-width:640px!important;
+  font-size:clamp(52px,5.4vw,84px)!important;
+}
+.hero-media{
+  position:relative;
+  min-width:0;
+  align-self:stretch;
+  min-height:480px;
+  overflow:hidden;
+  background:#f4f6fa;
+  border-radius:4px;
+}
+.hero-media::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.025);
+}
+.hero-media img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:60% center;
+}
+.home-task-panel{
+  grid-column:1/-1;
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  background:#fff!important;
+  border-top:1px solid #dedede!important;
+  border-bottom:1px solid #dedede!important;
+}
+.home-task-panel a{
+  min-width:0;
+  border-bottom:0!important;
+  border-right:1px solid #dedede!important;
+  padding:18px 20px!important;
+}
+.home-task-panel a:last-child{border-right:0!important}
+
+@media(max-width:1000px){
+  .home-primary{
+    grid-template-columns:1fr!important;
+    grid-template-rows:auto auto auto;
+    gap:24px!important;
+    min-height:auto!important;
+  }
+  .hero-copy{
+    order:1;
+    max-width:780px!important;
+  }
+  .hero-media{
+    order:2;
+    min-height:0;
+    aspect-ratio:5/3;
+  }
+  .home-task-panel{
+    order:3;
+    grid-column:auto;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:700px){
+  .hero-media{
+    aspect-ratio:4/3;
+    margin-inline:-14px;
+    border-radius:0;
+  }
+  .hero-media img{object-position:61% center}
+  .home-task-panel{
+    grid-template-columns:1fr!important;
+  }
+  .home-task-panel a{
+    border-right:0!important;
+    border-bottom:1px solid #dedede!important;
+  }
+  .home-task-panel a:last-child{border-bottom:0!important}
+}
+@media(max-width:420px){
+  .hero-media{aspect-ratio:1.15/1}
+  .hero-media img{object-position:66% center}
+}
