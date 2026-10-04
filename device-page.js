@@ -3,7 +3,9 @@
   const cfg=window.DDH_CONFIG||{};
   const base=String(cfg.supabaseUrl||'').replace(/\/$/,'');
   const key=String(cfg.supabasePublishableKey||'');
-  const id=new URLSearchParams(location.search).get('id');
+  const pageParams=new URLSearchParams(location.search);
+  const id=pageParams.get('id');
+  const previewMode=pageParams.get('preview')==='1';
   const SESSION_KEY='ddh_supabase_session';
   const VISITOR_KEY='ddh_visitor_id';
   let listing=null,seller=null,images=[];const countryName=code=>window.DDH_COUNTRIES?.name?.(code)||code||'';
@@ -14,7 +16,16 @@
   const publicImage=p=>p?`${base}/storage/v1/object/public/listing-images/${String(p).split('/').map(encodeURIComponent).join('/')}`:'';
   const session=()=>{try{return JSON.parse(localStorage.getItem(SESSION_KEY)||'null')}catch{return null}};
   function visitor(){let v='';try{v=localStorage.getItem(VISITOR_KEY)||''}catch{}if(!/^[0-9a-f-]{36}$/i.test(v)){v=crypto.randomUUID();try{localStorage.setItem(VISITOR_KEY,v)}catch{}}return v}
-  async function get(path,auth=false){const s=session();const headers={apikey:key};if(auth&&s?.access_token)headers.Authorization=`Bearer ${s.access_token}`;const r=await fetch(`${base}${path}`,{headers});if(!r.ok)throw new Error(`Request failed (${r.status})`);return r.json()}
+  async function get(path,auth=false){const s=session();const headers={apikey:key};if(auth&&s?.access_token&&s.access_token!=='__http_only__')headers.Authorization=`Bearer ${s.access_token}`;const r=await fetch(`${base}${path}`,{headers});if(!r.ok)throw new Error(`Request failed (${r.status})`);return r.json()}
+  async function privateGet(path){
+    const r=await fetch(`/api/supabase?path=${encodeURIComponent(path)}`,{credentials:'same-origin',headers:{Accept:'application/json'}});
+    if(!r.ok){
+      if(r.status===401)throw new Error('Sign in to preview this listing.');
+      if(r.status===403)throw new Error('You do not have access to preview this listing.');
+      throw new Error(`Preview request failed (${r.status})`);
+    }
+    return r.json();
+  }
   async function write(path,method,body){const s=session();if(!s?.access_token)throw new Error('Sign in to continue.');const r=await fetch(`${base}${path}`,{method,headers:{apikey:key,Authorization:`Bearer ${s.access_token}`,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(body)});const data=await r.json().catch(()=>[]);if(!r.ok)throw new Error(data.message||data.error||`Request failed (${r.status})`);return data}
   function toast(t){const el=document.querySelector('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),2600)}
   function modal(html){document.querySelector('#deviceDialogContent').innerHTML=html;document.querySelector('#deviceDialog').showModal()}
@@ -70,23 +81,37 @@
     if(!id||!/^[0-9a-f-]{36}$/i.test(id)){document.querySelector('#deviceMeta').innerHTML='<h1>Device not found.</h1>';return}
     try{
       await window.DDH_LOCALIZATION?.ready;
-      const rows=await get(`/rest/v1/listings?select=id,seller_id,title,category,brand,model,condition,price_amount,price_currency,description,storage,color,city,country_code,delivery_mode,warranty_text,specs,identity_check_status,created_at&status=eq.published&id=eq.${encodeURIComponent(id)}&limit=1`);
-      listing=rows?.[0]; if(!listing)throw new Error('This listing is no longer available.');
-      images=await get(`/rest/v1/listing_images?select=storage_path,variants,sort_order&listing_id=eq.${encodeURIComponent(id)}&order=sort_order.asc`).catch(()=>[]);
+      const listingPath=`/rest/v1/listings?select=id,seller_id,title,category,brand,model,condition,price_amount,price_currency,description,storage,color,city,country_code,delivery_mode,warranty_text,specs,identity_check_status,status,created_at&id=eq.${encodeURIComponent(id)}${previewMode?'':'&status=eq.published'}&limit=1`;
+      const rows=previewMode?await privateGet(listingPath):await get(listingPath);
+      listing=rows?.[0]; if(!listing)throw new Error(previewMode?'This listing could not be previewed.':'This listing is no longer available.');
+      const imagePath=`/rest/v1/listing_images?select=storage_path,variants,sort_order&listing_id=eq.${encodeURIComponent(id)}&order=sort_order.asc`;
+      images=previewMode?await privateGet(imagePath).catch(()=>[]):await get(imagePath).catch(()=>[]);
       const profiles=await get(`/rest/v1/public_profiles?select=id,display_name,created_at,verification_tier,rating_avg,rating_count,sales_count,response_rate,response_time_mins&id=eq.${encodeURIComponent(listing.seller_id)}&limit=1`).catch(()=>[]);
       seller=profiles?.[0]||null;
-      document.title=`${listing.title} — DigitalDeviceHub`;const canonical=`${location.origin}/device.html?id=${encodeURIComponent(listing.id)}`;let canonicalEl=document.querySelector('link[rel="canonical"]');if(!canonicalEl){canonicalEl=document.createElement('link');canonicalEl.rel='canonical';document.head.appendChild(canonicalEl)}canonicalEl.href=canonical;const meta=(name,value,prop=false)=>{let el=document.head.querySelector(`meta[${prop?'property':'name'}="${name}"]`);if(!el){el=document.createElement('meta');el.setAttribute(prop?'property':'name',name);document.head.appendChild(el)}el.content=value};meta('og:title',document.title,true);meta('og:url',canonical,true);meta('og:type','product',true);
+      document.title=`${previewMode?'Preview — ':''}${listing.title} — DigitalDeviceHub`;const canonical=`${location.origin}/device.html?id=${encodeURIComponent(listing.id)}`;
+      if(previewMode){
+        let robots=document.head.querySelector('meta[name="robots"]');
+        if(!robots){robots=document.createElement('meta');robots.name='robots';document.head.appendChild(robots)}
+        robots.content='noindex,nofollow';
+      }let canonicalEl=document.querySelector('link[rel="canonical"]');if(!canonicalEl){canonicalEl=document.createElement('link');canonicalEl.rel='canonical';document.head.appendChild(canonicalEl)}canonicalEl.href=canonical;const meta=(name,value,prop=false)=>{let el=document.head.querySelector(`meta[${prop?'property':'name'}="${name}"]`);if(!el){el=document.createElement('meta');el.setAttribute(prop?'property':'name',name);document.head.appendChild(el)}el.content=value};meta('og:title',document.title,true);meta('og:url',canonical,true);meta('og:type','product',true);
       document.querySelector('meta[name="description"]')?.setAttribute('content',`${listing.title} — ${listing.condition==='new'?'New':'Used'} ${listing.storage||''} device listed on DigitalDeviceHub.`);
       renderGallery();
       const sellerPrice=money(listing.price_amount,listing.price_currency);
-      document.querySelector('#deviceBreadcrumbs').innerHTML=`<a href="/">Home</a><span>›</span><a href="/marketplace?category=${encodeURIComponent(listing.category)}">${esc(listing.category)}</a><span>›</span><span>${esc(listing.brand||listing.title)}</span>`;document.querySelector('#deviceMeta').innerHTML=`<span class="eyebrow">${esc(listing.category)} · ${esc(listing.condition==='new'?'New':'Used')}</span><h1>${esc(listing.title)}</h1><div class="subline">${esc(listing.storage||'Details available')}${listing.city?` · ${esc(listing.city)}`:''}</div><div class="seller-price-primary device-price">${esc(sellerPrice)}</div><div class="converted-line">Local estimate: <span class="price local-estimate" data-price-amount="${esc(listing.price_amount)}" data-price-currency="${esc(listing.price_currency)}">${esc(sellerPrice)}</span></div>`;
+      document.querySelector('#deviceBreadcrumbs').innerHTML=`<a href="/">Home</a><span>›</span><a href="/marketplace?category=${encodeURIComponent(listing.category)}">${esc(listing.category)}</a><span>›</span><span>${esc(listing.brand||listing.title)}</span>`;document.querySelector('#deviceMeta').innerHTML=`${previewMode?`<div class="preview-mode-banner" role="status"><strong>Private preview</strong><span>${esc(String(listing.status||'unpublished').replaceAll('_',' '))} · only authorized accounts can view this preview</span></div>`:''}<span class="eyebrow">${esc(listing.category)} · ${esc(listing.condition==='new'?'New':'Used')}</span><h1>${esc(listing.title)}</h1><div class="subline">${esc(listing.storage||'Details available')}${listing.city?` · ${esc(listing.city)}`:''}</div><div class="seller-price-primary device-price">${esc(sellerPrice)}</div><div class="converted-line">Local estimate: <span class="price local-estimate" data-price-amount="${esc(listing.price_amount)}" data-price-currency="${esc(listing.price_currency)}">${esc(sellerPrice)}</span></div>`;
       document.querySelector('#deviceDescription').textContent=listing.description||'The seller has not added a description yet.';
       document.querySelector('#deviceSpecs').innerHTML=specRows();
       const joined=seller?.created_at?new Date(seller.created_at).toLocaleDateString(undefined,{year:'numeric',month:'short'}):'';const trust=[verificationLabel(seller?.verification_tier),Number(seller?.sales_count)>0?`${seller.sales_count} completed sale${Number(seller.sales_count)===1?'':'s'}`:null,Number(seller?.rating_count)>0?`${Number(seller.rating_avg).toFixed(1)}★ from ${seller.rating_count} review${Number(seller.rating_count)===1?'':'s'}`:null].filter(Boolean).join(' · ');
       document.querySelector('#sellerPanel').innerHTML=`<div class="spec"><span>Listed by</span><strong><a href="/seller?id=${encodeURIComponent(listing.seller_id)}">${esc(seller?.display_name||'DigitalDeviceHub seller')} →</a></strong></div><div class="spec"><span>Seller trust</span><strong>${esc(trust||'Account authenticated')}</strong></div>${joined?`<div class="spec"><span>Member since</span><strong>${esc(joined)}</strong></div>`:''}<div class="spec"><span>Listed</span><strong>${esc(new Date(listing.created_at).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}))}</strong></div>`;
       window.DDH_LOCALIZATION?.refresh?.();
-      recordView();
-      loadRelated();
+      if(previewMode){
+        document.querySelector('.device-actions')?.setAttribute('hidden','');
+        document.querySelector('.transaction-scope-note')?.setAttribute('hidden','');
+        document.querySelector('.device-secondary-actions')?.setAttribute('hidden','');
+        document.querySelector('#relatedSection')?.setAttribute('hidden','');
+      }else{
+        recordView();
+        loadRelated();
+      }
     }catch(err){
       document.querySelector('#deviceMeta').innerHTML=`<span class="eyebrow">Unavailable</span><h1>${esc(err.message)}</h1><p><a href="/marketplace">Return to marketplace →</a></p>`;
     }
