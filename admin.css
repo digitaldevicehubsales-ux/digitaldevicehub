@@ -5,3 +5,36 @@
 .admin-quality.warn{background:#fff4e8;color:#9a4c00}
 .admin-seller-context{margin-top:8px}
 @media(max-width:700px){.admin-quality-row{gap:6px}.admin-quality{font-size:10px}}
+
+/* Review workspace polish */
+.admin-shell{width:min(100% - 40px,1280px);max-width:1280px;margin-inline:auto}
+.admin-hero{max-width:860px}
+.admin-review-row{grid-template-columns:150px minmax(0,1fr) 270px;align-items:start}
+.admin-media-preview{display:block;width:150px;aspect-ratio:4/3;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#f2f4f6;color:var(--muted);text-decoration:none}
+.admin-media-preview img{width:100%;height:100%;object-fit:cover;display:block}
+.admin-media-empty{display:grid;place-items:center;font-size:12px;font-weight:750}
+.admin-review-copy{min-width:0}
+.admin-review-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:8px}
+.admin-review-row .admin-actions{display:grid;grid-template-columns:1fr 1fr;align-items:stretch;gap:8px}
+.admin-review-row .admin-note{grid-column:1/-1;min-width:0}
+.admin-review-row .admin-actions a{grid-column:1/-1;text-align:center}
+.admin-review-row .btn{justify-content:center}
+.admin-seller-context{line-height:1.45}
+@media(max-width:980px){
+  .admin-review-row{grid-template-columns:120px minmax(0,1fr)}
+  .admin-media-preview{width:120px}
+  .admin-review-row .admin-actions{grid-column:1/-1;display:flex}
+  .admin-review-row .admin-actions .admin-note{flex:1 1 260px}
+  .admin-review-row .admin-actions .btn{flex:0 0 auto}
+  .admin-review-row .admin-actions a{flex:0 0 auto}
+}
+@media(max-width:640px){
+  .admin-shell{width:min(100% - 20px,1280px)}
+  .admin-review-row{grid-template-columns:88px minmax(0,1fr);gap:12px}
+  .admin-media-preview{width:88px}
+  .admin-review-row .admin-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}
+  .admin-review-row .admin-note{grid-column:1/-1}
+  .admin-review-row .admin-actions a{grid-column:1/-1}
+  .admin-bulk{display:grid!important;grid-template-columns:1fr;gap:8px}
+  .admin-bulk .control{width:100%}
+}
