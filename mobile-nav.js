@@ -241,7 +241,8 @@
     const links=[];nav?.querySelectorAll('a').forEach(a=>links.push({href:a.getAttribute('href'),label:a.textContent.trim()}));
     if(!links.some(x=>/sell/i.test(x.label)))links.push({href:'/sell',label:'Sell device'});
     if(!links.some(x=>/account/i.test(x.label)))links.push({href:'/dashboard',label:'Account'});
-    panel.innerHTML=links.filter((x,i,a)=>x.href&&a.findIndex(y=>y.href===x.href)===i).map(x=>`<a href="${x.href}">${iconFor(x.label)}<span>${x.label}</span></a>`).join('')+(isSignedIn()?`<button type="button" class="mobile-menu-signout" data-public-signout>${icons.logout}<span>Sign out</span></button>`:'');
+    panel.innerHTML=links.filter((x,i,a)=>x.href&&a.findIndex(y=>y.href===x.href)===i).map(x=>`<a href="${x.href}">${iconFor(x.label)}<span>${x.label}</span></a>`).join('')+`<button type="button" class="mobile-menu-locale" data-mobile-locale>${icons.filter}<span>Region & currency</span></button>`+(isSignedIn()?`<button type="button" class="mobile-menu-signout" data-public-signout>${icons.logout}<span>Sign out</span></button>`:'');
+    panel.querySelector('[data-mobile-locale]')?.addEventListener('click',async()=>{await loadLocalePicker();document.querySelector('.locale-chip')?.click();panel.classList.remove('open');toggle.setAttribute('aria-expanded','false')});
     panel.querySelector('[data-public-signout]')?.addEventListener('click',publicSignOut);
     markCurrentPage(panel);header.append(toggle,panel);
 
