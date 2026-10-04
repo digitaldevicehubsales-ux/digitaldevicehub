@@ -15,8 +15,9 @@
   <meta property="og:image" content="https://digitaldevicehub.com/social-card.png">
   <meta name="twitter:image" content="https://digitaldevicehub.com/social-card.png">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="preload" as="image" href="/assets/home-hero-devices.webp" type="image/webp" fetchpriority="high">\n  <link rel="stylesheet" href="/site-v2.css">
-  <link rel="stylesheet" href="/premium-ui.css?v=20261004-cat7">
+  <link rel="preload" as="image" href="/assets/home-hero-devices.webp" type="image/webp" fetchpriority="high">
+  <link rel="stylesheet" href="/site-v2.css">
+  <link rel="stylesheet" href="/premium-ui.css?v=20261004-editorial1">
   <title>DigitalDeviceHub — Device marketplace</title>
   <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://digitaldevicehub.com/#organization","name":"DigitalDeviceHub","url":"https://digitaldevicehub.com/","logo":"https://digitaldevicehub.com/social-card.png","email":"digitaldevicehubsales@gmail.com"},{"@type":"WebSite","@id":"https://digitaldevicehub.com/#website","url":"https://digitaldevicehub.com/","name":"DigitalDeviceHub","publisher":{"@id":"https://digitaldevicehub.com/#organization"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://digitaldevicehub.com/marketplace?q={search_term_string}"},"query-input":"required name=search_term_string"}}]}</script>
 </head>
@@ -64,18 +65,21 @@
       </div>
     </section>
 
-    <section class="retail-feature shell" aria-labelledby="retail-feature-title">
-      <div class="retail-feature-copy">
-        <span class="eyebrow">Shop with context</span>
-        <h2 id="retail-feature-title">See the details that matter.</h2>
-        <p>Compare condition, seller context, price, location and delivery before you decide.</p>
-        <div class="retail-feature-actions"><a class="button" href="/marketplace">Browse devices</a><a class="button secondary" href="/compare">Compare devices</a></div>
-      </div>
-      <div class="retail-feature-visual" aria-label="Marketplace buying signals">
-        <article><span>01</span><strong>Condition</strong><small>Structured device grading</small></article>
-        <article><span>02</span><strong>Seller</strong><small>Visible marketplace context</small></article>
-        <article><span>03</span><strong>Delivery</strong><small>Pickup and shipping scope</small></article>
-      </div>
+    <section class="editorial-stack shell" aria-label="Marketplace guidance">
+      <article class="editorial-panel" data-reveal>
+        <div class="editorial-copy">
+          <span class="eyebrow">Buy with context</span>
+          <h2>Know what you’re buying.</h2>
+          <p>Review condition, seller context, price and delivery before you decide.</p>
+          <div class="editorial-points" aria-label="Buying checks">
+            <span><b>Condition</b><small>Structured grading</small></span>
+            <span><b>Seller</b><small>Visible context</small></span>
+            <span><b>Delivery</b><small>Clear options</small></span>
+          </div>
+          <div class="editorial-actions"><a class="button" href="/marketplace">Browse devices</a><a class="text-link" href="/trust#condition">Condition guide →</a></div>
+        </div>
+        <figure class="editorial-media"><img src="/assets/editorial-condition.webp" alt="Smartphone laid out for a careful condition inspection" width="960" height="720" loading="lazy" decoding="async"></figure>
+      </article>
     </section>
 
     <section id="marketplace" class="marketplace shell">
@@ -85,14 +89,39 @@
       <div class="section-end"><a class="button secondary" href="/marketplace">Browse marketplace</a></div>
     </section>
 
-    <section class="retail-stories shell" aria-labelledby="stories-title">
-      <div class="section-heading"><div><span class="eyebrow">Explore</span><h2 id="stories-title">Helpful ways to shop.</h2></div><a class="text-link" href="/help">View Help Center →</a></div>
-      <div class="retail-story-grid">
-        <a class="retail-story retail-story-dark" href="/trust#condition"><span>Buying guide</span><h3>Read condition clearly.</h3><p>Know what “like new”, “good” and other grades mean before you contact a seller.</p><b>Learn about condition →</b></a>
-        <a class="retail-story" href="/compare"><span>Comparison</span><h3>Compare before deciding.</h3><p>Put up to four published listings side by side and review the details that differ.</p><b>Compare devices →</b></a>
-        <a class="retail-story" href="/sell"><span>Selling guide</span><h3>Create a stronger listing.</h3><p>Use clear photos, accurate specifications and realistic delivery details.</p><b>Start selling →</b></a>
-        <a class="retail-story retail-story-soft" href="/trust"><span>Safety</span><h3>Keep conversations safer.</h3><p>Use on-platform messaging and review seller context before arranging pickup or delivery.</p><b>View safety guidance →</b></a>
-      </div>
+    <section class="editorial-stack shell editorial-stack-spacious" aria-labelledby="stories-title">
+      <div class="section-heading"><div><span class="eyebrow">Guidance</span><h2 id="stories-title">Simple steps. Clearer choices.</h2></div><a class="text-link" href="/help">Help Center →</a></div>
+
+      <article class="editorial-panel editorial-panel-reverse" data-reveal>
+        <div class="editorial-copy">
+          <span class="eyebrow">Sell with confidence</span>
+          <h2>List it clearly.</h2>
+          <p>Use sharp photos, accurate specifications and realistic delivery details.</p>
+          <div class="editorial-points editorial-points-compact"><span><b>Clear photos</b><small>Show the real device</small></span><span><b>Accurate details</b><small>Set expectations early</small></span></div>
+          <div class="editorial-actions"><a class="button" href="/sell">Start listing</a><a class="text-link" href="/seller-onboarding">Seller guide →</a></div>
+        </div>
+        <figure class="editorial-media"><img src="/assets/editorial-sell.webp" alt="Seller photographing a smartphone for a marketplace listing" width="960" height="720" loading="lazy" decoding="async"></figure>
+      </article>
+
+      <article class="editorial-panel" data-reveal>
+        <div class="editorial-copy">
+          <span class="eyebrow">Compare</span>
+          <h2>See the differences.</h2>
+          <p>Put published listings side by side and focus on the details that matter.</p>
+          <div class="editorial-actions"><a class="button" href="/compare">Compare devices</a><a class="text-link" href="/marketplace">Browse listings →</a></div>
+        </div>
+        <figure class="editorial-media editorial-media-contain"><img src="/assets/editorial-compare.webp" alt="Three different digital devices arranged side by side for comparison" width="960" height="720" loading="lazy" decoding="async"></figure>
+      </article>
+
+      <article class="editorial-panel editorial-panel-reverse editorial-panel-soft" data-reveal>
+        <div class="editorial-copy">
+          <span class="eyebrow">Safer handoff</span>
+          <h2>Meet safely. Check first.</h2>
+          <p>Use a public place, inspect the device and confirm the details before paying.</p>
+          <div class="editorial-actions"><a class="button" href="/trust">Safety guidance</a><a class="text-link" href="/help">Get help →</a></div>
+        </div>
+        <figure class="editorial-media"><img src="/assets/editorial-handoff.webp" alt="Two people exchanging a smartphone in a bright public setting" width="720" height="540" loading="lazy" decoding="async"></figure>
+      </article>
     </section>
 
     <section id="trust" class="home-checklist" aria-labelledby="check-title">
@@ -140,6 +169,7 @@
   <script src="/analytics.js" defer></script>
   <script src="/role-router.js" defer></script>
   <script src="/open-signin.js" defer></script>
-  <script src="/mobile-nav.js" defer></script>\n  <script src="/retail-nav.js?v=20261004-ref2" defer></script>
+  <script src="/mobile-nav.js" defer></script>
+  <script src="/retail-nav.js?v=20261004-ref2" defer></script>
 <script src="/apple-motion.js?v=20261004-ref2" defer></script></body>
 </html>
