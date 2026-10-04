@@ -435,3 +435,24 @@ body.filters-open{overflow:hidden}
   .footer-grid{grid-template-columns:1fr!important}
   .footer-grid>div:first-child{grid-column:auto}
 }
+
+
+/* Authorized unpublished-listing preview */
+.preview-mode-banner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin:0 0 18px;
+  padding:12px 14px;
+  border:1px solid #cfd9ff;
+  border-radius:12px;
+  background:#f3f6ff;
+  color:#17245d;
+}
+.preview-mode-banner strong{font-size:13px}
+.preview-mode-banner span{font-size:12px;color:#59658c;text-align:right}
+@media(max-width:560px){
+  .preview-mode-banner{align-items:flex-start;flex-direction:column;gap:4px}
+  .preview-mode-banner span{text-align:left}
+}
