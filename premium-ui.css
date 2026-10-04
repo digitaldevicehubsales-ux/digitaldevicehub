@@ -1625,3 +1625,60 @@ html.mega-open body:after{
   .hero-media{aspect-ratio:1.15/1}
   .hero-media img{object-position:66% center}
 }
+
+
+/* Progressive visual category photography */
+.category-card-image{
+  position:relative;
+  display:grid!important;
+  grid-template-rows:minmax(0,1fr) auto;
+  align-items:stretch!important;
+  gap:0!important;
+  padding:0!important;
+  overflow:hidden;
+  background:#f7f7f7!important;
+}
+.category-card-image .category-media{
+  display:block;
+  min-height:118px;
+  overflow:hidden;
+  background:#f4f4f4;
+}
+.category-card-image .category-media img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center;
+  transition:transform .35s cubic-bezier(.2,.7,.2,1);
+}
+.category-card-image .category-label{
+  display:grid;
+  gap:2px;
+  padding:14px 16px 16px;
+  background:#fff;
+  color:#111;
+}
+.category-card-image .category-label b{
+  font-size:15px!important;
+  letter-spacing:-.02em;
+}
+.category-card-image .category-label small{
+  display:block!important;
+  color:#6b6b6f;
+  font-size:11px;
+  line-height:1.3;
+}
+.category-card-image.active .category-label{
+  background:#111;
+  color:#fff;
+}
+.category-card-image.active .category-label small{color:#b9b9bd}
+@media(hover:hover) and (pointer:fine){
+  .category-card-image:hover .category-media img{transform:scale(1.025)}
+}
+@media(max-width:700px){
+  .category-card-image{min-height:176px!important}
+  .category-card-image .category-media{min-height:126px}
+  .category-card-image .category-label{padding:11px 12px 13px}
+}
