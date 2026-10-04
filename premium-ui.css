@@ -1030,3 +1030,52 @@ html.apple-page-leaving body{
   .home-primary,.page-hero,.gallery-main,.welcome-card{transform:none!important;transition:none!important}
   html.apple-page-leaving body{opacity:1!important;filter:none!important;transform:none!important}
 }
+
+
+/* Seller sign-in flow preview */
+.sell-flow-preview{
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:minmax(140px,1fr);
+  gap:10px;
+  overflow-x:auto;
+  margin-top:24px;
+  padding:2px 0 8px;
+  scroll-snap-type:x proximity;
+  scrollbar-width:none;
+}
+.sell-flow-preview::-webkit-scrollbar{display:none}
+.sell-flow-preview>div{
+  min-height:116px;
+  padding:16px;
+  border-radius:18px;
+  background:var(--apple-fill);
+  scroll-snap-align:start;
+}
+.sell-flow-preview span{
+  display:block;
+  color:#86868b;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.08em;
+}
+.sell-flow-preview strong{
+  display:block;
+  margin-top:14px;
+  font-size:16px;
+  letter-spacing:-.025em;
+}
+.sell-flow-preview small{
+  display:block;
+  margin-top:4px;
+  color:var(--apple-muted);
+  font-size:12px;
+  line-height:1.35;
+}
+@media(max-width:700px){
+  .sell-flow-preview{
+    margin-inline:-18px;
+    padding-inline:18px;
+    grid-auto-columns:148px;
+  }
+}
