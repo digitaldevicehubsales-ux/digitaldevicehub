@@ -31,6 +31,17 @@
   function toast(t){const el=document.querySelector('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),2600)}
   function modal(html){document.querySelector('#deviceDialogContent').innerHTML=html;document.querySelector('#deviceDialog').showModal()}
 
+  const deviceLayout=document.querySelector('.device-layout');
+  const devicePanel=document.querySelector('.device-panel');
+  const mobilePanelSlot=document.querySelector('#mobileDevicePanelSlot');
+  function syncDevicePanelPlacement(){
+    if(!deviceLayout||!devicePanel||!mobilePanelSlot)return;
+    const mobile=matchMedia('(max-width:1000px)').matches;
+    if(mobile&&devicePanel.parentElement!==mobilePanelSlot)mobilePanelSlot.appendChild(devicePanel);
+    else if(!mobile&&devicePanel.parentElement!==deviceLayout)deviceLayout.appendChild(devicePanel);
+  }
+  addEventListener('resize',syncDevicePanelPlacement,{passive:true});
+
   async function recordView(){
     if(!listing)return;
     const s=session();
@@ -177,5 +188,6 @@
   document.querySelector('#shareDevice').onclick=async()=>{try{if(navigator.share)await navigator.share({title:listing?.title||document.title,text:listing?`${listing.title} · ${money(listing.price_amount,listing.price_currency)}`:'DigitalDeviceHub listing',url:location.href});else await navigator.clipboard.writeText(location.href);toast('Listing link ready to share.')}catch{}};const wa=document.querySelector('#shareWhatsApp');if(wa)wa.href='https://wa.me/?text='+encodeURIComponent((listing?`${listing.title} · ${money(listing.price_amount,listing.price_currency)}\n`:'')+location.href);
   document.querySelector('#dialogClose').onclick=()=>document.querySelector('#deviceDialog').close();
   document.addEventListener('ddh:localization-ready',e=>document.querySelector('#localeChip').textContent=`${e.detail.country} · ${e.detail.currency}`);
+  syncDevicePanelPlacement();
   load();
 })();
