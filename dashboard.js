@@ -119,6 +119,7 @@
 
   function renderOverview(){
     document.querySelector('#welcomeTitle').textContent=profile?.display_name?`Welcome back, ${profile.display_name}.`:'Your marketplace at a glance.';
+    const welcomeCta=document.querySelector('#welcomeListCta');if(welcomeCta)welcomeCta.textContent=listings.length?'List another device':'List your first device';
     document.querySelector('#overviewChart').innerHTML=lineChart(trend,30);
     const pending=listings.filter(x=>x.status==='pending').length;
     const rejected=listings.filter(x=>x.status==='rejected').length;
@@ -130,7 +131,7 @@
     if(conversations.length)items.push(`<div class="activity-item"><strong>${conversations.length} active conversation${conversations.length>1?'s':''}</strong><span>Keep buyer responses timely.</span></div>`);
     document.querySelector('#attentionList').innerHTML=items.join('')||'<div class="empty-box">Nothing needs attention right now.</div>';
     const ranked=[...listings].sort((a,b)=>Number(statFor(b.id).views)-Number(statFor(a.id).views)).slice(0,4);
-    document.querySelector('#topListings').innerHTML=ranked.map(x=>`<div class="compact-row"><strong>${esc(x.title)}</strong><span>${money(x.price_amount,x.price_currency)} · ${Number(statFor(x.id).views).toLocaleString()} views · ${Number(statFor(x.id).buyer_messages).toLocaleString()} conversations</span></div>`).join('')||'<div class="empty-box">Your listings will appear here.</div>';
+    document.querySelector('#topListings').innerHTML=ranked.map(x=>`<div class="compact-row"><strong>${esc(x.title)}</strong><span>${money(x.price_amount,x.price_currency)} · ${Number(statFor(x.id).views).toLocaleString()} views · ${Number(statFor(x.id).buyer_messages).toLocaleString()} conversations</span></div>`).join('')||'<div class="empty-box"><strong>No listings yet.</strong><p>Create your first listing to start tracking views, messages and saves.</p><a class="primary-button" href="/sell">List your first device</a></div>';
   }
 
   function actionButtons(x){
