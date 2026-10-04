@@ -377,3 +377,49 @@ body.filters-open{overflow:hidden}
 @media(pointer:coarse){
   .global-nav a,.footer-grid a,.help-faq summary,.filter-chip{min-height:44px}
 }
+
+
+/* Production audit 2026-10-04 */
+[hidden]{display:none!important}
+
+@media(min-width:1001px){
+  .footer-grid{
+    grid-template-columns:minmax(220px,1.55fr) repeat(4,minmax(120px,1fr))!important;
+    gap:clamp(24px,3vw,54px)!important;
+    align-items:start;
+  }
+}
+.footer-v2{padding:42px 0 46px!important}
+.footer-grid h4{font-size:13px;letter-spacing:-.01em}
+.footer-grid a,.footer-grid p{font-size:12.5px;line-height:1.5}
+
+.market-layout.market-empty{
+  grid-template-columns:1fr!important;
+  padding-top:14px!important;
+  min-height:420px;
+}
+.market-layout.market-empty .filters,
+.market-layout.market-empty .market-toolbar,
+.market-layout.market-empty .active-filters,
+.market-layout.market-empty .load-more-wrap{
+  display:none!important;
+}
+.market-layout.market-empty .result-count{
+  margin:0 0 12px;
+}
+.market-layout.market-empty .empty-box{
+  min-height:260px;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  align-content:center;
+}
+
+.wizard-step[data-step].active{animation:none}
+.wizard-card{scroll-margin-top:92px}
+@media(max-width:700px){
+  .footer-v2{padding-bottom:96px!important}
+  .footer-grid{gap:28px!important}
+  .footer-grid>div{min-width:0}
+  .footer-grid h4{margin-bottom:7px}
+}
