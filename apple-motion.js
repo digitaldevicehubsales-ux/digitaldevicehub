@@ -2,6 +2,7 @@
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.documentElement.classList.add('apple-ui');
   if(reduce){document.documentElement.classList.add('apple-reduced-motion');return}
+  document.documentElement.classList.add('motion-ready');
 
   const revealSelectors=[
     '.hero-copy','.home-task-panel','.section-heading','.category-card','.product-card',
