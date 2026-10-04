@@ -8,7 +8,7 @@
     '.checklist-head','.check-item','.sell-card','.page-hero>*','.market-confidence>div',
     '.filters','.market-toolbar','.empty-box','.device-layout>section','.device-panel',
     '.detail-section','.wizard-head','.wizard-card','.welcome-card','.kpi-grid>*','.panel',
-    '.trust-card-v2','.help-card','.compare-empty>*','.footer-grid>*'
+    '.trust-card-v2','.help-card','.compare-empty>*','.footer-grid>*','.retail-feature-copy','.retail-feature-visual','.retail-story'
   ].join(',');
 
   const nodes=[...document.querySelectorAll(revealSelectors)];
