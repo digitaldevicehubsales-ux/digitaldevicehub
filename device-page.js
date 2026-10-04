@@ -73,10 +73,10 @@
     }
     const show=index=>{
       const img=images[index];
-      main.innerHTML=`<img src="${esc(publicImage(img.variants?.detail||img.storage_path))}" alt="${esc(listing.title)} photo ${index+1}" width="1200" height="900">`;
-      [...thumbs.querySelectorAll('button')].forEach((b,i)=>b.classList.toggle('active',i===index));
+      main.innerHTML=`<img src="${esc(publicImage(img.variants?.detail||img.storage_path))}" alt="${esc(listing.title)} photo ${index+1}" width="1200" height="900" decoding="async">`;
+      [...thumbs.querySelectorAll('button')].forEach((b,i)=>{const active=i===index;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});
     };
-    thumbs.innerHTML=images.map((img,i)=>`<button type="button" aria-label="View photo ${i+1}"><img src="${esc(publicImage(img.variants?.thumb||img.storage_path))}" alt="" loading="lazy" width="120" height="90"></button>`).join('');
+    thumbs.innerHTML=images.map((img,i)=>`<button type="button" aria-label="View photo ${i+1}" aria-pressed="false"><img src="${esc(publicImage(img.variants?.thumb||img.storage_path))}" alt="" loading="lazy" decoding="async" width="120" height="90"></button>`).join('');
     [...thumbs.querySelectorAll('button')].forEach((b,i)=>b.onclick=()=>show(i));
     show(0);
   }
@@ -115,7 +115,7 @@
       const joined=seller?.created_at?new Date(seller.created_at).toLocaleDateString(undefined,{year:'numeric',month:'short'}):'';const trust=[verificationLabel(seller?.verification_tier),Number(seller?.sales_count)>0?`${seller.sales_count} completed sale${Number(seller.sales_count)===1?'':'s'}`:null,Number(seller?.rating_count)>0?`${Number(seller.rating_avg).toFixed(1)}★ from ${seller.rating_count} review${Number(seller.rating_count)===1?'':'s'}`:null].filter(Boolean).join(' · ');
       document.querySelector('#sellerPanel').innerHTML=`<div class="spec"><span>Listed by</span><strong><a href="/seller?id=${encodeURIComponent(listing.seller_id)}">${esc(seller?.display_name||'DigitalDeviceHub seller')} →</a></strong></div><div class="spec"><span>Seller trust</span><strong>${esc(trust||'Account authenticated')}</strong></div>${joined?`<div class="spec"><span>Member since</span><strong>${esc(joined)}</strong></div>`:''}<div class="spec"><span>Listed</span><strong>${esc(new Date(listing.created_at).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}))}</strong></div>`;
       window.DDH_LOCALIZATION?.refresh?.();
-      document.querySelector('[data-preview-back]')?.addEventListener('click',()=>{if(history.length>1)history.back();else location.assign('/dashboard')});
+      document.querySelector('[data-preview-back]')?.addEventListener('click',()=>{if(history.length>1)history.back();else if(document.referrer&&new URL(document.referrer).origin===location.origin)location.assign(document.referrer);else location.assign('/dashboard')});
       if(previewMode){
         document.querySelector('.device-actions')?.setAttribute('hidden','');
         document.querySelector('.transaction-scope-note')?.setAttribute('hidden','');
