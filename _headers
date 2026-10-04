@@ -13,3 +13,8 @@
 
 /premium-ui.css
   Cache-Control: public, max-age=300, must-revalidate
+
+
+/service-worker.js
+  Cache-Control: no-cache, no-store, must-revalidate
+  Service-Worker-Allowed: /
