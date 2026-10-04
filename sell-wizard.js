@@ -175,6 +175,7 @@
       await uploadFiles(fd.getAll('images'),row.id,s.user.id);
       const identityResult=identifier?await checkDeviceIdentity(identifier,row.id).catch(()=>({unavailable:true})):null;
       await api(`/rest/v1/listings?id=eq.${encodeURIComponent(row.id)}&seller_id=eq.${encodeURIComponent(s.user.id)}`,{method:'PATCH',body:{status:'pending'},headers:{Prefer:'return=minimal'}});
+      api('/functions/v1/notify-listing-review',{method:'POST',body:{listing_id:row.id}}).catch(()=>null);
       localStorage.removeItem(DRAFT_KEY);clearSubmissionKey();await api(`/rest/v1/listing_drafts?user_id=eq.${encodeURIComponent(s.user.id)}`,{method:'DELETE'}).catch(()=>{});form.reset();
       if(identityResult?.duplicate)toast('Listing submitted for review. The device identifier matched another listing and was flagged for moderator review.');
       else if(identityResult?.unavailable)toast('Listing submitted for review. The optional identifier check will need moderator follow-up.');
