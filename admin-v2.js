@@ -82,7 +82,7 @@ async function load(){
       sellerProfiles=new Map((profiles||[]).map(x=>[x.id,x]));
     }
     renderListings(ls);renderReports(rs);
-    Promise.allSettled(ls.filter(x=>x.status==='pending').map(x=>api('/functions/v1/notify-listing-review',{method:'POST',body:{listing_id:x.id}}))).catch(()=>{});
+    Promise.allSettled(ls.filter(x=>x.status==='pending').map(async x=>{await api('/functions/v1/notify-listing-review',{method:'POST',body:{listing_id:x.id,action:'submitted'}}).catch(()=>null);await api('/functions/v1/notify-listing-review',{method:'POST',body:{listing_id:x.id,action:'ensure_reminder'}}).catch(()=>null)})).catch(()=>{});
     kpis.innerHTML='<div class="admin-kpi"><span>Pending listings</span><strong>'+ls.filter(x=>x.status==='pending').length+'</strong></div><div class="admin-kpi"><span>Automated flags</span><strong>'+ls.filter(x=>x.price_flagged||x.identity_check_status==='duplicate_review').length+'</strong></div><div class="admin-kpi"><span>Open reports</span><strong>'+rs.length+'</strong></div>';
   }catch(err){gate.hidden=false;gate.textContent=err.message;app.hidden=true}
 }
