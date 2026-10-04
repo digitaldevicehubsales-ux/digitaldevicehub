@@ -1,3 +1,4 @@
+const BUILD_REV='20261004-cat7';
 const SUPABASE_URL = 'https://zfnqmduqxgvmgfbokjwl.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Dq3vJAEg60BSnzfHxsx_Hg_AmHw0x4K';
 const ACCESS_COOKIE='__Host-ddh_access';
