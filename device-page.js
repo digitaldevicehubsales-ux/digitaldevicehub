@@ -32,8 +32,8 @@
   function specRows(){
     const s=listing.specs||{};
     const rows=[
-      ['Category',listing.category],['Condition',s.condition_grade||s.cosmetic_condition||(listing.condition==='new'?'New (sealed)':'Used')],['Usage origin',s.usage_origin],['Visible wear or faults',s.condition_notes],['Brand',listing.brand],['Model',listing.model],
-      ['Storage',listing.storage],['RAM',s.ram],['Colour',listing.color],['Battery health',s.battery_health],['Network status',s.network_status],
+      ['Category',listing.category],['Condition',s.condition_grade||s.cosmetic_condition||(listing.condition==='new'?'New (sealed)':'Used')],['Device history',s.usage_origin],['Visible wear or faults',s.condition_notes],['Brand',listing.brand],['Model',listing.model],
+      ['Storage',listing.storage],['RAM',s.ram],['Color',listing.color],['Battery health',s.battery_health],['Network status',s.network_status],
       ['IMEI duplicate screen',listing.category==='Phones'&&listing.identity_check_status==='format_valid'?'Passed':null],['Swap / trade',s.accepts_swap?'Open to swaps':null],['Swap preference',s.swap_notes],['Repairs',s.repair_history],['Included',s.accessories],['Delivery',({pickup:'Local pickup only',domestic:'Ships within seller country',international:'International shipping',pickup_domestic:'Pickup + domestic shipping',all:'Pickup + domestic + international shipping'})[listing.delivery_mode]||'Delivery details available'],
       ['Warranty',listing.warranty_text],['Location',[listing.city,countryName(listing.country_code)].filter(Boolean).join(', ')]
     ].filter(x=>x[1]);
