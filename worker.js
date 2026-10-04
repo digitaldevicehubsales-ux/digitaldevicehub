@@ -206,7 +206,7 @@ async function getPublicListings(limit=12) {
   return listings.map(item=>({...item,_image:firstImage.get(item.id)||'',_seller:profileMap.get(item.seller_id)||null}));
 }
 
-function renderHomeListingCard(item) {
+function renderHomeListingCard(item,index=0) {
   const href=canonicalPath(item);
   const seller=item._seller?.display_name||'Seller';
   const conditionGrade=item.specs?.condition_grade||item.specs?.cosmetic_condition||(item.condition==='new'?'New (sealed)':'Used');
@@ -214,7 +214,7 @@ function renderHomeListingCard(item) {
   const image=item._image?imageUrl(item._image):'';
   return `<article class="listing-card ssr-listing-card">
     <a href="${esc(href)}" aria-label="${esc(item.title)}, ${esc(money(item.price_amount,item.price_currency))}">
-      <div class="listing-art">${image?`<img src="${esc(image)}" alt="${esc(item.title)}" loading="eager" fetchpriority="high" width="900" height="675">`:'<span aria-hidden="true">▯</span>'}</div>
+      <div class="listing-art">${image?`<img src="${esc(image)}" alt="${esc(item.title)}" loading="${index<2?'eager':'lazy'}" ${index<2?'fetchpriority="high"':'fetchpriority="low"'} width="900" height="675">`:'<span aria-hidden="true">▯</span>'}</div>
       <div class="listing-body">
         <div class="listing-meta"><span>${esc(item.category)}</span><span>${esc(conditionGrade)}</span></div>
         <h3>${esc(item.title)}</h3>
@@ -226,7 +226,7 @@ function renderHomeListingCard(item) {
   </article>`;
 }
 
-function renderMarketListingCard(item) {
+function renderMarketListingCard(item,index=0) {
   const href=canonicalPath(item);
   const seller=item._seller?.display_name||'Seller';
   const image=item._image?imageUrl(item._image):'';
@@ -240,7 +240,7 @@ function renderMarketListingCard(item) {
   const rating=Number(item._seller?.rating_count)>0?`<span class="seller-rating">${Number(item._seller.rating_avg).toFixed(1)}★</span>`:'';
   return `<article class="product-card-shell ssr-product-card">
     <a class="product-card" href="${esc(href)}" aria-label="${esc(item.title)}, ${esc(money(item.price_amount,item.price_currency))}">
-      <div class="product-image">${image?`<img src="${esc(image)}" alt="${esc(item.title)}" loading="eager" width="900" height="675">`:'<span aria-hidden="true">▯</span>'}</div>
+      <div class="product-image">${image?`<img src="${esc(image)}" alt="${esc(item.title)}" loading="${index<4?'eager':'lazy'}" ${index<4?'fetchpriority="high"':'fetchpriority="low"'} width="900" height="675">`:'<span aria-hidden="true">▯</span>'}</div>
       <div class="product-content">
         <div class="tag-row"><span>${esc(item.category)}</span><span class="pill">${esc(conditionGrade)}</span></div>
         <h3>${esc(item.title)}</h3>
@@ -268,7 +268,7 @@ async function renderPublicPage(request,env,url,assetPath,kind) {
     }
     if(kind==='home'){
       html=html.replace('<div id="listingGrid" class="listing-grid home-listing-preview" aria-live="polite"></div>',
-        `<div id="listingGrid" class="listing-grid home-listing-preview" aria-live="polite" data-ssr="true">${listings.map(renderHomeListingCard).join('')}</div>`);
+        `<div id="listingGrid" class="listing-grid home-listing-preview" aria-live="polite" data-ssr="true">${listings.map((item,index)=>renderHomeListingCard(item,index)).join('')}</div>`);
       if(!listings.length){
         html=html.replace('<section id="marketplace" class="marketplace shell">','<section id="marketplace" class="marketplace shell" hidden>');
         html=html.replace('<p id="emptyState" class="empty-state" hidden>No matching devices.</p>','<p id="emptyState" class="empty-state" hidden>No matching devices.</p>');
@@ -277,7 +277,7 @@ async function renderPublicPage(request,env,url,assetPath,kind) {
       html=html.replace('<div class="result-count" id="resultCount" role="status" aria-live="polite">Loading devices…</div>',
         `<div class="result-count" id="resultCount" role="status" aria-live="polite">${listings.length} device${listings.length===1?'':'s'} available</div>`);
       html=html.replace('<div class="product-grid" id="marketplaceGrid" style="margin-top:18px"></div>',
-        `<div class="product-grid" id="marketplaceGrid" style="margin-top:18px" data-ssr="true">${listings.map(renderMarketListingCard).join('')}</div>`);
+        `<div class="product-grid" id="marketplaceGrid" style="margin-top:18px" data-ssr="true">${listings.map((item,index)=>renderMarketListingCard(item,index)).join('')}</div>`);
       if(!listings.length)html=html.replace('<div class="empty-box" id="emptyState" hidden>No matching devices.</div>',
         '<div class="empty-box" id="emptyState"><strong>No devices listed yet.</strong><p>Real inventory is being onboarded. Sellers can list one device or prepare shop stock for review.</p><div class="recovery-actions"><a class="btn blue" href="/sell">List a device</a><a class="btn secondary" href="/seller-onboarding">Onboard shop inventory</a></div></div>');
     }
