@@ -8,7 +8,7 @@
     '.checklist-head','.check-item','.sell-card','.page-hero>*','.market-confidence>div',
     '.filters','.market-toolbar','.empty-box','.device-layout>section','.device-panel',
     '.detail-section','.wizard-head','.wizard-card','.welcome-card','.kpi-grid>*','.panel',
-    '.trust-card-v2','.help-card','.compare-empty>*','.footer-grid>*','.retail-feature-copy','.retail-feature-visual','.retail-story'
+    '.trust-card-v2','.help-card','.compare-empty>*','.footer-grid>*','.retail-feature-copy','.retail-feature-visual','.retail-story','[data-reveal]'
   ].join(',');
 
   const nodes=[...document.querySelectorAll(revealSelectors)];
@@ -26,6 +26,14 @@
     }
   },{rootMargin:'0px 0px -7% 0px',threshold:.08});
   nodes.forEach(n=>io.observe(n));
+
+  const editorial=[...document.querySelectorAll('[data-reveal]')];
+  const editorialIO=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){entry.target.classList.add('is-visible');editorialIO.unobserve(entry.target)}
+    });
+  },{rootMargin:'0px 0px -8% 0px',threshold:.12});
+  editorial.forEach(el=>editorialIO.observe(el));
 
   const depthNodes=[...document.querySelectorAll('.home-primary,.page-hero,.gallery-main,.welcome-card')];
   let raf=0;
