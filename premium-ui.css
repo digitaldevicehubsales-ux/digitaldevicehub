@@ -1773,3 +1773,20 @@ html.mega-open body:after{
 @media(max-width:420px){
   .category-grid{grid-auto-columns:78vw!important}
 }
+
+
+/* Category image fail-safe */
+.category-card-image .category-media{
+  background-color:#f4f4f4;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:cover;
+}
+.category-card-image[data-category="Phones"] .category-media{background-image:url('/assets/category-phones-v2.webp')}
+.category-card-image[data-category="Laptops"] .category-media{background-image:url('/assets/category-laptops-v2.webp')}
+.category-card-image[data-category="Tablets"] .category-media{background-image:url('/assets/category-tablets-v2.webp')}
+.category-card-image[data-category="Accessories"] .category-media{background-image:url('/assets/category-accessories-v2.webp')}
+.category-card-image[data-category="Wearables"] .category-media{background-image:url('/assets/category-wearables-v2.webp')}
+.category-card-image .category-media img{
+  background:transparent!important;
+}
