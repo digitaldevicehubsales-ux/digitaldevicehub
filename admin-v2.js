@@ -2,9 +2,10 @@
 'use strict';
 const cfg=window.DDH_CONFIG||{},base=String(cfg.supabaseUrl||'').replace(/\/$/,''),key=String(cfg.supabasePublishableKey||''),SESSION_KEY='ddh_supabase_session';
 const gate=document.querySelector('#adminGate'),app=document.querySelector('#adminApp'),queue=document.querySelector('#moderationQueue'),reports=document.querySelector('#reportQueue'),kpis=document.querySelector('#adminKpis'),users=document.querySelector('#userResults');
-let mediaCounts=new Map(),sellerProfiles=new Map();
+let mediaCounts=new Map(),mediaPreviews=new Map(),sellerProfiles=new Map();
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=(a,c)=>{const n=Number(a)||0;try{return new Intl.NumberFormat(undefined,{style:'currency',currency:c||'USD',maximumFractionDigits:Number.isInteger(n)?0:2}).format(n)}catch{return `${c||'USD'} ${n.toLocaleString()}`}};
+const mediaUrl=path=>path?`${base}/storage/v1/object/public/listing-images/${String(path).split('/').map(encodeURIComponent).join('/')}`:'';
 const sess=()=>{try{return JSON.parse(localStorage.getItem(SESSION_KEY)||'null')}catch{return null}};
 function toast(t){const el=document.querySelector('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),3000)}
 async function api(path,{method='GET',body,prefer='return=representation'}={}){const s=sess();if(!s?.access_token)throw new Error('Sign in again.');const r=await fetch(`${base}${path}`,{method,headers:{apikey:key,Authorization:`Bearer ${s.access_token}`,'Content-Type':'application/json',Prefer:prefer},body:body===undefined?undefined:JSON.stringify(body)});const data=await r.json().catch(()=>[]);if(!r.ok)throw new Error(data.message||data.details||data.error||`Request failed (${r.status})`);return data}
@@ -18,6 +19,7 @@ function renderListings(rows){
   if(!rows.length){queue.innerHTML='<div class="empty-inline">No listings are waiting for review.</div>';return}
   queue.innerHTML=rows.map(x=>{
     const media=mediaCounts.get(x.id)||{images:0,videos:0};
+    const preview=mediaPreviews.get(x.id)||'';
     const seller=sellerProfiles.get(x.seller_id)||{};
     const grade=x.specs?.condition_grade||x.specs?.cosmetic_condition||(x.condition==='new'?'New (sealed)':'Missing grade');
     const origin=x.specs?.usage_origin||'';
@@ -31,7 +33,7 @@ function renderListings(rows){
     ];
     const quality=checks.map(([ok,label])=>'<span class="admin-quality '+(ok?'ok':'warn')+'">'+(ok?'✓ ':'! ')+esc(label)+'</span>').join('');
     const sellerTrust=[seller.verification_tier&&seller.verification_tier!=='account'?seller.verification_tier.replaceAll('_',' ')+' verified':null,Number(seller.rating_count)>0?Number(seller.rating_avg).toFixed(1)+'★ / '+seller.rating_count+' reviews':null,Number(seller.sales_count)>0?seller.sales_count+' completed sales':null].filter(Boolean).join(' · ')||'Account authenticated';
-    return '<article class="admin-row" data-listing="'+esc(x.id)+'"><div><label class="admin-select"><input type="checkbox" data-select-listing value="'+esc(x.id)+'"> Select</label><span class="status-chip">'+esc(x.status)+'</span> '+(x.price_flagged?'<span class="flag">Price flagged</span>':'')+' '+(x.identity_check_status==='duplicate_review'?'<span class="flag">Identifier duplicate</span>':'')+' '+sla(x.created_at)+'<h3>'+esc(x.title)+'</h3><p>'+esc(x.category)+' · '+esc(x.condition)+' · '+esc(grade)+' · '+esc(money(x.price_amount,x.price_currency))+'</p><p>'+esc([x.city,x.country_code].filter(Boolean).join(', ')||'Location not provided')+' · '+esc(x.delivery_mode||'Delivery not set')+'</p><div class="admin-quality-row">'+quality+'</div><p class="admin-seller-context"><strong>Seller:</strong> '+esc(seller.display_name||'Unnamed seller')+' · '+esc(sellerTrust)+'</p><p>'+esc(x.moderation_note||'No moderation note')+'</p></div><div class="admin-actions"><input class="control admin-note" placeholder="Reason / note"><button class="btn blue small" data-approve>Approve</button><button class="btn secondary small" data-reject>Reject</button><a class="btn secondary small" href="/device/'+encodeURIComponent(x.id)+'" target="_blank" rel="noopener">Preview</a></div></article>';
+    return '<article class="admin-row admin-review-row" data-listing="'+esc(x.id)+'">'+(preview?'<a class="admin-media-preview" href="/device/'+encodeURIComponent(x.id)+'" target="_blank" rel="noopener"><img src="'+esc(preview)+'" alt="'+esc(x.title)+'" loading="lazy"></a>':'<div class="admin-media-preview admin-media-empty">No image</div>')+'<div class="admin-review-copy"><div class="admin-review-meta"><label class="admin-select"><input type="checkbox" data-select-listing value="'+esc(x.id)+'"> Select</label><span class="status-chip">'+esc(x.status)+'</span> '+(x.price_flagged?'<span class="flag">Price flagged</span>':'')+' '+(x.identity_check_status==='duplicate_review'?'<span class="flag">Identifier duplicate</span>':'')+' '+sla(x.created_at)+'</div><h3>'+esc(x.title)+'</h3><p>'+esc(x.category)+' · '+esc(grade)+' · '+esc(money(x.price_amount,x.price_currency))+'</p><p>'+esc([x.city,x.country_code].filter(Boolean).join(', ')||'Location not provided')+' · '+esc(x.delivery_mode||'Delivery not set')+'</p><div class="admin-quality-row">'+quality+'</div><p class="admin-seller-context"><strong>Seller:</strong> '+esc(seller.display_name||'Unnamed seller')+' · '+esc(sellerTrust)+'</p><p>'+esc(x.moderation_note||'No moderation note')+'</p></div><div class="admin-actions"><input class="control admin-note" placeholder="Reason / note"><button class="btn blue small" data-approve>Approve</button><button class="btn secondary small" data-reject>Reject</button><a class="btn secondary small" href="/device/'+encodeURIComponent(x.id)+'" target="_blank" rel="noopener">Open listing</a></div></article>';
   }).join('');
   queue.querySelectorAll('[data-listing]').forEach(row=>{
     const id=row.dataset.listing,note=()=>row.querySelector('.admin-note').value.trim();
@@ -48,15 +50,15 @@ async function load(){
       api('/rest/v1/listings?select=id,seller_id,title,category,condition,price_amount,price_currency,city,country_code,delivery_mode,status,price_flagged,identity_check_status,moderation_note,description,specs,created_at&status=in.(pending,rejected)&order=created_at.asc'),
       api('/rest/v1/reports?select=id,listing_id,reason,details,status,created_at&status=in.(open,reviewing)&order=created_at.asc')
     ]);
-    mediaCounts=new Map();sellerProfiles=new Map();
+    mediaCounts=new Map();mediaPreviews=new Map();sellerProfiles=new Map();
     const listingIds=ls.map(x=>x.id),sellerIds=[...new Set(ls.map(x=>x.seller_id).filter(Boolean))];
     if(listingIds.length){
       const inList=listingIds.map(id=>'"'+id+'"').join(',');
       const [imgs,vids]=await Promise.all([
-        api('/rest/v1/listing_images?select=listing_id&id=not.is.null&listing_id=in.('+encodeURIComponent(inList)+')').catch(()=>[]),
+        api('/rest/v1/listing_images?select=listing_id,storage_path,variants,sort_order&id=not.is.null&listing_id=in.('+encodeURIComponent(inList)+')&order=sort_order.asc').catch(()=>[]),
         api('/rest/v1/listing_videos?select=listing_id&id=not.is.null&listing_id=in.('+encodeURIComponent(inList)+')').catch(()=>[])
       ]);
-      for(const row of imgs||[]){const m=mediaCounts.get(row.listing_id)||{images:0,videos:0};m.images++;mediaCounts.set(row.listing_id,m)}
+      for(const row of imgs||[]){const m=mediaCounts.get(row.listing_id)||{images:0,videos:0};m.images++;mediaCounts.set(row.listing_id,m);if(!mediaPreviews.has(row.listing_id)){const path=row.variants?.thumb||row.variants?.card||row.storage_path;if(path)mediaPreviews.set(row.listing_id,mediaUrl(path))}}
       for(const row of vids||[]){const m=mediaCounts.get(row.listing_id)||{images:0,videos:0};m.videos++;mediaCounts.set(row.listing_id,m)}
     }
     if(sellerIds.length){
@@ -65,6 +67,7 @@ async function load(){
       sellerProfiles=new Map((profiles||[]).map(x=>[x.id,x]));
     }
     renderListings(ls);renderReports(rs);
+    Promise.allSettled(ls.filter(x=>x.status==='pending').map(x=>api('/functions/v1/notify-listing-review',{method:'POST',body:{listing_id:x.id}}))).catch(()=>{});
     kpis.innerHTML='<div class="admin-kpi"><span>Pending listings</span><strong>'+ls.filter(x=>x.status==='pending').length+'</strong></div><div class="admin-kpi"><span>Automated flags</span><strong>'+ls.filter(x=>x.price_flagged||x.identity_check_status==='duplicate_review').length+'</strong></div><div class="admin-kpi"><span>Open reports</span><strong>'+rs.length+'</strong></div>';
   }catch(err){gate.hidden=false;gate.textContent=err.message;app.hidden=true}
 }
