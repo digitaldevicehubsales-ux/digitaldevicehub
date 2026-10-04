@@ -3,6 +3,7 @@
 
   const meta = document.querySelector('#deviceMeta');
   if (!meta) return;
+  const previewMode = new URLSearchParams(location.search).get('preview') === '1';
 
   const actionButtons = [
     document.querySelector('#makeOffer'),
@@ -32,6 +33,16 @@
     }
   };
 
+  const applyPreviewState = () => {
+    if (!previewMode) return;
+    document.body.classList.add('listing-preview-mode');
+    document.querySelector('.device-actions')?.setAttribute('hidden','');
+    document.querySelector('.transaction-scope-note')?.setAttribute('hidden','');
+    document.querySelector('.device-secondary-actions')?.setAttribute('hidden','');
+    document.querySelector('#relatedSection')?.setAttribute('hidden','');
+    setButtonsDisabled(true);
+  };
+
   const state = () => {
     const heading = meta.querySelector('h1')?.textContent?.trim() || '';
     const eyebrow = meta.querySelector('.eyebrow')?.textContent?.trim() || '';
@@ -44,9 +55,10 @@
   const apply = () => {
     const current = state();
     const unavailable = current === 'unavailable';
-    setButtonsDisabled(current !== 'ready');
-    for (const area of actionAreas) area.hidden = unavailable;
-    for (const area of detailAreas) area.hidden = unavailable;
+    setButtonsDisabled(current !== 'ready' || previewMode);
+    for (const area of actionAreas) area.hidden = unavailable || (previewMode && area !== document.querySelector('#sellerPanel'));
+    for (const area of detailAreas) area.hidden = unavailable || (previewMode && area === document.querySelector('#relatedSection'));
+    applyPreviewState();
 
     if (unavailable && !meta.querySelector('[data-unavailable-actions]')) {
       const actions = document.createElement('p');
@@ -57,6 +69,7 @@
   };
 
   setButtonsDisabled(true);
+  applyPreviewState();
   new MutationObserver(apply).observe(meta, { childList: true, subtree: true, characterData: true });
   apply();
 })();
