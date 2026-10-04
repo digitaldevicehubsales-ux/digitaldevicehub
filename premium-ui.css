@@ -456,3 +456,147 @@ body.filters-open{overflow:hidden}
   .preview-mode-banner{align-items:flex-start;flex-direction:column;gap:4px}
   .preview-mode-banner span{text-align:left}
 }
+
+
+/* Product-detail production upgrade */
+.listing-preview-mode .device-actions,
+.listing-preview-mode .transaction-scope-note,
+.listing-preview-mode .device-secondary-actions,
+.listing-preview-mode #relatedSection{display:none!important}
+
+.preview-mode-banner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin:0 0 20px;
+  padding:13px 14px;
+  border:1px solid #ccd7ff;
+  border-radius:12px;
+  background:#f4f6ff;
+  color:#17245d;
+}
+.preview-mode-banner>div{display:grid;gap:2px;min-width:0}
+.preview-mode-banner strong{font-size:13px}
+.preview-mode-banner span{font-size:12px;color:#59658c}
+.preview-back{
+  flex:0 0 auto;
+  min-height:38px!important;
+  padding:8px 12px;
+  border:1px solid #c7d1ef;
+  border-radius:9px;
+  background:#fff;
+  color:#1f2c60;
+  font:inherit;
+  font-size:12px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.device-layout{
+  grid-template-columns:minmax(0,1.45fr) minmax(360px,.72fr)!important;
+  gap:28px!important;
+  align-items:start;
+}
+.gallery-main{
+  min-height:0!important;
+  aspect-ratio:4/3;
+  border-radius:18px!important;
+}
+.gallery-main img{
+  max-height:none!important;
+  object-fit:contain;
+}
+.gallery-thumbs{padding-top:10px!important}
+.gallery-thumbs button{
+  width:78px!important;
+  height:62px!important;
+  border-radius:10px!important;
+}
+.device-panel{
+  top:88px!important;
+  padding:24px!important;
+  border-radius:18px!important;
+}
+.device-panel h1{
+  font-size:clamp(32px,3.2vw,46px)!important;
+  line-height:.98!important;
+  margin:9px 0 8px!important;
+}
+.device-price{
+  margin:20px 0 4px!important;
+  font-size:clamp(30px,3vw,40px)!important;
+}
+.device-actions{margin:18px 0 10px!important}
+.transaction-scope-note{
+  margin:0 0 14px;
+  font-size:12px;
+  color:#747a84;
+}
+.detail-section{
+  border-radius:16px!important;
+  padding:24px!important;
+  margin-top:16px!important;
+}
+.detail-section h2{
+  margin:7px 0 14px;
+  font-size:24px;
+  letter-spacing:-.035em;
+}
+.specs{margin-top:20px!important}
+.spec{
+  align-items:flex-start;
+  gap:28px!important;
+  padding:12px 0!important;
+  font-size:13px!important;
+}
+.spec>span:first-child{flex:0 0 min(38%,190px)}
+.spec>strong{
+  min-width:0;
+  text-align:right;
+  overflow-wrap:anywhere;
+}
+.mobile-device-panel-slot{display:none}
+
+@media(min-width:1500px){
+  .container{width:min(1440px,calc(100% - 64px))!important}
+  .global-header{padding-left:max(28px,calc((100vw - 1440px)/2))!important;padding-right:max(28px,calc((100vw - 1440px)/2))!important}
+  .device-layout{grid-template-columns:minmax(0,1.55fr) minmax(390px,.7fr)!important}
+}
+
+@media(max-width:1000px){
+  .device-layout{display:block!important;padding-top:24px!important}
+  .device-layout>section{min-width:0}
+  .mobile-device-panel-slot{display:block;margin-top:14px}
+  .mobile-device-panel-slot .device-panel{
+    position:static!important;
+    width:100%;
+    margin:0;
+  }
+  .device-panel{position:static!important}
+  .detail-section{margin-top:14px!important}
+}
+
+@media(max-width:640px){
+  .device-layout{padding-top:14px!important;padding-bottom:78px!important}
+  .breadcrumbs{padding:0 1px 10px}
+  .gallery-main{aspect-ratio:1/1;border-radius:14px!important}
+  .gallery-thumbs{gap:7px!important}
+  .gallery-thumbs button{width:68px!important;height:54px!important}
+  .mobile-device-panel-slot{margin-top:12px}
+  .device-panel{padding:18px!important;border-radius:14px!important}
+  .device-panel h1{font-size:32px!important}
+  .device-price{font-size:30px!important}
+  .detail-section{padding:18px!important;border-radius:14px!important}
+  .detail-section h2{font-size:21px}
+  .spec{display:grid!important;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:12px!important}
+  .spec>span:first-child{flex:auto}
+  .spec>strong{text-align:right}
+  .preview-mode-banner{align-items:flex-start}
+}
+@media(max-width:420px){
+  .preview-mode-banner{flex-direction:column}
+  .preview-back{width:100%}
+  .spec{grid-template-columns:1fr!important;gap:4px!important}
+  .spec>strong{text-align:left}
+}
