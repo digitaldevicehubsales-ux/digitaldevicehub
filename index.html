@@ -16,7 +16,7 @@
   <meta name="twitter:image" content="https://digitaldevicehub.com/social-card.png">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="/site-v2.css">
-  <link rel="stylesheet" href="/premium-ui.css?v=20261004-apple1">
+  <link rel="stylesheet" href="/premium-ui.css?v=20261004-ref1">
   <title>DigitalDeviceHub — Device marketplace</title>
   <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://digitaldevicehub.com/#organization","name":"DigitalDeviceHub","url":"https://digitaldevicehub.com/","logo":"https://digitaldevicehub.com/social-card.png","email":"digitaldevicehubsales@gmail.com"},{"@type":"WebSite","@id":"https://digitaldevicehub.com/#website","url":"https://digitaldevicehub.com/","name":"DigitalDeviceHub","publisher":{"@id":"https://digitaldevicehub.com/#organization"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://digitaldevicehub.com/marketplace?q={search_term_string}"},"query-input":"required name=search_term_string"}}]}</script>
 </head>
@@ -61,11 +61,35 @@
       </div>
     </section>
 
+    <section class="retail-feature shell" aria-labelledby="retail-feature-title">
+      <div class="retail-feature-copy">
+        <span class="eyebrow">Shop with context</span>
+        <h2 id="retail-feature-title">See the details that matter.</h2>
+        <p>Compare condition, seller context, price, location and delivery before you decide.</p>
+        <div class="retail-feature-actions"><a class="button" href="/marketplace">Browse devices</a><a class="button secondary" href="/compare">Compare devices</a></div>
+      </div>
+      <div class="retail-feature-visual" aria-label="Marketplace buying signals">
+        <article><span>01</span><strong>Condition</strong><small>Structured device grading</small></article>
+        <article><span>02</span><strong>Seller</strong><small>Visible marketplace context</small></article>
+        <article><span>03</span><strong>Delivery</strong><small>Pickup and shipping scope</small></article>
+      </div>
+    </section>
+
     <section id="marketplace" class="marketplace shell">
       <div class="section-heading marketplace-heading"><div><span class="eyebrow">Latest</span><h2>Recently listed.</h2></div><div class="search-wrap"><input id="searchInput" type="search" placeholder="Search listings" aria-label="Search listings" /><select id="conditionFilter" aria-label="Condition"><option value="all">All conditions</option><option value="New (sealed)">New · sealed</option><option>Open box</option><option>Like new</option><option>Good</option><option>Fair</option><option>For parts</option><option>Refurbished</option></select></div></div>
       <div id="listingGrid" class="listing-grid home-listing-preview" aria-live="polite"></div>
       <p id="emptyState" class="empty-state" hidden>No matching devices.</p>
       <div class="section-end"><a class="button secondary" href="/marketplace">Browse marketplace</a></div>
+    </section>
+
+    <section class="retail-stories shell" aria-labelledby="stories-title">
+      <div class="section-heading"><div><span class="eyebrow">Explore</span><h2 id="stories-title">Helpful ways to shop.</h2></div><a class="text-link" href="/help">View Help Center →</a></div>
+      <div class="retail-story-grid">
+        <a class="retail-story retail-story-dark" href="/trust#condition"><span>Buying guide</span><h3>Read condition clearly.</h3><p>Know what “like new”, “good” and other grades mean before you contact a seller.</p><b>Learn about condition →</b></a>
+        <a class="retail-story" href="/compare"><span>Comparison</span><h3>Compare before deciding.</h3><p>Put up to four published listings side by side and review the details that differ.</p><b>Compare devices →</b></a>
+        <a class="retail-story" href="/sell"><span>Selling guide</span><h3>Create a stronger listing.</h3><p>Use clear photos, accurate specifications and realistic delivery details.</p><b>Start selling →</b></a>
+        <a class="retail-story retail-story-soft" href="/trust"><span>Safety</span><h3>Keep conversations safer.</h3><p>Use on-platform messaging and review seller context before arranging pickup or delivery.</p><b>View safety guidance →</b></a>
+      </div>
     </section>
 
     <section id="trust" class="home-checklist" aria-labelledby="check-title">
@@ -113,6 +137,6 @@
   <script src="/analytics.js" defer></script>
   <script src="/role-router.js" defer></script>
   <script src="/open-signin.js" defer></script>
-  <script src="/mobile-nav.js" defer></script>
-<script src="/apple-motion.js?v=20261004-apple1" defer></script></body>
+  <script src="/mobile-nav.js" defer></script>\n  <script src="/retail-nav.js?v=20261004-ref1" defer></script>
+<script src="/apple-motion.js?v=20261004-ref1" defer></script></body>
 </html>
