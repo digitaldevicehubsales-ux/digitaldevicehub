@@ -135,7 +135,7 @@
   }
 
   function actionButtons(x){
-    const buttons=[`<button class="mini-button primary" data-edit="${x.id}">Edit</button>`];
+    const buttons=[`<button class="mini-button primary" data-edit="${x.id}">Edit</button>`,`<a class="mini-button" href="/device/${encodeURIComponent(x.id)}?preview=1" target="_blank" rel="noopener">Preview</a>`];
     if(x.status==='published')buttons.push(`<button class="mini-button" data-status="paused" data-id="${x.id}">Pause</button>`);
     if(x.status==='paused')buttons.push(`<button class="mini-button" data-status="published" data-id="${x.id}">Resume</button>`);
     if(['published','paused'].includes(x.status))buttons.push(`<button class="mini-button" data-status="sold" data-id="${x.id}">Mark sold</button>`);
