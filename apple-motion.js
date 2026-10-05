@@ -36,7 +36,8 @@
   },{rootMargin:'0px 0px -8% 0px',threshold:.12});
   editorial.forEach(el=>editorialIO.observe(el));
 
-  const depthNodes=[...document.querySelectorAll('.home-primary,.page-hero,.gallery-main,.welcome-card')];
+  const allowDepth=matchMedia('(min-width: 900px) and (hover: hover) and (pointer: fine)').matches;
+  const depthNodes=allowDepth ? [...document.querySelectorAll('.home-primary,.page-hero,.gallery-main,.welcome-card')] : [];
   let raf=0;
   const updateDepth=()=>{
     raf=0;
