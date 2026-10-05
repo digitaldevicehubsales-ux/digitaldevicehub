@@ -28,7 +28,7 @@
   }
 
   function loadPremiumUi(){
-    if(document.querySelector('link[data-premium-ui],link[href="/premium-ui.css"]'))return;
+    if(document.querySelector('link[data-premium-ui],link[href^="/premium-ui.css"]'))return;
     const link=document.createElement('link');
     link.rel='stylesheet';
     link.href='/premium-ui.css';
@@ -171,7 +171,7 @@
     if(header){
       header.className='global-header';
       header.innerHTML=`
-        <a class="global-brand" href="/" aria-label="DigitalDeviceHub home"><span class="global-brand-mark" aria-hidden="true">D</span><span>DigitalDeviceHub</span></a>
+        <a class="global-brand" href="/" aria-label="DigitalDeviceHub home"><span class="ddh-logo" aria-hidden="true"><svg viewBox="0 0 64 64" focusable="false"><rect width="64" height="64" rx="18" fill="currentColor"></rect><path d="M19 15h13c12 0 19 6 19 17S44 49 32 49H19V15zm12 26c7 0 11-3 11-9s-4-9-11-9h-3v18h3z" fill="white"></path></svg></span><span>DigitalDeviceHub</span></a>
         <nav class="global-nav" aria-label="Primary navigation">
           <a href="/marketplace">Marketplace</a>
           <a href="/trust">Trust</a>
@@ -190,7 +190,7 @@
     if(footer){
       footer.className='footer-v2';
       footer.innerHTML=`<div class="container footer-grid">
-        <div><a class="global-brand" href="/" aria-label="DigitalDeviceHub home"><span class="global-brand-mark" aria-hidden="true">D</span><span>DigitalDeviceHub</span></a><p>Devices with clearer checks.</p></div>
+        <div><a class="global-brand" href="/" aria-label="DigitalDeviceHub home"><span class="ddh-logo" aria-hidden="true"><svg viewBox="0 0 64 64" focusable="false"><rect width="64" height="64" rx="18" fill="currentColor"></rect><path d="M19 15h13c12 0 19 6 19 17S44 49 32 49H19V15zm12 26c7 0 11-3 11-9s-4-9-11-9h-3v18h3z" fill="white"></path></svg></span><span>DigitalDeviceHub</span></a><p>Devices with clearer checks.</p></div>
         <div><h4>Marketplace</h4><a href="/marketplace">Browse devices</a><a href="/sell">Sell device</a><a href="/seller-onboarding">Seller onboarding</a><a href="/compare">Compare</a></div>
         <div><h4>Support</h4><a href="/trust">Trust & Safety</a><a href="/help">Help Center</a><a href="/contact">Contact</a></div>
         <div><h4>Company</h4><a href="/about">About</a><a href="/regions">Regions & features</a></div>
