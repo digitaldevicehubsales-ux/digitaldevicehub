@@ -2691,3 +2691,93 @@ body{
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   .apple-reveal-target,.motion-ready [data-reveal]{opacity:1!important;filter:none!important;transform:none!important}
 }
+
+
+/* Category image-fit refinement — 2026-10-05 */
+.categories .category-grid{
+  align-items:stretch!important;
+}
+.categories .category-card-image{
+  display:grid!important;
+  grid-template-rows:minmax(0,1fr) auto!important;
+  padding:0!important;
+  min-height:248px!important;
+  overflow:hidden!important;
+  background:#fff!important;
+  border:1px solid var(--ddh-line)!important;
+  border-radius:22px!important;
+}
+.categories .category-card-image .category-media{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  padding:14px 12px 6px!important;
+  overflow:hidden!important;
+  background:linear-gradient(180deg,#f7f8fa 0%,#f2f4f7 100%)!important;
+}
+.categories .category-card-image .category-media img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  transform:none!important;
+  filter:saturate(.98) contrast(1.01);
+}
+.categories .category-card-image .category-label{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  min-height:78px!important;
+  padding:16px 18px 17px!important;
+  background:#fff!important;
+  border-top:1px solid rgba(16,17,20,.06)!important;
+}
+.categories .category-card-image .category-label b{
+  font-size:16px!important;
+  line-height:1.1!important;
+  letter-spacing:-.02em!important;
+}
+.categories .category-card-image .category-label small{
+  display:block!important;
+  margin-top:6px!important;
+  font-size:12px!important;
+  line-height:1.25!important;
+  color:#70747c!important;
+}
+
+/* Optical tuning per source image so every device sits on the same visual baseline. */
+.categories .category-card-image[data-category="Phones"] .category-media img{transform:scale(.96)!important}
+.categories .category-card-image[data-category="Laptops"] .category-media img{transform:scale(.94)!important}
+.categories .category-card-image[data-category="Tablets"] .category-media img{transform:scale(.95)!important}
+.categories .category-card-image[data-category="Accessories"] .category-media img{transform:scale(.91)!important}
+.categories .category-card-image[data-category="Wearables"] .category-media img{transform:scale(.93)!important}
+
+@media(hover:hover) and (pointer:fine){
+  .categories .category-card-image{
+    transition:transform .24s cubic-bezier(.2,.7,.2,1),border-color .2s ease,box-shadow .2s ease!important;
+  }
+  .categories .category-card-image:hover{
+    transform:translateY(-3px)!important;
+    border-color:rgba(16,17,20,.18)!important;
+    box-shadow:0 14px 34px rgba(16,24,40,.07)!important;
+  }
+  .categories .category-card-image:hover .category-media img{
+    filter:saturate(1) contrast(1.015);
+  }
+}
+@media(max-width:1020px){
+  .categories .category-card-image{min-height:238px!important}
+  .categories .category-card-image .category-media{min-height:164px!important;padding:12px 10px 4px!important}
+  .categories .category-card-image .category-label{min-height:72px!important;padding:14px 16px!important}
+}
+@media(max-width:700px){
+  .categories .category-card-image{min-height:252px!important}
+  .categories .category-card-image .category-media{min-height:176px!important;padding:12px 10px 5px!important}
+  .categories .category-card-image .category-label{min-height:76px!important}
+}
