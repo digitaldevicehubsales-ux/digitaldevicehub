@@ -58,12 +58,14 @@
     closeTimer=setTimeout(()=>{if(!mega.classList.contains('open'))mega.hidden=true},180);
   };
 
-  if(matchMedia('(hover:hover) and (min-width:1001px)').matches){
-    shopLink?.addEventListener('mouseenter',open);
-    shopLink?.addEventListener('focus',open);
-    mega.addEventListener('mouseenter',()=>clearTimeout(closeTimer));
-    mega.addEventListener('mouseleave',close);
-    header.addEventListener('mouseleave',()=>{closeTimer=setTimeout(close,140)});
+  if(matchMedia('(min-width:1001px)').matches && shopLink){
+    shopLink.addEventListener('click',e=>{
+      if(mega.hidden){e.preventDefault();open()}
+      else if(mega.classList.contains('open')){e.preventDefault();close()}
+    });
+    shopLink.addEventListener('keydown',e=>{
+      if(e.key==='ArrowDown'||e.key===' '){e.preventDefault();open();mega.querySelector('a')?.focus()}
+    });
   }
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!mega.hidden){close();shopLink?.focus()}});
   document.addEventListener('click',e=>{
