@@ -3643,3 +3643,24 @@ body{
     transform:none!important;
   }
 }
+
+
+/* Large-display refinement — 2026-10-05 */
+@media(min-width:1800px){
+  :root{--lux-width:1600px}
+  .shell,.container{width:min(1600px,calc(100% - 96px))!important}
+  .home-primary{width:min(1600px,calc(100% - 96px))!important}
+  .page-hero{width:min(1380px,calc(100% - 96px))!important}
+  .market-layout{width:min(1600px,calc(100% - 96px))!important}
+  .editorial-stack,.trust-grid-v2,.trust-detail-section,.help-grid{
+    width:min(1380px,calc(100% - 96px))!important;
+  }
+  .global-header{padding-inline:max(48px,calc((100vw - 1600px)/2))!important}
+  .dashboard-main{
+    max-width:1760px!important;
+    padding-left:72px!important;
+    padding-right:72px!important;
+  }
+  .product-grid{grid-template-columns:repeat(4,minmax(230px,1fr))!important}
+  .home-listing-preview{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+}
