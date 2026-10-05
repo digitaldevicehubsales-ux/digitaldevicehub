@@ -3722,3 +3722,292 @@ body{
   }
   .ddh-logo{flex-basis:30px!important}
 }
+
+
+/* Studio refinement — 2026-10-05 */
+:root{
+  --studio-bg:#f4f5f7;
+  --studio-card:#ffffff;
+  --studio-ink:#101217;
+  --studio-muted:#6b7079;
+  --studio-blue:#315eea;
+  --studio-line:rgba(16,18,23,.10);
+  --studio-shadow:0 18px 50px rgba(16,24,40,.07);
+}
+body{background:var(--studio-bg)!important}
+.global-header{
+  height:68px!important;
+  background:rgba(248,249,251,.88)!important;
+  border-bottom:1px solid var(--studio-line)!important;
+}
+.global-brand{font-size:15px!important;letter-spacing:-.03em!important}
+.global-brand .ddh-logo{width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important;flex-basis:32px!important}
+.global-brand .ddh-logo svg{width:32px!important;height:32px!important}
+
+/* Prevent hidden/blank category sections regardless of earlier animation or layout rules. */
+.categories{
+  display:block!important;
+  height:auto!important;
+  min-height:0!important;
+  padding:62px 0 68px!important;
+  overflow:visible!important;
+}
+.categories .section-heading{
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:space-between!important;
+  margin-bottom:24px!important;
+  opacity:1!important;
+  visibility:visible!important;
+  transform:none!important;
+}
+.categories .category-grid{
+  display:grid!important;
+  grid-template-columns:1.08fr repeat(5,minmax(0,1fr))!important;
+  grid-auto-flow:row!important;
+  gap:12px!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:280px!important;
+  overflow:visible!important;
+  opacity:1!important;
+  visibility:visible!important;
+  transform:none!important;
+  position:relative!important;
+  z-index:2!important;
+}
+.categories .category-card,
+.categories .category-card-image{
+  display:grid!important;
+  opacity:1!important;
+  visibility:visible!important;
+  transform:none!important;
+  position:relative!important;
+  min-width:0!important;
+  min-height:280px!important;
+}
+.categories .category-card-image{
+  grid-template-rows:minmax(0,1fr) auto!important;
+  padding:0!important;
+  overflow:hidden!important;
+  border-radius:24px!important;
+  background:#fff!important;
+  border:1px solid var(--studio-line)!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.8) inset!important;
+}
+.categories .category-card-image .category-media{
+  display:grid!important;
+  place-items:center!important;
+  min-height:196px!important;
+  padding:12px!important;
+  overflow:hidden!important;
+  background:linear-gradient(180deg,#f7f8fa 0%,#eef1f5 100%)!important;
+}
+.categories .category-card-image .category-media img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  opacity:1!important;
+  filter:saturate(.98) contrast(1.02);
+}
+.categories .category-card-image .category-label{
+  min-height:82px!important;
+  padding:18px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  border-top:1px solid rgba(16,18,23,.06)!important;
+  background:#fff!important;
+}
+.categories .category-card-image .category-label b{font-size:16px!important;line-height:1.05!important}
+.categories .category-card-image .category-label small{display:block!important;margin-top:6px!important;font-size:12px!important;color:#747983!important}
+.categories .category-card-all-luxe{
+  display:flex!important;
+  min-height:280px!important;
+  border-radius:24px!important;
+  background:
+    radial-gradient(circle at 80% 10%,rgba(91,121,255,.20),transparent 30%),
+    linear-gradient(155deg,#171a21 0%,#111318 56%,#0b0d11 100%)!important;
+  box-shadow:0 18px 40px rgba(10,13,20,.10)!important;
+}
+.categories .category-card-all-luxe .category-all-copy b{font-size:27px!important}
+.categories .category-card-all-luxe .category-all-copy small{font-size:13px!important}
+
+/* Premium recent listings: no giant blank zone while data loads. */
+.marketplace{
+  height:auto!important;
+  min-height:0!important;
+  padding:64px 0 74px!important;
+}
+.marketplace .marketplace-heading{
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:space-between!important;
+  margin-bottom:22px!important;
+}
+.home-listing-preview{
+  width:100%!important;
+  min-height:0!important;
+}
+.listing-loading{
+  grid-column:1/-1;
+  min-height:210px;
+  display:grid;
+  grid-template-columns:250px minmax(0,1fr);
+  gap:24px;
+  align-items:center;
+  padding:18px;
+  border:1px solid var(--studio-line);
+  border-radius:22px;
+  background:#fff;
+}
+.listing-loading-art{
+  display:block;
+  height:174px;
+  border-radius:16px;
+  background:linear-gradient(110deg,#edf0f4 8%,#f8f9fb 18%,#edf0f4 33%);
+  background-size:200% 100%;
+  animation:ddh-shimmer 1.25s linear infinite;
+}
+.listing-loading-lines{display:grid;gap:12px;max-width:420px}
+.listing-loading-lines i{
+  display:block;height:14px;border-radius:999px;
+  background:linear-gradient(110deg,#edf0f4 8%,#f8f9fb 18%,#edf0f4 33%);
+  background-size:200% 100%;
+  animation:ddh-shimmer 1.25s linear infinite;
+}
+.listing-loading-lines i:nth-child(1){width:72%}
+.listing-loading-lines i:nth-child(2){width:48%}
+.listing-loading-lines i:nth-child(3){width:36%}
+@keyframes ddh-shimmer{to{background-position-x:-200%}}
+.marketplace .empty-state{
+  display:block;
+  min-height:0!important;
+  max-width:760px;
+  padding:28px 30px!important;
+  margin:0!important;
+}
+.marketplace .empty-state[hidden]{display:none!important}
+.marketplace .section-end{margin-top:22px!important}
+
+/* Distinctive but restrained dimensionality. */
+.hero-media,.editorial-panel,.category-card-image,.category-card-all-luxe{
+  transform-style:preserve-3d;
+  backface-visibility:hidden;
+}
+@media(hover:hover) and (pointer:fine){
+  .hero-media{
+    transition:transform .55s cubic-bezier(.2,.7,.2,1),box-shadow .4s ease!important;
+  }
+  .home-primary:hover .hero-media{
+    transform:perspective(1200px) rotateY(-1.4deg) rotateX(.5deg) translateY(-2px)!important;
+    box-shadow:0 28px 65px rgba(19,27,45,.11)!important;
+  }
+  .categories .category-card-image:hover,
+  .categories .category-card-all-luxe:hover{
+    transform:perspective(900px) translateY(-5px) rotateX(.8deg)!important;
+    box-shadow:0 20px 46px rgba(16,24,40,.10)!important;
+  }
+  .editorial-panel{
+    transition:transform .42s cubic-bezier(.2,.7,.2,1),box-shadow .35s ease!important;
+  }
+  .editorial-panel:hover{
+    transform:perspective(1200px) translateY(-3px) rotateX(.35deg)!important;
+    box-shadow:0 24px 58px rgba(16,24,40,.085)!important;
+  }
+}
+
+/* Public content pages: stronger composition, less empty paper. */
+.page-hero{
+  padding-top:70px!important;
+  padding-bottom:34px!important;
+}
+.page-hero h1{max-width:11.5ch!important}
+.trust-grid-v2,.help-grid{
+  box-shadow:0 12px 38px rgba(16,24,40,.045)!important;
+}
+.help-grid{
+  border:1px solid var(--studio-line)!important;
+  border-radius:24px!important;
+  overflow:hidden!important;
+  background:#fff!important;
+}
+.help-faq{
+  background:#fff!important;
+  border:0!important;
+  border-bottom:1px solid var(--studio-line)!important;
+}
+.help-faq:last-child{border-bottom:0!important}
+.help-faq summary{min-height:64px!important;padding:0 20px!important}
+.help-faq[open] summary{background:#f8f9fb!important}
+.help-faq>div{padding:0 20px 22px!important}
+
+/* About page: richer editorial rhythm without decorative clutter. */
+body:has(.page-hero .eyebrow:first-child) .page-hero p{max-width:780px!important}
+.trust-card-v2{transition:background .18s ease,border-color .18s ease!important}
+.trust-card-v2:hover{background:#fafbfc!important}
+
+/* Mobile: keep every critical section visible and compact. */
+@media(max-width:760px){
+  .global-header{height:60px!important}
+  .global-brand{font-size:13px!important}
+  .global-brand .ddh-logo,.global-brand .ddh-logo svg{
+    width:29px!important;height:29px!important;min-width:29px!important;min-height:29px!important
+  }
+  .categories{padding:42px 0 48px!important}
+  .categories .section-heading{margin-bottom:18px!important}
+  .categories .category-grid{
+    display:flex!important;
+    gap:12px!important;
+    min-height:0!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    scroll-snap-type:x mandatory;
+    scrollbar-width:none;
+    padding:2px 1px 8px!important;
+  }
+  .categories .category-grid::-webkit-scrollbar{display:none}
+  .categories .category-card,
+  .categories .category-card-image{
+    flex:0 0 78vw!important;
+    min-height:300px!important;
+    scroll-snap-align:start;
+  }
+  .categories .category-card-image .category-media{min-height:210px!important}
+  .categories .category-card-all-luxe{min-height:300px!important}
+  .marketplace{padding:48px 0 54px!important}
+  .marketplace .marketplace-heading{
+    align-items:flex-start!important;
+    flex-direction:column!important;
+    gap:16px!important;
+  }
+  .marketplace .search-wrap{
+    width:100%!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(132px,.45fr)!important;
+  }
+  .listing-loading{
+    grid-template-columns:1fr!important;
+    min-height:0!important;
+  }
+  .listing-loading-art{height:auto;aspect-ratio:4/3}
+  .home-listing-preview{grid-template-columns:1fr!important}
+  .marketplace .empty-state{max-width:none!important;width:100%!important}
+  .editorial-panel:hover,.home-primary:hover .hero-media,.categories .category-card-image:hover,.categories .category-card-all-luxe:hover{
+    transform:none!important;
+  }
+}
+@media(max-width:430px){
+  .categories .category-card,.categories .category-card-image{flex-basis:86vw!important}
+  .marketplace .search-wrap{grid-template-columns:1fr!important}
+}
+
+/* Never let animations hide primary discovery content. */
+.categories .category-grid,
+.categories .category-card,
+.categories .category-card-image,
+.home-listing-preview{
+  filter:none!important;
+}
