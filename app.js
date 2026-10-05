@@ -176,7 +176,11 @@ function render(){
 async function loadListings(){
   if(!backendReady){
     listings = [];
-    render();
+    if(grid && empty){
+      grid.innerHTML='';
+      empty.innerHTML='<strong>Marketplace is temporarily unavailable.</strong><br>You can still browse marketplace pages or try again shortly.';
+      empty.hidden=false;
+    }
     return;
   }
   try{
@@ -219,7 +223,11 @@ async function loadListings(){
     render();
   }catch(err){
     listings = [];
-    render();
+    if(grid && empty){
+      grid.innerHTML='';
+      empty.innerHTML='<strong>Could not load recent listings.</strong><br>Open the marketplace or refresh to try again.';
+      empty.hidden=false;
+    }
     console.error('Could not load listings:', err);
   }
 }
