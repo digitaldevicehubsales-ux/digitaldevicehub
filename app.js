@@ -137,9 +137,9 @@ function render(){
   const q = search?.value.trim().toLowerCase() || '';
   const cond = condition?.value || 'all';
   if(!grid || !empty) return;
-  if(listings.length < 12){
+  if(listings.length === 0){
     grid.innerHTML='';
-    empty.innerHTML='<strong>The worldwide marketplace is growing.</strong><br>We are onboarding the first wave of real sellers. Browse the full marketplace or list a device from your country.';
+    empty.innerHTML='<strong>No published devices yet.</strong><br>Be among the first sellers to list a device, or check back as new listings are approved.';
     empty.hidden=false;
     window.DDH_LOCALIZATION?.refresh?.();
     return;
@@ -149,7 +149,15 @@ function render(){
     (cond === 'all' || x.condition === cond) &&
     (!q || `${x.name} ${x.category} ${x.storage || ''} ${x.seller || ''}`.toLowerCase().includes(q))
   );
-  grid.innerHTML = filtered.map(x => `
+  const visible = filtered.slice(0, 4);
+  if(filtered.length === 0){
+    grid.innerHTML='';
+    empty.innerHTML='<strong>No matching devices.</strong><br>Try another search or condition.';
+    empty.hidden=false;
+    return;
+  }
+  empty.hidden=true;
+  grid.innerHTML = visible.map(x => `
     <article class="listing-card" tabindex="0" data-id="${escapeHtml(x.id)}" aria-label="${escapeHtml(x.name)}, ${escapeHtml(money(x.price,x.currency))}">
       <div class="listing-art">${x.image_url ? `<img src="${escapeHtml(x.image_url)}" alt="${escapeHtml(x.name)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;" />` : `<span aria-hidden="true">${escapeHtml(x.icon)}</span>`}</div>
       <div class="listing-body">
