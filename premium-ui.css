@@ -3664,3 +3664,23 @@ body{
   .product-grid{grid-template-columns:repeat(4,minmax(230px,1fr))!important}
   .home-listing-preview{grid-template-columns:repeat(4,minmax(0,1fr))!important}
 }
+
+
+/* Brand logo render hardening — 2026-10-05 */
+.global-brand-mark,.brand-mark{
+  display:block!important;
+  width:34px!important;
+  height:34px!important;
+  min-width:34px!important;
+  min-height:34px!important;
+  object-fit:contain!important;
+  flex:0 0 34px!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:9px!important;
+}
+.global-brand,.dash-brand{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+}
