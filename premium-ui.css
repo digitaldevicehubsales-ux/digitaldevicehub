@@ -3684,3 +3684,41 @@ body{
   align-items:center!important;
   gap:10px!important;
 }
+
+
+/* Inline brand mark — 2026-10-05 */
+.ddh-logo{
+  display:grid!important;
+  place-items:center!important;
+  width:34px!important;
+  height:34px!important;
+  min-width:34px!important;
+  min-height:34px!important;
+  flex:0 0 34px!important;
+  color:#111214!important;
+  border-radius:9px!important;
+  overflow:hidden!important;
+  line-height:0!important;
+}
+.ddh-logo svg{
+  display:block!important;
+  width:34px!important;
+  height:34px!important;
+  max-width:none!important;
+  max-height:none!important;
+  stroke:none!important;
+}
+.ddh-logo svg rect{fill:currentColor!important}
+.ddh-logo svg path{fill:#fff!important;stroke:none!important}
+.global-brand .ddh-logo{color:#111214!important}
+.dash-brand .ddh-logo{color:#fff!important}
+.dash-brand .ddh-logo svg path{fill:#111318!important}
+@media(max-width:700px){
+  .ddh-logo,.ddh-logo svg{
+    width:30px!important;
+    height:30px!important;
+    min-width:30px!important;
+    min-height:30px!important;
+  }
+  .ddh-logo{flex-basis:30px!important}
+}
