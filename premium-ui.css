@@ -2155,10 +2155,10 @@ html.mega-open body:after{
   object-position:center!important;
   transform:scale(1.002)!important;
 }
-.editorial-media-condition{background:#f3f5f8 url('/assets/editorial-condition.webp') center/cover no-repeat!important}
-.editorial-media-sell{background:#f3f5f8 url('/assets/editorial-sell.webp') center/cover no-repeat!important}
-.editorial-media-compare{background:#f7f7f8 url('/assets/editorial-compare.webp') center/cover no-repeat!important}
-.editorial-media-handoff{background:#f4f2ef url('/assets/editorial-handoff.webp') center/cover no-repeat!important}
+.editorial-media-condition{background:#f3f5f8 url('/assets/editorial-condition-v2.webp') center/cover no-repeat!important}
+.editorial-media-sell{background:#f3f5f8 url('/assets/editorial-sell-v2.webp') center/cover no-repeat!important}
+.editorial-media-compare{background:#f7f7f8 url('/assets/editorial-compare-v2.webp') center/cover no-repeat!important}
+.editorial-media-handoff{background:#f4f2ef url('/assets/editorial-handoff-v2.webp') center/cover no-repeat!important}
 
 /* Progressive enhancement: content stays visible if motion JS fails. */
 [data-reveal]{opacity:1!important;transform:none!important}
