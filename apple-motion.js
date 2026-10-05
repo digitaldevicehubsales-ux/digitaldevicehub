@@ -5,7 +5,7 @@
   document.documentElement.classList.add('motion-ready');
 
   const revealSelectors=[
-    '.hero-copy','.home-task-panel','.section-heading','.category-card','.product-card',
+    '.hero-copy','.home-task-panel','.section-heading',
     '.checklist-head','.check-item','.sell-card','.page-hero>*','.market-confidence>div',
     '.filters','.market-toolbar','.empty-box','.device-layout>section','.device-panel',
     '.detail-section','.wizard-head','.wizard-card','.welcome-card','.kpi-grid>*','.panel',
@@ -27,6 +27,8 @@
     }
   },{rootMargin:'0px 0px -7% 0px',threshold:.08});
   nodes.forEach(n=>io.observe(n));
+  const revealFailsafe=setTimeout(()=>nodes.forEach(n=>n.classList.add('apple-in-view')),1200);
+  addEventListener('pagehide',()=>clearTimeout(revealFailsafe),{once:true});
 
   const editorial=[...document.querySelectorAll('[data-reveal]')];
   const editorialIO=new IntersectionObserver(entries=>{
