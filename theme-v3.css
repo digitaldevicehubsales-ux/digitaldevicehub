@@ -1,8 +1,8 @@
 /* DigitalDeviceHub theme v3 — sitewide skin.
    Load AFTER site-v2.css and premium-ui.css on any existing page:
    <link rel="stylesheet" href="/theme-v3.css?v=20261011">
-   It restyles the shared header, footer, buttons, form controls, marketplace and trust pages
-   to match the v3 homepage without changing any markup or JavaScript. */
+   It restyles every page (header, footer, buttons, forms, marketplace, listing, sell, help,
+   articles, compare, dashboard) to match the v3 homepage without changing markup or JavaScript. */
 
 @font-face{
   font-family:"Schibsted Grotesk";
@@ -18,7 +18,7 @@
 }
 
 /* ---------- base ---------- */
-html body{background:var(--v3-bench);color:var(--v3-ink);font-family:var(--v3-font);-webkit-font-smoothing:antialiased}
+html:root:root:root body{background:var(--v3-bench)!important;color:var(--v3-ink)!important;font-family:var(--v3-font)!important;-webkit-font-smoothing:antialiased!important}
 html:root:root:root body h1,html:root:root:root body h2,html:root:root:root body h3,html:root:root:root body h4,html:root:root:root body .apple-display-text{font-family:var(--v3-font)!important;color:inherit!important}
 main a:not([class]){color:var(--v3-cobalt)}
 html:root:root:root body :focus-visible{outline:3px solid var(--v3-cobalt)!important;outline-offset:3px!important}
@@ -26,7 +26,7 @@ html:root:root:root body :focus-visible{outline:3px solid var(--v3-cobalt)!impor
 html:root:root:root .apple-reveal-target,html.motion-ready:root:root .apple-reveal-target,html:root:root:root [data-reveal]{opacity:1!important;transform:none!important;filter:none!important;transition:none!important}
 
 /* Small labels: sentence case, no tracking, no shouting */
-html:root:root:root body .eyebrow{display:block;text-transform:none;letter-spacing:0;font-size:15px;font-weight:600;color:var(--v3-ink-3);margin-bottom:10px;background:none;padding:0;border:0}
+html:root:root:root body .eyebrow{display:block!important;text-transform:none!important;letter-spacing:0!important;font-size:15px!important;font-weight:600!important;color:var(--v3-ink-3)!important;margin-bottom:10px!important;background:none!important;padding:0!important;border:0!important}
 
 /* Restore the [hidden] attribute: premium-ui.css forces display on some elements (e.g. the
    "No matching devices" box), which made hidden UI appear. */
@@ -38,7 +38,7 @@ html:root:root:root body .btn svg,html:root:root:root body .mobile-filter-button
 html:root:root:root body .mobile-filter-button{gap:8px!important;align-items:center!important}
 
 /* ---------- header ---------- */
-html:root:root:root body .global-header{background:var(--v3-paper);border-bottom:1px solid var(--v3-line);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;min-height:68px;font-family:var(--v3-font)}
+html:root:root:root body .global-header{background:var(--v3-paper)!important;border-bottom:1px solid var(--v3-line)!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;min-height:68px!important;font-family:var(--v3-font)!important}
 html:root:root:root body .global-brand{color:var(--v3-ink)!important;font-weight:800!important;font-size:19px!important;letter-spacing:-.02em!important;text-decoration:none!important}
 html:root:root:root body .global-brand .ddh-logo{color:var(--v3-ink)!important}
 html:root:root:root body .global-nav a{color:var(--v3-ink)!important;font-weight:500!important;font-size:15px!important;text-decoration:none!important}
@@ -53,7 +53,7 @@ html:root:root:root body .retail-mega a{color:var(--v3-ink)!important} html:root
 html:root:root:root body .retail-mega section>span{text-transform:none!important;letter-spacing:0!important;font-weight:700!important;color:var(--v3-ink-3)!important}
 
 /* ---------- buttons and controls ---------- */
-html:root:root:root body .btn,html:root:root:root body .button{font-family:var(--v3-font);font-weight:700;border-radius:999px;min-height:44px;background:var(--v3-cobalt);color:#fff;border:0;box-shadow:none;text-decoration:none}
+html:root:root:root body .btn,html:root:root:root body .button{font-family:var(--v3-font)!important;font-weight:700!important;border-radius:999px!important;min-height:44px!important;background:var(--v3-cobalt)!important;color:#fff!important;border:0!important;box-shadow:none!important;text-decoration:none!important}
 html:root:root:root body .btn:hover,html:root:root:root body .button:hover{background:var(--v3-cobalt-dark)!important;color:#fff!important}
 html:root:root:root body .btn.secondary{background:#fff!important;color:var(--v3-ink)!important;border:1.5px solid #C9CEC6!important}
 html:root:root:root body .btn.secondary:hover{border-color:var(--v3-ink)!important;background:#fff!important;color:var(--v3-ink)!important}
@@ -64,7 +64,7 @@ html:root:root:root body .control:focus{border-color:var(--v3-ink)!important;out
 html:root:root:root body input[type=checkbox]{accent-color:var(--v3-pass)!important}
 
 /* ---------- page hero (marketplace, help, about…) ---------- */
-html:root:root:root body .page-hero{padding-top:clamp(40px,6vw,72px);padding-bottom:28px}
+html:root:root:root body .page-hero{padding-top:clamp(40px,6vw,72px)!important;padding-bottom:28px!important}
 html:root:root:root body .page-hero h1{font-size:clamp(40px,5.6vw,72px)!important;line-height:1!important;letter-spacing:-.045em!important;font-weight:800!important;color:var(--v3-ink)!important;margin:0!important}
 html:root:root:root body .page-hero p{font-size:clamp(16px,1.6vw,19px)!important;color:var(--v3-ink-2)!important;max-width:36em!important;margin-top:16px!important}
 html:root:root:root body .market-confidence{min-height:0!important;height:auto!important;display:flex!important;flex-wrap:wrap!important;gap:8px 24px!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin-top:24px!important}
@@ -74,7 +74,7 @@ html:root:root:root body .market-confidence strong{font-size:15px!important;font
 html:root:root:root body .market-confidence span{display:none!important}
 
 /* ---------- marketplace layout ---------- */
-html:root:root:root body .filters{background:var(--v3-paper);border:1px solid var(--v3-line);border-radius:20px;box-shadow:none}
+html:root:root:root body .filters{background:var(--v3-paper)!important;border:1px solid var(--v3-line)!important;border-radius:20px!important;box-shadow:none!important}
 html:root:root:root body .filter-group label,html:root:root:root body .field-label{font-size:14px!important;font-weight:600!important;color:var(--v3-ink-2)!important;text-transform:none!important;letter-spacing:0!important}
 html:root:root:root body .filters small,html:root:root:root body .market-helper{color:var(--v3-ink-3)!important}
 html:root:root:root body .market-toolbar{background:none!important;border:0!important;box-shadow:none!important}
@@ -82,7 +82,7 @@ html:root:root:root body .result-count{font-weight:700!important;color:var(--v3-
 html:root:root:root body .active-filters button,html:root:root:root body .active-filters span{border-radius:999px!important}
 
 /* product cards */
-html:root:root:root body .product-card-shell{position:relative;background:var(--v3-paper);border:1px solid var(--v3-line);border-radius:18px;overflow:hidden;box-shadow:none;transition:border-color .15s}
+html:root:root:root body .product-card-shell{position:relative!important;background:var(--v3-paper)!important;border:1px solid var(--v3-line)!important;border-radius:18px!important;overflow:hidden!important;box-shadow:none!important;transition:border-color .15s!important}
 html:root:root:root body .product-card-shell:hover{border-color:var(--v3-ink)!important;transform:none!important;box-shadow:none!important}
 html:root:root:root body .product-card{color:var(--v3-ink)!important;text-decoration:none!important;background:none!important;border:0!important;box-shadow:none!important}
 html:root:root:root body .product-image{background:#E3E6E0!important;border-radius:0!important}
@@ -103,18 +103,140 @@ html:root:root:root body .compare-tray{background:var(--v3-ink)!important;color:
 html:root:root:root body .toast{background:var(--v3-ink)!important;color:#fff!important;border-radius:14px!important;font-family:var(--v3-font)!important}
 
 /* mobile action dock */
-html:root:root:root body .mobile-action-dock{background:var(--v3-paper);border:1px solid var(--v3-line);box-shadow:0 10px 30px -10px rgba(21,24,29,.3);font-family:var(--v3-font)}
+html:root:root:root body .mobile-action-dock{background:var(--v3-paper)!important;border:1px solid var(--v3-line)!important;box-shadow:0 10px 30px -10px rgba(21,24,29,.3)!important;font-family:var(--v3-font)!important}
 html:root:root:root body .mobile-action-dock a{color:var(--v3-ink)!important;font-weight:700!important}
 html:root:root:root body .mobile-action-dock a.primary{background:var(--v3-cobalt)!important;color:#fff!important}
 
 /* ---------- footer ---------- */
-html:root:root:root body .footer-v2{background:var(--v3-ink);color:#C9CDD3;border:0}
+html:root:root:root body .footer-v2{background:var(--v3-ink)!important;color:#C9CDD3!important;border:0!important}
 html:root:root:root body .footer-v2 .global-brand,html:root:root:root body .footer-v2 .global-brand:hover{color:#fff!important}
 html:root:root:root body .footer-v2 .global-brand .ddh-logo{color:var(--v3-tag)!important}
 html:root:root:root body .footer-v2 h4{color:#fff!important;font-size:15px!important;text-transform:none!important;letter-spacing:0!important}
 html:root:root:root body .footer-v2 a{color:#C9CDD3!important;text-decoration:none!important}
 html:root:root:root body .footer-v2 a:hover{color:#fff!important}
 html:root:root:root body .footer-v2 p{color:#C9CDD3!important}
+
+/* ---------- Content cards: category, about, regions, onboarding ---------- */
+html:root:root:root body .trust-grid-v2{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))!important;gap:0 48px!important;background:none!important;border:0!important;box-shadow:none!important;padding-top:8px!important;padding-bottom:64px!important}
+html:root:root:root body .trust-card-v2{background:var(--v3-paper)!important;border:1px solid var(--v3-line)!important;border-radius:20px!important;box-shadow:none!important;padding:clamp(22px,3vw,36px)!important;min-height:0!important}
+html:root:root:root body .trust-grid-v2 .trust-card-v2{background:none!important;border:0!important;border-top:1px solid var(--v3-line)!important;border-radius:0!important;box-shadow:none!important;padding:24px 0!important}
+html:root:root:root body .trust-card-v2 h2{font-size:clamp(24px,2.6vw,32px)!important;letter-spacing:-.03em!important;font-weight:800!important;line-height:1.1!important;margin:0 0 10px!important;color:var(--v3-ink)!important}
+html:root:root:root body .trust-card-v2 h3{font-size:20px!important;letter-spacing:-.02em!important;font-weight:700!important;line-height:1.2!important;margin:0 0 8px!important;color:var(--v3-ink)!important}
+html:root:root:root body .trust-card-v2 p{color:var(--v3-ink-2)!important;font-size:16px!important;line-height:1.55!important;max-width:40em!important}
+html:root:root:root body .trust-card-v2 a{color:var(--v3-cobalt)!important;font-weight:700!important}
+html:root:root:root body .recovery-actions,
+html:root:root:root body .hero-actions{display:flex!important;flex-wrap:wrap!important;gap:10px!important;margin-top:24px!important}
+html:root:root:root body .recovery-actions .btn,
+html:root:root:root body .hero-actions .btn{width:auto!important;padding:0 22px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important}
+
+/* ---------- Help and contact ---------- */
+html:root:root:root body .help-topic-grid{display:flex!important;flex-direction:column!important;gap:10px!important;padding-bottom:64px!important;background:none!important;border:0!important;box-shadow:none!important}
+html:root:root:root body .help-topic-grid>*{max-width:860px!important;width:100%!important}
+html:root:root:root body .help-faq{background:var(--v3-paper)!important;border:1px solid var(--v3-line)!important;border-radius:16px!important;box-shadow:none!important;padding:0!important;overflow:hidden!important}
+html:root:root:root body .help-faq summary{padding:20px 22px!important;font-weight:700!important;font-size:18px!important;cursor:pointer!important;color:var(--v3-ink)!important;list-style-position:inside!important}
+html:root:root:root body .help-faq>div{padding:0 22px 20px!important}
+html:root:root:root body .help-faq p{color:var(--v3-ink-2)!important;line-height:1.55!important}
+html:root:root:root body .help-search{max-width:560px!important;margin-top:20px!important;border:2px solid var(--v3-ink)!important;min-height:52px!important}
+html:root:root:root body .help-search-label{display:block!important;margin-top:24px!important;font-weight:600!important;color:var(--v3-ink-2)!important;font-size:15px!important}
+html:root:root:root body .help-grid{background:none!important;border:0!important;box-shadow:none!important;display:grid!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))!important;gap:16px!important;padding-bottom:64px!important}
+html:root:root:root body .help-card{background:var(--v3-paper)!important;border:1px solid var(--v3-line)!important;border-radius:18px!important;box-shadow:none!important;padding:24px!important}
+html:root:root:root body .help-card h3{font-size:19px!important;letter-spacing:-.02em!important;margin:0 0 8px!important;color:var(--v3-ink)!important}
+html:root:root:root body .help-card p{color:var(--v3-ink-2)!important}
+html:root:root:root body .help-card a{color:var(--v3-cobalt)!important;font-weight:700!important}
+html:root:root:root body .help-empty{color:var(--v3-ink-2)!important}
+
+/* ---------- Articles: guides, privacy, terms ---------- */
+html:root:root:root body .legal-page{max-width:820px!important;padding-bottom:72px!important}
+html:root:root:root body .legal-page h2{font-size:clamp(22px,2.4vw,28px)!important;letter-spacing:-.025em!important;font-weight:800!important;margin:40px 0 10px!important;color:var(--v3-ink)!important}
+html:root:root:root body .legal-page p,
+html:root:root:root body .legal-page li{font-size:17px!important;line-height:1.65!important;color:var(--v3-ink-2)!important}
+html:root:root:root body .legal-meta{color:var(--v3-ink-3)!important;font-size:14px!important}
+html:root:root:root body .legal-section{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+html:root:root:root body .page-hero h1{max-width:16em!important}
+html:root:root:root body .shell.legal{max-width:820px!important;margin:0 auto!important;padding:56px 24px 72px!important}
+html:root:root:root body .shell.legal h1{font-size:clamp(40px,5vw,64px)!important;letter-spacing:-.045em!important;font-weight:800!important;line-height:1!important;margin:0 0 12px!important;color:var(--v3-ink)!important}
+html:root:root:root body .shell.legal h2{font-size:clamp(22px,2.4vw,28px)!important;letter-spacing:-.025em!important;font-weight:800!important;margin:40px 0 10px!important;color:var(--v3-ink)!important}
+html:root:root:root body .shell.legal p,
+html:root:root:root body .shell.legal li{font-size:17px!important;line-height:1.65!important;color:var(--v3-ink-2)!important}
+
+/* ---------- Sell wizard ---------- */
+html:root:root:root body .wizard-head h1{font-size:clamp(36px,4.6vw,60px)!important;letter-spacing:-.045em!important;font-weight:800!important;line-height:1!important;color:var(--v3-ink)!important}
+html:root:root:root body .wizard-progress{background:var(--v3-line-2)!important;border-radius:999px!important}
+html:root:root:root body .wizard-progress>*{background:var(--v3-cobalt)!important}
+html:root:root:root body .sell-editorial-intro,
+html:root:root:root body .wizard-card{background:var(--v3-paper)!important;border:1px solid var(--v3-line)!important;border-radius:22px!important;box-shadow:none!important}
+html:root:root:root body .field label,
+html:root:root:root body .wizard-step label{font-weight:600!important;color:var(--v3-ink-2)!important;font-size:14px!important;text-transform:none!important;letter-spacing:0!important}
+html:root:root:root body .field input:not([type=checkbox]):not([type=radio]):not([type=file]),
+html:root:root:root body .field select,
+html:root:root:root body .field textarea,
+html:root:root:root body .wizard-step input:not([type=checkbox]):not([type=radio]):not([type=file]),
+html:root:root:root body .wizard-step select,
+html:root:root:root body .wizard-step textarea{font-family:var(--v3-font)!important;font-size:16px!important;color:var(--v3-ink)!important;background:#fff!important;border:1.5px solid #C9CEC6!important;border-radius:12px!important;min-height:46px!important;box-shadow:none!important}
+html:root:root:root body .field textarea,
+html:root:root:root body .wizard-step textarea{min-height:120px!important;padding:12px!important}
+html:root:root:root body .photo-drop{background:var(--v3-bench)!important;border:2px dashed #9AA19A!important;border-radius:18px!important;box-shadow:none!important}
+html:root:root:root body .listing-quality,
+html:root:root:root body .market-price-guidance,
+html:root:root:root body .listing-signin-note,
+html:root:root:root body .listing-submit-note{background:var(--v3-bench)!important;border:1px solid var(--v3-line)!important;border-radius:16px!important;box-shadow:none!important;color:var(--v3-ink-2)!important}
+html:root:root:root body .wizard-actions{gap:10px!important}
+
+/* ---------- Device listing page ---------- */
+html:root:root:root body .device-panel,
+html:root:root:root body .mobile-device-panel-slot .device-panel{background:var(--v3-paper)!important;border:1px solid var(--v3-line)!important;border-radius:22px!important;box-shadow:none!important}
+html:root:root:root body .device-panel h1{font-size:clamp(28px,3vw,38px)!important;letter-spacing:-.035em!important;font-weight:800!important;line-height:1.05!important;color:var(--v3-ink)!important}
+html:root:root:root body .device-price{font-weight:800!important;letter-spacing:-.03em!important;color:var(--v3-ink)!important}
+html:root:root:root body .device-actions .btn,
+html:root:root:root body .offer-actions .btn{white-space:nowrap!important}
+html:root:root:root body .buyer-safety-panel{background:var(--v3-bench)!important;border:1px solid var(--v3-line)!important;border-radius:16px!important;box-shadow:none!important}
+html:root:root:root body .detail-section,
+html:root:root:root body .related-section{background:var(--v3-paper)!important;border:1px solid var(--v3-line)!important;border-radius:20px!important;box-shadow:none!important}
+html:root:root:root body .detail-section h2,
+html:root:root:root body .related-section h2{letter-spacing:-.03em!important;font-weight:800!important;color:var(--v3-ink)!important}
+html:root:root:root body .gallery-main{border-radius:20px!important;background:#E3E6E0!important;box-shadow:none!important}
+html:root:root:root body .gallery-thumbs button,
+html:root:root:root body .gallery-thumbs img{border-radius:10px!important}
+html:root:root:root body .breadcrumbs a{color:var(--v3-ink-3)!important}
+html:root:root:root body .spec{border-color:var(--v3-line-2)!important}
+html:root:root:root body .danger-outline{color:#B42318!important;border-color:#E3B3AE!important;background:#fff!important}
+html:root:root:root body .transaction-scope-note{color:var(--v3-ink-3)!important}
+
+/* ---------- Compare ---------- */
+html:root:root:root body .compare-table-wrap{background:var(--v3-paper)!important;border:1px solid var(--v3-line)!important;border-radius:20px!important;box-shadow:none!important}
+html:root:root:root body .compare-table-wrap th{color:var(--v3-ink-2)!important;font-weight:600!important;text-transform:none!important;letter-spacing:0!important}
+html:root:root:root body .compare-table-wrap td,
+html:root:root:root body .compare-table-wrap th{border-color:var(--v3-line-2)!important}
+
+/* ---------- Dashboard and admin (incl. fix: signed-out sign-in box was squeezed into a 160px column) ---------- */
+html:root:root:root body.dashboard-signed-out .dashboard-shell{grid-template-columns:minmax(0,1fr)!important}
+html:root:root:root body.dashboard-signed-out .dashboard-main{width:auto!important;max-width:none!important}
+html:root:root:root body .auth-gate{width:100%!important;max-width:480px!important;margin:48px auto!important;background:var(--v3-paper)!important;border:1px solid var(--v3-line)!important;border-radius:22px!important;box-shadow:none!important;padding:clamp(24px,4vw,40px)!important;text-align:left!important}
+html:root:root:root body .auth-gate h2,
+html:root:root:root body .auth-gate h1{font-size:clamp(28px,3vw,36px)!important;letter-spacing:-.035em!important;font-weight:800!important;line-height:1.05!important;color:var(--v3-ink)!important}
+html:root:root:root body .dashboard-shell{background:var(--v3-bench)!important}
+html:root:root:root body .sidebar{background:var(--v3-paper)!important;border-right:1px solid var(--v3-line)!important;box-shadow:none!important}
+html:root:root:root body .nav-item{color:var(--v3-ink)!important;border-radius:12px!important;font-weight:600!important}
+html:root:root:root body .nav-item.active,
+html:root:root:root body .nav-item[aria-current="page"]{background:var(--v3-bench)!important;color:var(--v3-cobalt)!important}
+html:root:root:root body .dash-header h1{font-size:clamp(30px,3.4vw,44px)!important;letter-spacing:-.04em!important;font-weight:800!important;color:var(--v3-ink)!important}
+html:root:root:root body .panel,
+html:root:root:root body .welcome-card,
+html:root:root:root body .kpi-grid>*,
+html:root:root:root body .insight-panel{background:var(--v3-paper)!important;border:1px solid var(--v3-line)!important;border-radius:20px!important;box-shadow:none!important}
+html:root:root:root body .panel-heading h2,
+html:root:root:root body .panel-heading h3{letter-spacing:-.02em!important;font-weight:800!important;color:var(--v3-ink)!important}
+html:root:root:root body .primary-button{background:var(--v3-cobalt)!important;color:#fff!important;border:0!important;border-radius:999px!important;font-weight:700!important;min-height:44px!important;box-shadow:none!important}
+html:root:root:root body .primary-button:hover{background:var(--v3-cobalt-dark)!important}
+html:root:root:root body .secondary-button{background:#fff!important;color:var(--v3-ink)!important;border:1.5px solid #C9CEC6!important;border-radius:999px!important;font-weight:700!important;min-height:44px!important;box-shadow:none!important}
+html:root:root:root body .link-button,
+html:root:root:root body .text-action{color:var(--v3-cobalt)!important;font-weight:700!important}
+html:root:root:root body .analytics-table th{color:var(--v3-ink-2)!important;text-transform:none!important;letter-spacing:0!important;font-weight:600!important}
+html:root:root:root body .analytics-table td,
+html:root:root:root body .analytics-table th{border-color:var(--v3-line-2)!important}
+html:root:root:root body .admin-hero h1{letter-spacing:-.04em!important;font-weight:800!important}
+html:root:root:root body.dashboard-signed-out .dashboard-main{background:none!important;min-height:100vh!important}
+html:root:root:root body .dashboard-main{background:var(--v3-bench)!important}
 
 /* ---------- trust page v3 (trust.html) ---------- */
 .t3-wrap{max-width:1240px;margin:0 auto;padding-inline:24px}

@@ -1,34 +1,51 @@
-# DigitalDeviceHub v3 — deploy notes
+# DigitalDeviceHub v3: uniform look across every page
 
-Files go in the site root unless noted.
+Already live: `index.html`, `home-v3.css`, `home-v3.js`, `trust.html`, `fonts/…woff2`.
 
-| File | What to do |
-|---|---|
-| `index.html` | Replace the homepage (keep a backup of the old one). |
-| `home-v3.css`, `home-v3.js` | New. Used by the homepage only. |
-| `fonts/schibsted-grotesk-latin-wght-normal.woff2` | New. Put it in a `/fonts/` folder. Self-hosted because the site's Content-Security-Policy blocks Google Fonts. |
-| `theme-v3.css` | New. Sitewide skin for every other page. |
-| `trust.html` | Replace the Trust page. |
+## Step 1: replace one file
 
-## Marketplace (and any other existing page)
+Upload the new **`theme-v3.css`** over the old one. It now covers every page on the site.
 
-Don't replace `marketplace.html`: its listing cards are filled in server-side. Make two small edits instead:
+## Step 2: add the theme to every other page
 
-1. In `<head>`, directly after the `premium-ui.css` line, add:
+Make these two edits in **each** HTML page listed below:
+
+1. Directly after the line that loads `premium-ui.css` (whatever its `?v=` number), add:
    ```html
-   <link rel="stylesheet" href="/theme-v3.css?v=20261011">
+   <link rel="stylesheet" href="/theme-v3.css?v=20261011b">
    ```
-2. Remove `<script src="/apple-motion.js?v=20261005-studio1" defer></script>` (the theme disables its effect anyway).
+2. Delete the `apple-motion.js` script line if the page has one:
+   ```html
+   <script src="/apple-motion.js?v=20261005-studio1" defer></script>
+   ```
 
-The same `<link>` line can go on Help, About, Sell, Dashboard, Device and other pages to bring them into the new look.
+Pages:
 
-## Bugs fixed by theme-v3.css
+- /marketplace
+- /phones, /phones/iphone, /laptops, /tablets, /accessories, /wearables
+- /guides/buying-used-iphone
+- /sell
+- /device/… (the listing page template)
+- /compare
+- /help, /contact, /about, /regions, /seller-onboarding
+- /privacy, /terms
+- /dashboard, /admin
 
-- `premium-ui.css` forces `display:flex !important` on `.empty-box`, which overrides the `hidden` attribute. As a result, "No matching devices." shows even when listings exist. The theme restores `[hidden]`.
-- On phones, the Filters button icon has no size, so the button grows to about 290px tall. The theme sizes it to 20px.
-- Scroll-reveal (`apple-motion.js`) can leave sections blank. The theme shows content immediately.
+Do not change `index.html`, which has its own styles. `trust.html` already has the theme line; just bump its `?v=` to `20261011b`.
 
-## After uploading
+Prompt you can paste into ChatGPT or Codex with the files:
 
-- The site runs a service worker. Bump its cache version so returning visitors get the new files.
-- Supabase needs no changes. The homepage reads the same public tables (`listings`, `public_profiles`, `listing_images`) with the publishable key in `config.js`.
+> In every .html file of my site except index.html, add `<link rel="stylesheet" href="/theme-v3.css?v=20261011b">` on the line directly after the existing premium-ui.css stylesheet link, and remove any `<script>` tag that loads apple-motion.js. In trust.html, change theme-v3.css?v=20261011 to theme-v3.css?v=20261011b. Change nothing else.
+
+## Step 3: clear caches
+
+Bump the service worker's cache version so returning visitors get the new files.
+
+## Live-site bugs this theme fixes
+
+- **Marketplace:** "No matching devices." showed even when listings existed, because `premium-ui.css` overrides the `hidden` attribute.
+- **Marketplace on phones:** the Filters button icon had no size, so the button was about 290px tall.
+- **All pages:** the scroll-reveal effect could leave sections blank.
+- **Dashboard when signed out:** the sign-in box was squeezed into a 160px strip, because the hidden sidebar still reserved its column.
+
+Supabase needs no changes.
