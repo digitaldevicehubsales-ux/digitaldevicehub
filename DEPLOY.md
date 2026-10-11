@@ -1,51 +1,25 @@
-# DigitalDeviceHub v3: uniform look across every page
+# DigitalDeviceHub v3: whole-site theme
 
-Already live: `index.html`, `home-v3.css`, `home-v3.js`, `trust.html`, `fonts/…woff2`.
+Upload these 4 files to your site root, replacing the existing ones:
 
-## Step 1: replace one file
+| File | What changed |
+|---|---|
+| `theme-v3.css` | Final theme: covers all pages, plus the welcome card, Sell progress bar, sidebar and Admin layout fixes |
+| `mobile-nav.js` | One line added at the top that loads the theme. The rest is your original code, unchanged. |
+| `apple-motion.js` | Same one-line loader added at the top (covers /dashboard, which doesn't load mobile-nav.js). The rest is unchanged. |
+| `service-worker.js` | Cache bumped to ddh-v68, and the new theme, homepage and font files added for offline use |
 
-Upload the new **`theme-v3.css`** over the old one. It now covers every page on the site.
+No HTML edits are needed. Every page already loads `mobile-nav.js` or `apple-motion.js`, so all 20 pages pick up the theme automatically.
 
-## Step 2: add the theme to every other page
+Optional, later: to stop the old look flashing for a split second on slow connections, add
+`<link rel="stylesheet" href="/theme-v3.css?v=20261011c">` after the `premium-ui.css` line in each HTML file. The loader detects this line and won't add the theme twice.
 
-Make these two edits in **each** HTML page listed below:
+## Already live (no action needed)
+`index.html`, `home-v3.css`, `home-v3.js`, `trust.html`, `fonts/schibsted-grotesk-latin-wght-normal.woff2`
 
-1. Directly after the line that loads `premium-ui.css` (whatever its `?v=` number), add:
-   ```html
-   <link rel="stylesheet" href="/theme-v3.css?v=20261011b">
-   ```
-2. Delete the `apple-motion.js` script line if the page has one:
-   ```html
-   <script src="/apple-motion.js?v=20261005-studio1" defer></script>
-   ```
-
-Pages:
-
-- /marketplace
-- /phones, /phones/iphone, /laptops, /tablets, /accessories, /wearables
-- /guides/buying-used-iphone
-- /sell
-- /device/… (the listing page template)
-- /compare
-- /help, /contact, /about, /regions, /seller-onboarding
-- /privacy, /terms
-- /dashboard, /admin
-
-Do not change `index.html`, which has its own styles. `trust.html` already has the theme line; just bump its `?v=` to `20261011b`.
-
-Prompt you can paste into ChatGPT or Codex with the files:
-
-> In every .html file of my site except index.html, add `<link rel="stylesheet" href="/theme-v3.css?v=20261011b">` on the line directly after the existing premium-ui.css stylesheet link, and remove any `<script>` tag that loads apple-motion.js. In trust.html, change theme-v3.css?v=20261011 to theme-v3.css?v=20261011b. Change nothing else.
-
-## Step 3: clear caches
-
-Bump the service worker's cache version so returning visitors get the new files.
-
-## Live-site bugs this theme fixes
-
-- **Marketplace:** "No matching devices." showed even when listings existed, because `premium-ui.css` overrides the `hidden` attribute.
-- **Marketplace on phones:** the Filters button icon had no size, so the button was about 290px tall.
+## Live-site bugs the theme fixes
+- **Marketplace:** "No matching devices." showed even when listings existed.
+- **Marketplace on phones:** the Filters button was about 290px tall.
 - **All pages:** the scroll-reveal effect could leave sections blank.
-- **Dashboard when signed out:** the sign-in box was squeezed into a 160px strip, because the hidden sidebar still reserved its column.
-
-Supabase needs no changes.
+- **Dashboard when signed out:** the sign-in box was squeezed into a 160px strip.
+- **Dashboard when signed in:** the welcome card's white text sat on white, the Sell progress bar showed every step as complete, and the Admin heading was misaligned.

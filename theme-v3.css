@@ -247,6 +247,8 @@ html:root:root:root body .welcome-card .eyebrow,html:root:root:root body .welcom
 html:root:root:root body .sidebar-admin-label{text-transform:none!important;letter-spacing:0!important;font-size:13px!important;font-weight:700!important;color:var(--v3-ink-3)!important}
 html:root:root:root body .sidebar-admin a,html:root:root:root body .sidebar-bottom a{color:var(--v3-ink-2)!important}
 
+html:root:root:root body .admin-hero{max-width:1280px!important;width:100%!important;margin-left:auto!important;margin-right:auto!important;box-sizing:border-box!important}
+
 /* ---------- trust page v3 (trust.html) ---------- */
 .t3-wrap{max-width:1240px;margin:0 auto;padding-inline:24px}
 .t3-section{padding-block:clamp(56px,7vw,88px)}

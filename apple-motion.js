@@ -1,77 +1,80 @@
+/* DigitalDeviceHub v3: load the sitewide theme (pages that only load this script, e.g. /dashboard) */
+(()=>{try{if(!document.querySelector('link[href*="theme-v3.css"]')){const l=document.createElement('link');l.rel='stylesheet';l.href='/theme-v3.css?v=20261011c';document.head.appendChild(l);}}catch(e){}})();
+
 (()=>{
-  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  document.documentElement.classList.add('apple-ui');
-  if(reduce){document.documentElement.classList.add('apple-reduced-motion');return}
-  document.documentElement.classList.add('motion-ready');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+document.documentElement.classList.add('apple-ui');
+if(reduce){document.documentElement.classList.add('apple-reduced-motion');return}
+document.documentElement.classList.add('motion-ready');
 
-  const revealSelectors=[
-    '.hero-copy','.home-task-panel','.section-heading',
-    '.checklist-head','.check-item','.sell-card','.page-hero>*','.market-confidence>div',
-    '.filters','.market-toolbar','.empty-box','.device-layout>section','.device-panel',
-    '.detail-section','.wizard-head','.wizard-card','.welcome-card','.kpi-grid>*','.panel',
-    '.trust-card-v2','.help-card','.compare-empty>*','.footer-grid>*','.retail-feature-copy','.retail-feature-visual','.retail-story','[data-reveal]'
-  ].join(',');
+const revealSelectors=[
+'.hero-copy','.home-task-panel','.section-heading',
+'.checklist-head','.check-item','.sell-card','.page-hero>*','.market-confidence>div',
+'.filters','.market-toolbar','.empty-box','.device-layout>section','.device-panel',
+'.detail-section','.wizard-head','.wizard-card','.welcome-card','.kpi-grid>*','.panel',
+'.trust-card-v2','.help-card','.compare-empty>*','.footer-grid>*','.retail-feature-copy','.retail-feature-visual','.retail-story','[data-reveal]'
+].join(',');
 
-  const nodes=[...document.querySelectorAll(revealSelectors)];
-  nodes.forEach((el,i)=>{
-    el.classList.add('apple-reveal-target');
-    el.style.setProperty('--apple-delay', Math.min((i%8)*55,330)+'ms');
-  });
+const nodes=[...document.querySelectorAll(revealSelectors)];
+nodes.forEach((el,i)=>{
+el.classList.add('apple-reveal-target');
+el.style.setProperty('--apple-delay', Math.min((i%8)*55,330)+'ms');
+});
 
-  const io=new IntersectionObserver(entries=>{
-    for(const e of entries){
-      if(e.isIntersecting){
-        e.target.classList.add('apple-in-view');
-        io.unobserve(e.target);
-      }
-    }
-  },{rootMargin:'0px 0px -7% 0px',threshold:.08});
-  nodes.forEach(n=>io.observe(n));
-  const revealFailsafe=setTimeout(()=>nodes.forEach(n=>n.classList.add('apple-in-view')),1200);
-  addEventListener('pagehide',()=>clearTimeout(revealFailsafe),{once:true});
+const io=new IntersectionObserver(entries=>{
+for(const e of entries){
+if(e.isIntersecting){
+e.target.classList.add('apple-in-view');
+io.unobserve(e.target);
+}
+}
+},{rootMargin:'0px 0px -7% 0px',threshold:.08});
+nodes.forEach(n=>io.observe(n));
+const revealFailsafe=setTimeout(()=>nodes.forEach(n=>n.classList.add('apple-in-view')),1200);
+addEventListener('pagehide',()=>clearTimeout(revealFailsafe),{once:true});
 
-  const editorial=[...document.querySelectorAll('[data-reveal]')];
-  const editorialIO=new IntersectionObserver(entries=>{
-    entries.forEach(entry=>{
-      if(entry.isIntersecting){entry.target.classList.add('is-visible');editorialIO.unobserve(entry.target)}
-    });
-  },{rootMargin:'0px 0px -8% 0px',threshold:.12});
-  editorial.forEach(el=>editorialIO.observe(el));
+const editorial=[...document.querySelectorAll('[data-reveal]')];
+const editorialIO=new IntersectionObserver(entries=>{
+entries.forEach(entry=>{
+if(entry.isIntersecting){entry.target.classList.add('is-visible');editorialIO.unobserve(entry.target)}
+});
+},{rootMargin:'0px 0px -8% 0px',threshold:.12});
+editorial.forEach(el=>editorialIO.observe(el));
 
-  const allowDepth=matchMedia('(min-width: 900px) and (hover: hover) and (pointer: fine)').matches;
-  const depthNodes=allowDepth ? [...document.querySelectorAll('.home-primary,.page-hero,.gallery-main,.welcome-card')] : [];
-  let raf=0;
-  const updateDepth=()=>{
-    raf=0;
-    const vh=innerHeight||800;
-    for(const el of depthNodes){
-      const r=el.getBoundingClientRect();
-      const center=r.top+r.height/2;
-      const distance=(center-vh/2)/vh;
-      const y=Math.max(-12,Math.min(12,-distance*14));
-      const scale=1-Math.min(.018,Math.abs(distance)*.012);
-      el.style.setProperty('--apple-depth-y',y.toFixed(2)+'px');
-      el.style.setProperty('--apple-depth-scale',scale.toFixed(4));
-    }
-  };
-  addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(updateDepth)},{passive:true});
-  addEventListener('resize',()=>{if(!raf)raf=requestAnimationFrame(updateDepth)},{passive:true});
-  updateDepth();
+const allowDepth=matchMedia('(min-width: 900px) and (hover: hover) and (pointer: fine)').matches;
+const depthNodes=allowDepth ? [...document.querySelectorAll('.home-primary,.page-hero,.gallery-main,.welcome-card')] : [];
+let raf=0;
+const updateDepth=()=>{
+raf=0;
+const vh=innerHeight||800;
+for(const el of depthNodes){
+const r=el.getBoundingClientRect();
+const center=r.top+r.height/2;
+const distance=(center-vh/2)/vh;
+const y=Math.max(-12,Math.min(12,-distance*14));
+const scale=1-Math.min(.018,Math.abs(distance)*.012);
+el.style.setProperty('--apple-depth-y',y.toFixed(2)+'px');
+el.style.setProperty('--apple-depth-scale',scale.toFixed(4));
+}
+};
+addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(updateDepth)},{passive:true});
+addEventListener('resize',()=>{if(!raf)raf=requestAnimationFrame(updateDepth)},{passive:true});
+updateDepth();
 
-  const internalLinks=[...document.querySelectorAll('a[href]')];
-  internalLinks.forEach(a=>a.addEventListener('click',e=>{
-    if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
-    const href=a.getAttribute('href')||'';
-    if(!href||href.startsWith('#')||a.target==='_blank'||a.hasAttribute('download'))return;
-    let url; try{url=new URL(href,location.href)}catch{return}
-    if(url.origin!==location.origin||url.pathname===location.pathname&&url.search===location.search)return;
-    document.documentElement.classList.add('apple-page-leaving');
-  },{passive:true}));
+const internalLinks=[...document.querySelectorAll('a[href]')];
+internalLinks.forEach(a=>a.addEventListener('click',e=>{
+if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+const href=a.getAttribute('href')||'';
+if(!href||href.startsWith('#')||a.target==='_blank'||a.hasAttribute('download'))return;
+let url; try{url=new URL(href,location.href)}catch{return}
+if(url.origin!==location.origin||url.pathname===location.pathname&&url.search===location.search)return;
+document.documentElement.classList.add('apple-page-leaving');
+},{passive:true}));
 
-  addEventListener('pageshow',()=>document.documentElement.classList.remove('apple-page-leaving'));
+addEventListener('pageshow',()=>document.documentElement.classList.remove('apple-page-leaving'));
 
-  const rails=[...document.querySelectorAll('.category-grid,.home-listing-preview,.product-grid,.gallery-thumbs,.compare-empty-actions')];
-  rails.forEach(r=>r.classList.add('apple-rail'));
+const rails=[...document.querySelectorAll('.category-grid,.home-listing-preview,.product-grid,.gallery-thumbs,.compare-empty-actions')];
+rails.forEach(r=>r.classList.add('apple-rail'));
 
-  document.querySelectorAll('h1,h2').forEach(h=>h.classList.add('apple-display-text'));
+document.querySelectorAll('h1,h2').forEach(h=>h.classList.add('apple-display-text'));
 })();
