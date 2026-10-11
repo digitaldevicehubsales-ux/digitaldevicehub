@@ -31,6 +31,7 @@ return icons.browse;
 }
 
 function loadPremiumUi(){
+if(document.body&&document.body.classList.contains('v3'))return; /* v3 homepage has its own styles */
 if(document.querySelector('link[data-premium-ui],link[href^="/premium-ui.css"]'))return;
 const link=document.createElement('link');
 link.rel='stylesheet';

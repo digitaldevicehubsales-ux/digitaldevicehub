@@ -1,10 +1,11 @@
 # DigitalDeviceHub v3: whole-site theme
 
-Upload these 4 files to your site root, replacing the existing ones:
+Upload these 7 files to your site root, replacing the existing ones:
 
 | File | What changed |
 |---|---|
-| `theme-v3.css` | Final theme: covers all pages, plus the welcome card, Sell progress bar, sidebar and Admin layout fixes |
+| `theme-v3.css` | Final theme: one shared header, footer, phone menu and bottom bar for every page (homepage included), plus all page fixes |
+| `index.html`, `home-v3.css`, `home-v3.js` | Homepage now uses the shared header and footer and your real logo, so it matches every other page |
 | `mobile-nav.js` | One line added at the top that loads the theme. The rest is your original code, unchanged. |
 | `apple-motion.js` | Same one-line loader added at the top (covers /dashboard, which doesn't load mobile-nav.js). The rest is unchanged. |
 | `service-worker.js` | Cache bumped to ddh-v68, and the new theme, homepage and font files added for offline use |
@@ -15,7 +16,7 @@ Optional, later: to stop the old look flashing for a split second on slow connec
 `<link rel="stylesheet" href="/theme-v3.css?v=20261011c">` after the `premium-ui.css` line in each HTML file. The loader detects this line and won't add the theme twice.
 
 ## Already live (no action needed)
-`index.html`, `home-v3.css`, `home-v3.js`, `trust.html`, `fonts/schibsted-grotesk-latin-wght-normal.woff2`
+`trust.html`, `fonts/schibsted-grotesk-latin-wght-normal.woff2`
 
 ## Live-site bugs the theme fixes
 - **Marketplace:** "No matching devices." showed even when listings existed.

@@ -16,38 +16,28 @@
   <meta name="twitter:image" content="https://digitaldevicehub.com/social-card.png">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="preload" href="/fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/home-v3.css?v=20261011">
+  <link rel="stylesheet" href="/home-v3.css?v=20261011c">
+  <link rel="stylesheet" href="/theme-v3.css?v=20261011c">
   <title>DigitalDeviceHub: know the device before you pay</title>
   <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://digitaldevicehub.com/#organization","name":"DigitalDeviceHub","url":"https://digitaldevicehub.com/","logo":"https://digitaldevicehub.com/social-card.png","email":"digitaldevicehubsales@gmail.com"},{"@type":"WebSite","@id":"https://digitaldevicehub.com/#website","url":"https://digitaldevicehub.com/","name":"DigitalDeviceHub","publisher":{"@id":"https://digitaldevicehub.com/#organization"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://digitaldevicehub.com/marketplace?q={search_term_string}"},"query-input":"required name=search_term_string"}}]}</script>
 </head>
 <body class="v3">
-<a class="skip" href="#main">Skip to content</a>
-
-<header class="site-head">
-  <div class="wrap head-row">
-    <a class="brand" href="/" aria-label="DigitalDeviceHub home">
-      <span class="brand-mark" aria-hidden="true">D</span>
-      <span>DigitalDeviceHub</span>
-    </a>
-    <nav class="head-nav" id="headNav" aria-label="Main">
-      <a href="/marketplace">Marketplace</a>
-      <a href="/trust">Trust</a>
-      <a href="/help">Help</a>
-      <a href="/about">About</a>
-      <a class="nav-signin" href="/?signin=1&amp;returnTo=%2F">Sign in</a>
-    </nav>
-    <div class="head-actions">
-      <a class="chip region" href="/regions" id="regionChip" aria-label="Region and currency">Region</a>
-      <button type="button" class="link-btn" data-action="signin">Sign in</button>
-      <a class="btn btn-blue" href="/sell">Sell a device</a>
-      <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="headNav" aria-label="Open menu">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-      </button>
-    </div>
-  </div>
+<header class="global-header">
+<a class="global-brand" href="/" aria-label="DigitalDeviceHub home"><span class="ddh-logo" aria-hidden="true"><svg viewBox="0 0 64 64" focusable="false"><rect width="64" height="64" rx="18" fill="currentColor"></rect><path d="M19 15h13c12 0 19 6 19 17S44 49 32 49H19V15zm12 26c7 0 11-3 11-9s-4-9-11-9h-3v18h3z" fill="white"></path></svg></span><span>DigitalDeviceHub</span></a>
+<nav class="global-nav" aria-label="Primary navigation">
+<a href="/marketplace">Marketplace</a>
+<a href="/trust">Trust</a>
+<a href="/help">Help</a>
+<a href="/about">About</a>
+</nav>
+<div class="global-actions">
+<button class="locale-chip" id="localeChip" type="button">Region &amp; currency</button>
+<a class="btn secondary small account-access" href="/?signin=1&amp;returnTo=%2F">Sign in</a>
+<a class="btn small" href="/sell">Sell device</a>
+</div>
 </header>
 
-<main id="main">
+<main id="main-content">
 
   <section class="hero wrap" aria-labelledby="heroTitle">
     <div class="hero-copy">
@@ -56,7 +46,7 @@
       <form class="search" role="search" action="/marketplace" method="get">
         <label class="sr-only" for="homeSearch">Search devices</label>
         <input id="homeSearch" name="q" type="search" placeholder="Try iPhone 13 or Galaxy S20" autocomplete="off">
-        <button type="submit" class="btn btn-ink">Search</button>
+        <button type="submit" class="hbtn hbtn-ink">Search</button>
       </form>
       <p class="popular"><span>Popular:</span>
         <a href="/marketplace?q=iPhone">iPhone</a>
@@ -101,7 +91,7 @@
       </div>
       <a class="strong-link" href="/marketplace">See the whole marketplace</a>
     </div>
-    <div class="filters" role="group" aria-label="Filter by condition" id="condFilters">
+    <div class="cond-filters" role="group" aria-label="Filter by condition" id="condFilters">
       <button type="button" aria-pressed="true" data-cond="all">All conditions</button>
       <button type="button" aria-pressed="false" data-cond="New (sealed)">New, sealed</button>
       <button type="button" aria-pressed="false" data-cond="Open box">Open box</button>
@@ -127,7 +117,7 @@
       <h2 id="checksTitle" class="h-big narrow">What we check, and what a check can't prove.</h2>
       <p class="muted-lg on-ink">Checks reduce risk. They don't remove it. Here is exactly where the line sits, so you can decide with your eyes open.</p>
       <div class="split">
-        <div class="panel panel-white">
+        <div class="hpanel hpanel-white">
           <h3>We check</h3>
           <ul class="checklist">
             <li><span class="dot dot-pass" aria-hidden="true"></span><div><strong>Moderated listings</strong><p>A person reviews every listing before it goes live.</p></div></li>
@@ -137,7 +127,7 @@
             <li><span class="dot dot-pass" aria-hidden="true"></span><div><strong>Delivery clarity</strong><p>Each listing states pickup or shipping, so you know the logistics before you commit.</p></div></li>
           </ul>
         </div>
-        <div class="panel panel-line">
+        <div class="hpanel hpanel-line">
           <h3>A check doesn't prove</h3>
           <ul class="checklist on-ink">
             <li><span class="dot dot-warn" aria-hidden="true">!</span><div><strong>Identity, from an email</strong><p>A confirmed email shows inbox access, not who someone is.</p></div></li>
@@ -217,8 +207,8 @@
         <h2 id="sellTitle">List it clearly. Sell it sooner.</h2>
         <p>Buyers trust listings that answer their questions before they ask. Show the real device, state the true condition and say how it gets to them.</p>
         <div class="sell-ctas">
-          <a class="btn btn-white" href="/sell">Start a listing</a>
-          <a class="btn btn-outline" href="/seller-onboarding">Read the seller guide</a>
+          <a class="hbtn hbtn-white" href="/sell">Start a listing</a>
+          <a class="hbtn hbtn-outline" href="/seller-onboarding">Read the seller guide</a>
         </div>
       </div>
       <ul class="sell-points">
@@ -231,18 +221,13 @@
 
 </main>
 
-<footer class="site-foot">
-  <div class="wrap foot-row">
-    <div class="foot-brand">
-      <a class="brand on-ink" href="/"><span class="brand-mark yellow" aria-hidden="true">D</span><span>DigitalDeviceHub</span></a>
-      <p>Buy and sell phones, laptops and tablets with the checks in plain sight.</p>
-    </div>
-    <nav aria-label="Marketplace"><h3>Marketplace</h3><a href="/marketplace">Browse devices</a><a href="/sell">Sell a device</a><a href="/compare">Compare</a></nav>
-    <nav aria-label="Support"><h3>Support</h3><a href="/trust">Trust and safety</a><a href="/help">Help centre</a><a href="/contact">Contact</a></nav>
-    <nav aria-label="Company"><h3>Company</h3><a href="/about">About</a><a href="/regions">Regions and features</a></nav>
-    <nav aria-label="Legal"><h3>Legal</h3><a href="/privacy">Privacy</a><a href="/terms">Terms</a></nav>
-  </div>
-</footer>
+<footer class="footer-v2"><div class="container footer-grid">
+<div><a class="global-brand" href="/" aria-label="DigitalDeviceHub home"><span class="ddh-logo" aria-hidden="true"><svg viewBox="0 0 64 64" focusable="false"><rect width="64" height="64" rx="18" fill="currentColor"></rect><path d="M19 15h13c12 0 19 6 19 17S44 49 32 49H19V15zm12 26c7 0 11-3 11-9s-4-9-11-9h-3v18h3z" fill="white"></path></svg></span><span>DigitalDeviceHub</span></a><p>Devices with clearer checks.</p></div>
+<div><h4>Marketplace</h4><a href="/marketplace">Browse devices</a><a href="/sell">Sell device</a><a href="/seller-onboarding">Seller onboarding</a><a href="/compare">Compare</a></div>
+<div><h4>Support</h4><a href="/trust">Trust &amp; Safety</a><a href="/help">Help Center</a><a href="/contact">Contact</a></div>
+<div><h4>Company</h4><a href="/about">About</a><a href="/regions">Regions &amp; features</a></div>
+<div><h4>Legal</h4><a href="/privacy">Privacy</a><a href="/terms">Terms</a></div>
+</div></footer>
 
 <!-- Sign-in dialog used by app.js / auth-ui.js -->
 <dialog id="dialog"><button class="dialog-close" aria-label="Close">×</button><div id="dialogContent"></div></dialog>
@@ -257,6 +242,8 @@
 <script src="/analytics.js" defer></script>
 <script src="/role-router.js" defer></script>
 <script src="/open-signin.js" defer></script>
-<script src="/home-v3.js?v=20261011" defer></script>
+<script src="/home-v3.js?v=20261011c" defer></script>
+<script src="/mobile-nav.js?v=20261005-studio1" defer></script>
+<script src="/retail-nav.js?v=20261005-studio1" defer></script>
 </body>
 </html>

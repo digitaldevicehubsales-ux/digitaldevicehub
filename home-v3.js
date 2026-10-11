@@ -47,14 +47,6 @@
   const gradeOf = r => r.specs?.condition_grade || r.specs?.cosmetic_condition || (r.condition === 'new' ? 'New (sealed)' : 'Used');
   const norm = s => String(s || '').toLowerCase().replace(/[^a-z]/g, '');
 
-  /* ---------- header menu ---------- */
-  const menuBtn = $('#menuBtn'), nav = $('#headNav');
-  menuBtn?.addEventListener('click', () => {
-    const open = nav.classList.toggle('open');
-    menuBtn.setAttribute('aria-expanded', String(open));
-    menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-  });
-
   /* ---------- data ---------- */
   let listings = [];
   let activeCond = 'all';
@@ -225,8 +217,6 @@
       let curName = cur;
       try { curName = new Intl.DisplayNames(['en'], { type: 'currency' }).of(cur) || cur; } catch { /* keep code */ }
       $('#fxTargetName').textContent = curName;
-      const chip = $('#regionChip');
-      if (chip) chip.textContent = [countryName(country), cur].filter(Boolean).join(', ');
     }
     updateFx();
   }
