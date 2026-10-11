@@ -161,8 +161,9 @@ html:root:root:root body .shell.legal li{font-size:17px!important;line-height:1.
 
 /* ---------- Sell wizard ---------- */
 html:root:root:root body .wizard-head h1{font-size:clamp(36px,4.6vw,60px)!important;letter-spacing:-.045em!important;font-weight:800!important;line-height:1!important;color:var(--v3-ink)!important}
-html:root:root:root body .wizard-progress{background:var(--v3-line-2)!important;border-radius:999px!important}
-html:root:root:root body .wizard-progress>*{background:var(--v3-cobalt)!important}
+html:root:root:root body .wizard-progress{background:none!important}
+html:root:root:root body .wizard-progress>*{background:var(--v3-line)!important;border-radius:999px!important}
+html:root:root:root body .wizard-progress>.active,html:root:root:root body .wizard-progress>.done,html:root:root:root body .wizard-progress>.complete{background:var(--v3-cobalt)!important}
 html:root:root:root body .sell-editorial-intro,
 html:root:root:root body .wizard-card{background:var(--v3-paper)!important;border:1px solid var(--v3-line)!important;border-radius:22px!important;box-shadow:none!important}
 html:root:root:root body .field label,
@@ -221,7 +222,6 @@ html:root:root:root body .nav-item.active,
 html:root:root:root body .nav-item[aria-current="page"]{background:var(--v3-bench)!important;color:var(--v3-cobalt)!important}
 html:root:root:root body .dash-header h1{font-size:clamp(30px,3.4vw,44px)!important;letter-spacing:-.04em!important;font-weight:800!important;color:var(--v3-ink)!important}
 html:root:root:root body .panel,
-html:root:root:root body .welcome-card,
 html:root:root:root body .kpi-grid>*,
 html:root:root:root body .insight-panel{background:var(--v3-paper)!important;border:1px solid var(--v3-line)!important;border-radius:20px!important;box-shadow:none!important}
 html:root:root:root body .panel-heading h2,
@@ -237,6 +237,15 @@ html:root:root:root body .analytics-table th{border-color:var(--v3-line-2)!impor
 html:root:root:root body .admin-hero h1{letter-spacing:-.04em!important;font-weight:800!important}
 html:root:root:root body.dashboard-signed-out .dashboard-main{background:none!important;min-height:100vh!important}
 html:root:root:root body .dashboard-main{background:var(--v3-bench)!important}
+
+/* Dashboard welcome card stays dark (its text is white) */
+html:root:root:root body .welcome-card{background:var(--v3-ink)!important;background-image:none!important;color:#fff!important;border:0!important;border-radius:20px!important;box-shadow:none!important}
+html:root:root:root body .welcome-card h2{color:#fff!important;letter-spacing:-.03em!important;font-weight:800!important}
+html:root:root:root body .welcome-card p{color:#C9CDD3!important}
+html:root:root:root body .welcome-card .eyebrow,html:root:root:root body .welcome-card p:first-child{color:var(--v3-tag)!important}
+
+html:root:root:root body .sidebar-admin-label{text-transform:none!important;letter-spacing:0!important;font-size:13px!important;font-weight:700!important;color:var(--v3-ink-3)!important}
+html:root:root:root body .sidebar-admin a,html:root:root:root body .sidebar-bottom a{color:var(--v3-ink-2)!important}
 
 /* ---------- trust page v3 (trust.html) ---------- */
 .t3-wrap{max-width:1240px;margin:0 auto;padding-inline:24px}
